@@ -94,32 +94,33 @@ public:
     {
         return m;
     }
-    double determinant()const {
-        
-    }
-    
-    Matrix sumMatrix(Matrix other)
+    double determinant() const
     {
-        
     }
-    Matrix multiplyMatrix(Matrix other){
 
+    Matrix sumMatrix(Matrix other) const
+    {
     }
-    Matrix transposeMatrix(){
-
+    Matrix multiplyMatrix(Matrix other) const
+    {
     }
-    Matrix oppositeMatrix(){
-
+    Matrix transposeMatrix() const
+    {
     }
-    Matrix inverteMatrix(){
-
+    Matrix oppositeMatrix() const
+    {
     }
-    Matrix scalarMultiplyMatrix(){
-
+    Matrix inverteMatrix() const
+    {
+    }
+    Matrix scalarMultiplyMatrix() const
+    {
     }
 };
 
 int main()
 {
+    Matrix M1, M2, M3;
+    Fraction R1, R2, R3;
     return 0;
 }
