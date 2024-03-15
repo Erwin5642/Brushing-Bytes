@@ -1,5 +1,4 @@
 // Biblioteca de Álgebra Linear
-#define NULL (void *)0
 class Fraction
 {
 private:
@@ -95,21 +94,28 @@ public:
     {
         return m;
     }
+    double determinant()const {
+        
+    }
+    
     Matrix sumMatrix(Matrix other)
     {
-        Matrix ret;
-        int i, j;
-        if ((n == other.getLines()) && m == other.getCollums())
-        {
-            for (i = 0; i < m; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    ret.setIJMatrix(p[i][j] + other.getIJMatrix(i, j), i, j);
-                }
-            }
-            return ret;
-        }
+        
+    }
+    Matrix multiplyMatrix(Matrix other){
+
+    }
+    Matrix transposeMatrix(){
+
+    }
+    Matrix oppositeMatrix(){
+
+    }
+    Matrix inverteMatrix(){
+
+    }
+    Matrix scalarMultiplyMatrix(){
+
     }
 };
 
