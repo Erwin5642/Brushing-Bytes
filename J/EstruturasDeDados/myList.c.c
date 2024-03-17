@@ -19,12 +19,7 @@ void encerrarLista(ListaEncadeada lista){
 }
 
 void inserirLista(ListaEncadeada lista, int x){
-    ListaEncadeada *new = malloc(sizeof(ListaEncadeada));
-    new->chave = x;
-    if(x <= lista.chave){
-        new->prox = lista.prox;
-        lista.prox = new; 
-    }
+    
 }
 
 
