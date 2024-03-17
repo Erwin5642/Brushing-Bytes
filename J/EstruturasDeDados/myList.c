@@ -22,6 +22,14 @@ void inserirLista(ListaEncadeada lista, int x){
     
 }
 
+void deletarLista(ListaEncadeada lista, int x){
+
+}
+
+int lerLista(ListaEncadeada lista, int indice){
+
+}
+
 
 typedef struct LD{
 
