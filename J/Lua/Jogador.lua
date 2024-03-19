@@ -1,10 +1,10 @@
-Jogador = Class {}
+Jogador = Class{}
 
 function Jogador:init(x, y, largura, altura)
     self.x = x
     self.y = y
-    self.altura = altura
     self.largura = largura
+    self.altura = altura
 
     self.dy = 0
 end
