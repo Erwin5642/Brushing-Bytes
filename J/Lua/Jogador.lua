@@ -18,5 +18,6 @@ function Jogador:update(dt)
 end
 
 function Jogador:render()
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.rectangle('fill', self.x, self.y, self.largura, self.altura)
 end
