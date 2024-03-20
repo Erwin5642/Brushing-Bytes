@@ -121,9 +121,9 @@ function love.update(dt)
 
     --IA do jogador 2
     if Bola.y < J2.y then
-        J2.dy = -Jogador_Velocidade
+        J2.dy = -0.7 * Jogador_Velocidade
     elseif Bola.y > J2.y + 20 then
-        J2.dy = Jogador_Velocidade
+        J2.dy = 0.7 * Jogador_Velocidade
     else
         J2.dy = 0
     end
