@@ -3,12 +3,12 @@ Class = require 'class'
 require 'Lua'
 require 'Obstaculo'
 require 'MaquinaEstados'
-require 'Estados/Base'
-require 'Estados/Pausa'
-require 'Estados/Titulo'
-require 'Estados/Jogando'
-require 'Estados/Score'
-require 'Estados/Countdown'
+require 'Estados/EstadoBase'
+require 'Estados/EstadoPausa'
+require 'Estados/EstadoTitulo'
+require 'Estados/EstadoJogando'
+require 'Estados/EstadoScore'
+require 'Estados/EstadoCountdown'
 
 -- Define o tamanho da janela do jogo
 gALTURA_JANELA = 600
