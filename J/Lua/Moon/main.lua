@@ -21,6 +21,7 @@ local loop_scroll = 0
 
 --Objetivo: incialia certas variaveis para o funcionamento do código
 function love.load()
+    math.randomseed(os.time())
     love.window.setMode(gLARGURA_JANELA, gALTURA_JANELA, {
         resizable = false,
         fullscreen = false
@@ -29,6 +30,7 @@ function love.load()
     --Cria uma table vazia para armazenar teclas pressionadas pelo usuário
     love.keyboard.keysPressed = {}
     lua = Lua()
+    predio = Obstaculo(100, 'top')
 end
 
 --Objetivo: realizar alguma ação declarada no escopo da função sempre que uma tecla for acionada
@@ -67,5 +69,5 @@ function love.draw()
     love.graphics.draw(background, -loop_scroll, 0, 0, 1, gALTURA_JANELA / background:getHeight())
     love.graphics.draw(background, -loop_scroll + background:getWidth(), 0, 0, 1,
         gALTURA_JANELA / background:getHeight())
-    lua:render()
+    predio:render()
 end
