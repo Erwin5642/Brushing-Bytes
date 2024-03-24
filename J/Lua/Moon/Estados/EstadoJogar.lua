@@ -96,3 +96,26 @@ function EstadoJogar:update(dt)
     self.lua:update(dt)
 end
 
+function EstadoJogar:render()
+    --renderiza cada um dos obstaculos
+    for k, par in pairs(self.paresObstaculos) do
+    for k, obstaculo in pairs(par.obstaculos) do
+        obstaculo:render()
+    end
+    end
+
+    --Mostra a pontuação atual
+    love.graphics.printf('Pontuacao' .. tostring(self.score), 8, 8)
+
+    --Renderiza o jogador
+    self.lua:render()
+end
+
+function EstadoJogar:enter()
+    --Chamado quando o estado transita
+    gScrolling = true
+end
+
+function EstadoJogar:exit()
+    gScrolling = false
+end
