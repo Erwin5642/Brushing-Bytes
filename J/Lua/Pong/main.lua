@@ -189,25 +189,25 @@ function love.draw()
     end
 
     --Mostra a pontuação
-    disjogarScore()
+    displayScore()
     --Desenha os jogadores e a bola
     J1:render()
     J2:render()
     Bola:render()
 
     --Mostra o fps
-    disjogarFPS()
+    displayFPS()
 
 end
 
-function disjogarScore()
+function displayScore()
     love.graphics.print(tostring(pontuacaoJ1), LARGURA_JANELA / 2 - 50,
         ALTURA_JANELA / 3)
     love.graphics.print(tostring(pontuacaoJ2), LARGURA_JANELA / 2 + 30,
         ALTURA_JANELA / 3)
 end
 
-function disjogarFPS()
+function displayFPS()
     love.graphics.setColor(0, 255/255, 0, 255/255)
     love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10)
     love.graphics.setColor(255, 255, 255, 255)
