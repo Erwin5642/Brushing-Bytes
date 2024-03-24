@@ -2,7 +2,6 @@
 Class = require 'class'
 require 'Lua'
 require 'Obstaculo'
-require 'ParObstaculo'
 require 'MaquinaEstados'
 require 'Estados/Base'
 require 'Estados/Pausa'
@@ -19,9 +18,12 @@ local background = love.graphics.newImage('Imagens/Background-2.jpg')
 local VELOCIDADE_BACKGROUND = 60
 local loop_scroll = 0
 
---Objetivo: incialia certas variaveis para o funcionamento do código
+gScrolling = true
+
+--Objetivo: inicializa certas variaveis para o funcionamento do código
 function love.load()
     math.randomseed(os.time())
+    --Configura a janela
     love.window.setMode(gLARGURA_JANELA, gALTURA_JANELA, {
         resizable = false,
         fullscreen = false
@@ -29,8 +31,17 @@ function love.load()
     love.window.setTitle('Moon Light')
     --Cria uma table vazia para armazenar teclas pressionadas pelo usuário
     love.keyboard.keysPressed = {}
-    lua = Lua()
-    predio = Obstaculo(100, 'top')
+
+    --Inicializa a maquina com os estados titulo, countdown, jogando, score e pausa
+    gMaquinaEstados = MaquinaEstados{
+        ['titulo'] = function() return EstadoTitulo() end,
+        ['countdown'] = function() return EstadoCountdown() end,
+        ['jogando'] = function() return EstadoJogando() end,
+        ['score'] = function() return EstadoScore() end,
+        ['pausa'] = function() return EstadoPausa() end
+    }
+    --Muda para o estado do titulo
+    gMaquinaEstados:change('titulo')
 end
 
 --Objetivo: realizar alguma ação declarada no escopo da função sempre que uma tecla for acionada
@@ -57,8 +68,7 @@ end
 function love.update(dt)
     -- Atualiza a posição do background
     loop_scroll = (loop_scroll + VELOCIDADE_BACKGROUND * dt) % background:getWidth()
-    lua:update(dt)
-
+   
     --Apaga as teclas que acabaram de serem apertadas
     love.keyboard.keysPressed = {}
 end
@@ -69,5 +79,5 @@ function love.draw()
     love.graphics.draw(background, -loop_scroll, 0, 0, 1, gALTURA_JANELA / background:getHeight())
     love.graphics.draw(background, -loop_scroll + background:getWidth(), 0, 0, 1,
         gALTURA_JANELA / background:getHeight())
-    predio:render()
+
 end
