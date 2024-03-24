@@ -66,7 +66,7 @@ function EstadoJogar:update(dt)
     
     --Se o jogador apertar enter pausa o jogo
     if love.keyboard.wasPressed('enter') then 
-        gMaquinaEstados:change('pausa')
+        gMaquinaEstados:change('pausa', {lua, paresObstaculos})
     end
     --Se o jogador apertar return volta para o titulo
     if love.keyboard.wasPressed('return') then
