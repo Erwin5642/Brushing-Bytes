@@ -6,7 +6,7 @@ require 'MaquinaEstados'
 require 'Estados/EstadoBase'
 require 'Estados/EstadoPausa'
 require 'Estados/EstadoTitulo'
-require 'Estados/EstadoJogando'
+require 'Estados/EstadoJogar'
 require 'Estados/EstadoScore'
 require 'Estados/EstadoCountdown'
 
@@ -32,11 +32,11 @@ function love.load()
     --Cria uma table vazia para armazenar teclas pressionadas pelo usuário
     love.keyboard.keysPressed = {}
 
-    --Inicializa a maquina com os estados titulo, countdown, jogando, score e pausa
+    --Inicializa a maquina com os estados titulo, countdown, jogar, score e pausa
     gMaquinaEstados = MaquinaEstados{
         ['titulo'] = function() return EstadoTitulo() end,
         ['countdown'] = function() return EstadoCountdown() end,
-        ['jogando'] = function() return EstadoJogando() end,
+        ['jogar'] = function() return EstadoJogar() end,
         ['score'] = function() return EstadoScore() end,
         ['pausa'] = function() return EstadoPausa() end
     }
