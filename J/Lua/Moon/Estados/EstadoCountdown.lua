@@ -1,13 +1,15 @@
---Define o estado de countdown como uma classe filha do estado base
-EstadoCountdown = Class{__includes = EstadoBase}
+-- Define o estado de countdown como uma classe filha do estado base
+EstadoCountdown = Class {
+    __includes = EstadoBase
+}
 
 TEMPO_CONTADOR = 0.75
---Inicializa o contador para 3 tempos, e um outro temporizador em zero para registrar o tempo passado
+-- Inicializa o contador para 3 tempos, e um outro temporizador em zero para registrar o tempo passado
 function EstadoCountdown:init()
-        self.contador = 3
-        self.timer = 0
+    self.contador = 3
+    self.timer = 0
 end
---Atualiza o timer de acordo com os frames passados, diminuindo o contador a cada loop concluido e muda de estado no fim
+-- Atualiza o timer de acordo com os frames passados, diminuindo o contador a cada loop concluido e muda de estado no fim
 function EstadoCountdown:update(dt)
     self.timer = self.timer + dt
 
