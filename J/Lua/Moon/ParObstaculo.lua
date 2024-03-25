@@ -1,12 +1,12 @@
 ParObstaculo = Class{}
 
 -- Distancia entre os obstaculos
-local GAP = 90
+local GAP = 200
 
 function ParObstaculo:init(y)
     self.scored = false
 
-    self.x = LARGURA_JANELA + 32
+    self.x = gLARGURA_TELA + 32
 
     self.y = y
 

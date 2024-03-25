@@ -15,7 +15,7 @@ function MaquinaEstado:init(estados)
     self.atual = self.vazio
 end
 
-function MaquinaEstado:mudar(nomeEstado, parametrosEntrada)
+function MaquinaEstado:mudar(nomeEstado, parametros)
     assert(self.estados[nomeEstado])
     self.atual:sair()
     self.atual = self.estados[nomeEstado]()

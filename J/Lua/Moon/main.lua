@@ -10,6 +10,7 @@ require 'Estados/EstadoTitulo'
 
 require 'Lua'
 require 'Obstaculo'
+require 'ParObstaculo'
 
 gLARGURA_TELA = 800
 gALTURA_TELA = 600

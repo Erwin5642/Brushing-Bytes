@@ -61,7 +61,10 @@ function EstadoJogar:atualizar(dt)
     self.lua:update(dt)
 
     if self.lua.y > gALTURA_TELA - 15 then
-        gStateMachine:mudar('score', {score = self.score})
+       
+        gStateMachine:mudar('pontos', {
+            score = self.score
+        })
     end
 end
 
@@ -70,9 +73,8 @@ function EstadoJogar:renderizar()
         par:render()
     end
 
-    love.graphics.printf('Pontos: ' .. tostring(self.score), 8, 8)
-
-    lua:render()
+    love.graphics.printf('Pontos: ' .. tostring(self.score), 8, 8, gLARGURA_TELA)
+    self.lua:render()
 end
 
 function EstadoJogar:entrar()
