@@ -1,6 +1,6 @@
 Lua = Class{}
 
-local VELOCIDADE_GRAVIDADE = 30
+local VELOCIDADE_GRAVIDADE = 20
 
 --Objetivo: construtor da classe Lua
 function Lua:init()
@@ -9,7 +9,20 @@ function Lua:init()
     --Coloca o jogador no meio da janela 
     self.x = gLARGURA_TELA/2 - 8
     self.y = gALTURA_TELA/2 - 8  
+
+        self.width = self.imagem:getWidth()
+        self.height = self.imagem:getHeight()
     self.dy = 0
+end
+
+function Lua:colide(obstaculo)
+    if (self.x + 2) + (self.width - 4) >= obstaculo.x and self.x + 2 <= obstaculo.x + LARGURA_OBSTACULO then
+        if (self.y + 2) + (self.height - 4) >= obstaculo.y and self.y + 2 <= obstaculo.y + ALTURA_OBSTACULO then
+            return true
+        end
+    end
+
+    return false
 end
 
 --Objetivo: implementa a movimentação do jogador
