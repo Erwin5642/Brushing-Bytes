@@ -7,8 +7,8 @@ function Lua:init()
     --Linka a imagem do jogador com a sua classe
     self.imagem = love.graphics.newImage('Imagens/Lua-1.png')
     --Coloca o jogador no meio da janela 
-    self.x = gLARGURA_JANELA/2 - 8
-    self.y = gALTURA_JANELA/2 - 8  
+    self.x = gLARGURA_TELA/2 - 8
+    self.y = gALTURA_TELA/2 - 8  
     self.dy = 0
 end
 

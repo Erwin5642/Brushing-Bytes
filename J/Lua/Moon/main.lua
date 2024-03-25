@@ -8,6 +8,9 @@ require 'Estados/EstadoPausa'
 require 'Estados/EstadoPontos'
 require 'Estados/EstadoTitulo'
 
+require 'Lua'
+require 'Obstaculo'
+
 gLARGURA_TELA = 800
 gALTURA_TELA = 600
 
@@ -40,8 +43,8 @@ function love.load()
         ['pausa'] = function()
             return EstadoPausa()
         end,
-        ['ponto'] = function()
-            return EstadoPonto()
+        ['pontos'] = function()
+            return EstadoPontos()
         end
     }
 
