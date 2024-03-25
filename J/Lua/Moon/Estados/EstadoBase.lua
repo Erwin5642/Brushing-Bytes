@@ -1,19 +1,16 @@
---A classe de estado base define todos as funções básicas para cada estado, evitando repetição
-
-EstadoBase = Class{}
+EstadoBase = Class {}
 
 function EstadoBase:init()
-    
 end
-function EstadoBase:enter()
-    
+
+function EstadoBase:entrar()
 end
-function EstadoBase:exit()
-    
+
+function EstadoBase:atualizar(dt)
 end
-function EstadoBase:update(dt)
-    
+
+function EstadoBase:sair()
 end
-function EstadoBase:render()
-    
+
+function EstadoBase:renderizar()
 end

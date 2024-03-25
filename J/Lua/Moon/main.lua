@@ -1,83 +1,79 @@
---Chama todos as classes usadas no programa
 Class = require 'class'
-require 'Lua'
-require 'Obstaculo'
-require 'MaquinaEstados'
-require 'Estados/EstadoBase'
-require 'Estados/EstadoPausa'
-require 'Estados/EstadoTitulo'
-require 'Estados/EstadoJogar'
-require 'Estados/EstadoScore'
-require 'Estados/EstadoCountdown'
 
--- Define o tamanho da janela do jogo
-gALTURA_JANELA = 600
-gLARGURA_JANELA = 800
---Define as variaveis usadas para representar o background
-local background = love.graphics.newImage('Imagens/Background-2.jpg')
-local VELOCIDADE_BACKGROUND = 60
-local loop_scroll = 0
+require 'MaquinaEstado'
+require 'Estados/EstadoBase'
+require 'Estados/EstadoTempo'
+require 'Estados/EstadoJogar'
+require 'Estados/EstadoPausa'
+require 'Estados/EstadoPontos'
+require 'Estados/EstadoTitulo'
+
+gLARGURA_TELA = 800
+gALTURA_TELA = 600
+
+local imagemFundo = love.graphics.newImage('Imagens/Background-2.jpg')
+local VELOCIDADE_FUNDO = 60
+local posicaoFundo = 0
 
 gScrolling = true
 
---Objetivo: inicializa certas variaveis para o funcionamento do código
 function love.load()
-    math.randomseed(os.time())
-    --Configura a janela
-    love.window.setMode(gLARGURA_JANELA, gALTURA_JANELA, {
-        resizable = false,
-        fullscreen = false
-    })
-    love.window.setTitle('Moon Light')
-    --Cria uma table vazia para armazenar teclas pressionadas pelo usuário
-    love.keyboard.keysPressed = {}
 
-    --Inicializa a maquina com os estados titulo, countdown, jogar, score e pausa
-    gMaquinaEstados = MaquinaEstados{
-        ['titulo'] = function() return EstadoTitulo() end,
-        ['countdown'] = function() return EstadoCountdown() end,
-        ['jogar'] = function() return EstadoJogar() end,
-        ['score'] = function() return EstadoScore() end,
-        ['pausa'] = function() return EstadoPausa() end
+    math.randomseed(os.time())
+
+    love.window.setTitle('Moon Light')
+    love.window.setMode(gLARGURA_TELA, gALTURA_TELA, {
+        fullscreen = false,
+        resizable = false
+    })
+
+    gStateMachine = MaquinaEstado {
+        ['titulo'] = function()
+            return EstadoTitulo()
+        end,
+        ['tempo'] = function()
+            return EstadoTempo()
+        end,
+        ['jogar'] = function()
+            return EstadoJogar()
+        end,
+        ['pausa'] = function()
+            return EstadoPausa()
+        end,
+        ['ponto'] = function()
+            return EstadoPonto()
+        end
     }
-    --Muda para o estado do titulo
-    gMaquinaEstados:change('titulo')
+
+    gStateMachine:mudar('titulo')
+
+    love.keyboard.keysPressed = {}
 end
 
---Objetivo: realizar alguma ação declarada no escopo da função sempre que uma tecla for acionada
 function love.keypressed(key)
-    --Sempre que uma dada tecla é apertada, adciona um índice para ela na table
     love.keyboard.keysPressed[key] = true
-    --Caso o usuário aperte esc encerra o app
+
     if key == 'escape' then
         love.event.quit()
     end
 end
 
---Objetivo: verifica se uma dada tecla foi verificada
 function love.keyboard.wasPressed(key)
-    --Retorna verdadeiro se a tecla no indice key foi apertada
-    if love.keyboard.keysPressed[key] then
-        return true
-    else
-        return false
-    end
+    return love.keyboard.keysPressed[key]
 end
 
---Objetivo: atualiza certas variaveis do programa a cada frame 
 function love.update(dt)
-    -- Atualiza a posição do background
-    loop_scroll = (loop_scroll + VELOCIDADE_BACKGROUND * dt) % background:getWidth()
-   
-    --Apaga as teclas que acabaram de serem apertadas
+    if gScrolling then
+        posicaoFundo = (posicaoFundo + VELOCIDADE_FUNDO * dt) % imagemFundo:getWidth()
+    end
+
+    gStateMachine:atualizar(dt)
     love.keyboard.keysPressed = {}
 end
 
---Objetivo: desenha imagens na tela
 function love.draw()
-    -- Desenha o background uma vez e então desenha uma segunda vez onde a primeira imagem acaba
-    love.graphics.draw(background, -loop_scroll, 0, 0, 1, gALTURA_JANELA / background:getHeight())
-    love.graphics.draw(background, -loop_scroll + background:getWidth(), 0, 0, 1,
-        gALTURA_JANELA / background:getHeight())
-
+    love.graphics.draw(imagemFundo, -posicaoFundo, 0, 0, 1, gALTURA_TELA / imagemFundo:getHeight())
+    love.graphics.draw(imagemFundo, -posicaoFundo + imagemFundo:getWidth(), 0, 0, 1,
+        gALTURA_TELA / imagemFundo:getHeight())
+    gStateMachine:renderizar()
 end
