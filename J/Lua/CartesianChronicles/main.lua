@@ -28,7 +28,7 @@ function love.load()
         end
     })
 
-    fx:define('constante')
+    fx:define('linear')
 
 end
 

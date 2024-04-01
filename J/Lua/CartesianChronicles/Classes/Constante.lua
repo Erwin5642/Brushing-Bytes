@@ -4,10 +4,6 @@ function Constante:init()
     self.dominante = 'x'
 end
 
-function Constante:updateE(dt)
-
-end
-
 function Constante:renderF(x, y)
     if self.dominante == 'x' then
         love.graphics.line(x, y - gRAIO_FUNCAO, x, y + gRAIO_FUNCAO)

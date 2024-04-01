@@ -8,8 +8,6 @@ function Personagem:init(x, y, r, classe)
         renderF = function()
         end,
         renderE = function()
-        end,
-        updateE = function()
         end
     }
     self.classe = classe or {}
@@ -19,10 +17,6 @@ end
 function Personagem:define(nomeClasse)
     assert(self.classe[nomeClasse])
     self.atual = self.classe[nomeClasse]()
-end
-
-function Personagem:updateE(dt)
-    self.atual:updateE(dt)
 end
 
 function Personagem:renderE()
