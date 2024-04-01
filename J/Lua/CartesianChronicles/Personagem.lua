@@ -1,5 +1,8 @@
 Personagem = Class {}
 
+gVELOCIDADE_PERSONAGEM = 200
+
+
 function Personagem:init(x, y, r, classe)
     self.x = x
     self.y = y

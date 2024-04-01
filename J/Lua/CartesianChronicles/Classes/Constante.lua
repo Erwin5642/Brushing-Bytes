@@ -1,7 +1,7 @@
 Constante = Class{__includes = ClasseBase}
 
 function Constante:init()
-    self.dominante = 'x'
+    self.dominante = 'y'
 end
 
 function Constante:renderF(x, y)

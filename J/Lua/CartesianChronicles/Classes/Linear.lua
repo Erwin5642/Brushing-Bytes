@@ -14,9 +14,10 @@ function Linear:renderF(x, y)
                                (2 * self.m)),
             -((math.sqrt(4 * self.m * self.m * gRAIO_FUNCAO * gRAIO_FUNCAO + 1) - 2 * self.m * self.m * y + 1) /
                 (2 * self.m * self.m)),
-            (math.sqrt(4 * self.m * self.m * gRAIO_FUNCAO * gRAIO_FUNCAO + 1) + 2 * self.m * x - 1) / (2 * self.m),
+                (math.sqrt(4 * self.m * self.m * gRAIO_FUNCAO * gRAIO_FUNCAO + 1) + 2 * self.m *
+                x - 1) / (2 * self.m), 
             (math.sqrt(4 * self.m * self.m * gRAIO_FUNCAO * gRAIO_FUNCAO + 1) + 2 * self.m * self.m * y - 1) /
-                (2 * self.m * self.m))
+(2 * self.m * self.m))
     else
         love.graphics.line(
             -((math.sqrt(4 * self.m * self.m * gRAIO_FUNCAO * gRAIO_FUNCAO + 1) - 2 * self.m * self.m * x + 1) /
