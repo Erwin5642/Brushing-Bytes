@@ -10,12 +10,10 @@ end
 
 function Constante:renderF(x, y)
     if self.dominante == 'x' then
-        local aux = x
-        x = y 
-        y = aux
+        love.graphics.line(x, y - gRAIO_FUNCAO, x, y + gRAIO_FUNCAO)
+    else
+        love.graphics.line(x - gRAIO_FUNCAO, y, x + gRAIO_FUNCAO, y)
     end
-
-    love.graphics.line(x - gRAIO_FUNCAO, y, x + gRAIO_FUNCAO, y)
 end
 
 function Constante:renderE()

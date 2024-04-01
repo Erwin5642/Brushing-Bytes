@@ -2,7 +2,6 @@ Class = require 'class'
 
 require 'Personagem'
 require 'Classes/ClasseBase'
-require 'Classes/ClasseBase'
 require 'Classes/Linear'
 require 'Classes/Constante'
 
