@@ -70,7 +70,7 @@ int main()
 	gfx_init(600, 600, "Fractais");
 	//Chama a função requisitada pelo usuário de acordo
 	escolha == 1 ? desenharCirc(300, 300, 280, recursividade) : desenhaQuad(300, 300, 100, recursividade);
-	//Desenha na tela ps objetos criados pelas funções
+	//Desenha na tela os objetos criados pelas funções
 	gfx_paint();
 	//Pausa o programa por 5 segundos
 	sleep(5);
