@@ -20,11 +20,11 @@ void deleta(struct s_no **inicio, int val)
 	struct s_no *aux;
 	if (inicio != NULL)
 	{
-		if ((*inicio) != NULL)
+		while((*inicio) != NULL)
 		{
 			if ((*inicio)->chave != val)
 			{
-				deleta(&(*inicio)->prox, val);
+				inicio = &(*inicio)->prox;
 			}
 			else
 			{
@@ -44,19 +44,22 @@ void imprime(struct s_no *inicio)
 		printf("[%i]->", p->chave);
 		p = p->prox;
 	}
+	if(p == NULL){
+		printf("[NULL]");
+	}
 	printf("\n");
 }
 
 void desalocar(struct s_no **inicio)
 {
-
+	struct s_no *aux;
 	if (inicio != NULL)
 	{
-		if ((*inicio) != NULL)
+		while((*inicio) != NULL)
 		{
-			desalocar(&(*inicio)->prox);
+			aux = (*inicio)->prox;
 			free((*inicio));
-			(*inicio) = NULL;
+			(*inicio) = aux;
 		}
 	}
 }
@@ -73,6 +76,22 @@ int main()
 	imprime(L);
 
 	deleta(&L, 0);
+
+	imprime(L);
+
+	deleta(&L, 0);
+
+	imprime(L);
+
+	deleta(&L, 3);
+
+	imprime(L);
+
+	desalocar(&L);
+
+	imprime(L);
+
+	insere(&L, 1);
 
 	imprime(L);
 
