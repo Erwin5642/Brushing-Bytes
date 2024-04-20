@@ -18,22 +18,26 @@ void insere(struct s_no **inicio, int val)
 void deleta(struct s_no **inicio, int val)
 {
 	struct s_no *aux;
-	if ((*inicio) != NULL)
+	if (inicio != NULL)
 	{
-		if ((*inicio)->chave != val)
+		if ((*inicio) != NULL)
 		{
-			deleta(&(*inicio)->prox, val);
-		}
-		else
-		{
-			aux = (*inicio)->prox;
-			free(*inicio);
-			(*inicio) = aux;
+			if ((*inicio)->chave != val)
+			{
+				deleta(&(*inicio)->prox, val);
+			}
+			else
+			{
+				aux = (*inicio)->prox;
+				free(*inicio);
+				(*inicio) = aux;
+			}
 		}
 	}
 }
 
-void imprime(struct s_no *inicio){
+void imprime(struct s_no *inicio)
+{
 	struct s_no *p = inicio;
 	while (p != NULL)
 	{
@@ -41,6 +45,20 @@ void imprime(struct s_no *inicio){
 		p = p->prox;
 	}
 	printf("\n");
+}
+
+void desalocar(struct s_no **inicio)
+{
+
+	if (inicio != NULL)
+	{
+		if ((*inicio) != NULL)
+		{
+			desalocar(&(*inicio)->prox);
+			free((*inicio));
+			(*inicio) = NULL;
+		}
+	}
 }
 
 int main()
@@ -54,31 +72,11 @@ int main()
 
 	imprime(L);
 
-	deleta(&L, 2);
-
-	imprime(L);
-
-	deleta(&L, 2);
-
-	imprime(L);
-
-	deleta(&L, 1);
-
-	imprime(L);
-
 	deleta(&L, 0);
 
 	imprime(L);
 
-	deleta(&L, 4);
-
-	imprime(L);
-
-	deleta(&L, 3);
-
-	imprime(L);
-
-	deleta(&L, 3);
+	desalocar(&L);
 
 	imprime(L);
 
