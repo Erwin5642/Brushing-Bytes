@@ -23,7 +23,7 @@ void deleta(struct s_no **inicio, int val)
 		while((*inicio) != NULL)
 		{
 			if ((*inicio)->chave != val)
-			{
+			{  
 				inicio = &(*inicio)->prox;
 			}
 			else
@@ -72,32 +72,6 @@ int main()
 	insere(&L, 2);
 	insere(&L, 1);
 	insere(&L, 0);
-
-	imprime(L);
-
-	deleta(&L, 0);
-
-	imprime(L);
-
-	deleta(&L, 0);
-
-	imprime(L);
-
-	deleta(&L, 3);
-
-	imprime(L);
-
-	desalocar(&L);
-
-	imprime(L);
-
-	insere(&L, 1);
-
-	imprime(L);
-
-	desalocar(&L);
-
-	imprime(L);
 
 	return 0;
 }
