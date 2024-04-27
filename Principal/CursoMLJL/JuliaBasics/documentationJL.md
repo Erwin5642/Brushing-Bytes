@@ -16,4 +16,10 @@ cntrl + enter: executa uma dada linha e mantem o cursor estático
 shift + enter: executa uma dada linha e avança o cursor para a próxima linha
 alt + enter: executa o arquivo inteiro
 
-#Vantagens entre os tipos Array, Tuple, NamedTuple, Dict
+#Vantagens entre os tipos Array, NamedTuple, Dict
+Tuplas são eficientes para armazenar e retornar dados, mas são pouco flexíveis por serem imutáveis.
+Dificultando seu uso para conjuntos de dados muito grandes.
+Arrays oferecem um equilibrio entre eficiência e flexibilidade, podendo ser usados de forma geral.
+Mas para conjuntos de dados muito grandes, se menos eficiente em retornar valores.
+Dicionários oferecem uma boa solução para conjuntos de dados grandes, permitindo acesso imediato a qualquer 
+dado. Entretanto, possuem um maior custo na memória, sendo menos eficiente que as outras opções para conjuntos pequenos. 
