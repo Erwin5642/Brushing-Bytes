@@ -18,6 +18,7 @@ frac + 1//10
 
 #Irracionais
 pi 
+ℯ
 typeof(pi) #Irrational(π)
 
 #Arredondamento
@@ -26,7 +27,7 @@ round(pi; digits = 5)
 #Undescores são ignoradas 
 100000000 == 100_000_000
 
-sqrt(21)
-div(15, 4)
+sqrt(21) #Raiz quadrada
+div(15, 4) #DIvisão inteira
 
 exit()

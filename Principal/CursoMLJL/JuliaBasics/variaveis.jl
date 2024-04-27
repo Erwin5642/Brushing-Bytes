@@ -4,11 +4,6 @@ y = 13
 z = x + y
 z = 2 * z + x / 2
 
-#Julia tambem suporta unicode
-👍 = true 
-😒 = 3.14
-👍 + 😒
-
 #Operadores de incremento
 x *= 2
 y += 2
