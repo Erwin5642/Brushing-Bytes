@@ -16,3 +16,4 @@ cntrl + enter: executa uma dada linha e mantem o cursor estático
 shift + enter: executa uma dada linha e avança o cursor para a próxima linha
 alt + enter: executa o arquivo inteiro
 
+#Vantagens entre os tipos Array, Tuple, NamedTuple, Dict
