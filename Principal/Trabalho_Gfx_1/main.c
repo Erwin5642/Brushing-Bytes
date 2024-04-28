@@ -2,10 +2,10 @@
 #include <unistd.h> /*sleep()*/
 #include <math.h> /*sen(), MATH_PI, floor()*/
  
-
 int drawnCsquare(unsigned x, unsigned y, unsigned c1, unsigned c2, unsigned times, unsigned d1, unsigned d2){//x,y tamanho dos lados, c1,c2 = ponto central, times = condicao de parada da recursao, d1,d2 = direcao  
 	int x1 = c1-x, y1= c2-y, x2= c1+x, y2=c2+y;
-	
+
+	//Caso o numero de recursoes ultrapasse 10
 	if(times<11){
 		gfx_rectangle(floor(x1),floor(y1),floor(x2),floor(y2));
 	}
@@ -36,17 +36,17 @@ int drawnCsquare(unsigned x, unsigned y, unsigned c1, unsigned c2, unsigned time
 
 int drawncircle(unsigned x,unsigned y,unsigned r, unsigned times){ // x,y = Posicao central, r = raio, times = condição de parada da recursao
 	
-	float sen45 = sin(M_PI/4); 
+	float sen45 = sin(M_PI/4); //Seno de 45 graus
 
 	if(times <= 11){ 
-		gfx_ellipse(x,y,r,r);
+		gfx_ellipse(x,y,r,r); // Desenha a circunferencia
 	}
 	else{
 		return 0;
 	}
 
 	if(times>=1){
-		//Cria um circulo entre o ponto central e o ponto diagonal com metade do raio 
+		//cria um circulo entre o ponto central e o ponto diagonal com metade do raio 
 		drawncircle((x+(x-r*sen45))/2,(y+(y-r*sen45))/2,r/2,times-1);
 		drawncircle((x+(x-r*sen45))/2,(y+(y+r*sen45))/2,r/2,times-1);
 		drawncircle((x+(x+r*sen45))/2,(y+(y+r*sen45))/2,r/2,times-1);
@@ -61,12 +61,12 @@ int main(){
 
 	printf("\nQuadrado(1), Circulo(2) ");
 	scanf("%u",&esc);
-	if((esc==1)||(esc==2)){
-		printf("\nNivel de recursao: ");
+	if((esc==1)||(esc==2)){//caso a escolha do usuario for 1 ou 2
+		printf("\nNivel de recursao: "); // nivel de recursao do desenho
  		scanf("%u",&nivel);
 		gfx_init(600,600,"a"); // Inicia a tela com tamanho 600x600
 
-	
+		//escolha do usuario
 		switch(esc){
 		
 			case 1:
