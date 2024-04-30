@@ -1,5 +1,36 @@
+//Livro Szwarcfiter: 2.1, 2.4, 2.6 a 2.18, 2.20, 2.21
+
 #include <stdio.h>
 #include <stdlib.h>
+
+//2.1: busca de um elemento na lista linear L
+int buscaL(int *L, int n, int elem){
+    int i;
+    for(i =  0; i < n; i++){
+        if(L[i] == elem){
+            return i;
+        }
+    }
+    return -1;
+} 
+
+//2.4: busca binária em lista linear L
+int buscaBinL(int *L, int n, int x){
+    int ini = 0, fim = n - 1, meio = (fim + ini)/2;
+    while(ini <= fim){
+        if(L[meio] == x){
+            return meio;
+        }
+        if(meio < x){
+            ini = meio + 1;
+        }
+        else{
+            fim = meio - 1;
+        }
+    }
+    return -1;
+}
+
 
 struct s_no
 {
