@@ -1,4 +1,4 @@
-#Estrutura condicional if...else
+#Estruturas condicionais
 
 x, y = 1, 2
 x, y = y, x
@@ -11,7 +11,7 @@ task1() = println("$x < $y")
 task2() = println("$x > $y")
 task3() = println("$x == $y")
 
-#Ifs else
+#If...ifelse...else...end
 if x > y
     task1()
 elseif x < y
@@ -20,4 +20,5 @@ else
     task3()
 end
 
-
+#Operador Ternário
+x > y ? task1() : (x < y ? task2() : task3())
