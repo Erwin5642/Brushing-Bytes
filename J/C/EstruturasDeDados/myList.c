@@ -1,108 +1,156 @@
-//Livro Szwarcfiter: 2.1, 2.4, 2.6 a 2.18, 2.20, 2.21
+/*
+Listas implementadas:
+-Lista sequencial
+	-Tamanho fixo
+	-Dinâmica
+-Lista Encadeada
+	-Simples
+	-Dupla
+	-Circular
 
-#include <stdio.h>
+Funções Implementadas:
+-Desalocar lista
+-Imprimir lista
+-Inserir chave
+-Remover chave
+-Buscar chave
+*/
 #include <stdlib.h>
 
-//2.1: busca de um elemento na lista linear L
-int buscaL(int *L, int n, int elem){
-    int i;
-    for(i =  0; i < n; i++){
-        if(L[i] == elem){
-            return i;
-        }
-    }
-    return -1;
-} 
+typedef struct{
+	int *L;
+	int n;
+}ListaSequencial;
 
-//2.4: busca binária em lista linear L
-int buscaBinL(int *L, int n, int x){
-    int ini = 0, fim = n - 1, meio = (fim + ini)/2;
-    while(ini <= fim){
-        if(L[meio] == x){
-            return meio;
-        }
-        if(meio < x){
-            ini = meio + 1;
-        }
-        else{
-            fim = meio - 1;
-        }
-    }
-    return -1;
-}
-
-
-struct s_no
-{
+//Lista Encadeada Simples
+typedef struct{
 	int chave;
-	struct s_no *prox;
-};
+	int *prox;
+}ListaEncadeada;
 
-void insere(struct s_no **inicio, int val)
-{
-	struct s_no *p = malloc(sizeof(struct s_no));
-	p->chave = val;
-	p->prox = *inicio;
-	*inicio = p;
-}
-
-void deleta(struct s_no **inicio, int val)
-{
-	struct s_no *aux;
-	if (inicio != NULL)
-	{
-		while((*inicio) != NULL)
-		{
-			if ((*inicio)->chave != val)
-			{  
-				inicio = &(*inicio)->prox;
-			}
-			else
-			{
-				aux = (*inicio)->prox;
-				free(*inicio);
-				(*inicio) = aux;
-			}
+//Operações na Lista Encadeada Simples
+void desalocarListaEncadeada(ListaEncadeada **LE){
+	ListaEncadeada *aux;
+	if(LE != NULL){
+		while((*LE) != NULL){
+			aux = (*LE)->prox;
+			free(*LE);
+			(*LE) = aux;
 		}
 	}
 }
 
-void imprime(struct s_no *inicio)
-{
-	struct s_no *p = inicio;
-	while (p != NULL)
-	{
-		printf("[%i]->", p->chave);
-		p = p->prox;
+void imprimirListaEncadeada(ListaEncadeada *LE, int chave){
+	ListaEncadeada *aux = LE;
+	while(aux != NULL){
+		printf("[%d]->", aux->chave);
+		aux = aux->prox;
 	}
-	if(p == NULL){
-		printf("[NULL]");
-	}
-	printf("\n");
+	printf("[NULL]\n");
 }
 
-void desalocar(struct s_no **inicio)
-{
-	struct s_no *aux;
-	if (inicio != NULL)
-	{
-		while((*inicio) != NULL)
-		{
-			aux = (*inicio)->prox;
-			free((*inicio));
-			(*inicio) = aux;
+void inserirChavevListaEncadeada(ListaEncadeada **LE, int chave){
+	ListaEncadeada *aux;
+	aux = malloc(sizeof(ListaEncadeada));
+	aux->chave = chave;
+	aux->prox = (*LE);
+	(*LE) = aux;
+}
+
+void removerChaveListaEncadeada(ListaEncadeada **LE, int chave){
+	ListaEncadeada *aux;
+	if(LE != NULL){
+		while((*LE) != NULL){
+			if((*LE)->chave == chave){
+				aux = (*LE)->prox;
+				free(*LE);
+				(*LE) = aux;
+				return;
+			}
+			LE = &(*LE)->prox;
 		}
 	}
 }
 
-int main()
-{
-	struct s_no *L = NULL;
-	insere(&L, 4);
-	insere(&L, 3);
-	insere(&L, 2);
-	insere(&L, 1);
-	insere(&L, 0);
+ListaEncadeada *buscarChaveListaEncadeada(ListaEncadeada *LE, int chave){
+	ListaEncadeada *aux = LE;
+	while (aux != NULL)
+	{
+		if(aux->chave == chave){
+			return aux;
+		}
+		aux = aux->prox;
+	}
+	return NULL;
+	
+}
 
-	return 0;
+//Lista encadeada dupla
+typedef struct{
+	int chave;
+	int *prox;
+	int *ant;
+}ListaEncadeadaDupla;
+
+//Operações com Lista Encadeada Dupla
+void desalocarListaEncadeadaDupla(ListaEncadeadaDupla **LED){
+	ListaEncadeadaDupla *aux;
+	if(LED != NULL){
+		while((*LED) != NULL){
+			aux = (*LED)->prox;
+			free(*LED);
+			(*LED) = aux;
+		}
+	}
+}
+
+void imprimirListaEncadeadaDupla(ListaEncadeadaDupla *LED, int chave){
+	ListaEncadeadaDupla *aux = LED;
+	while(aux != NULL){
+		printf("<-[%d]->", aux->chave);
+		aux = aux->prox;
+	}
+	printf("[NULL]\n");
+}
+
+void inserirChavevListaEncadeadaDupla(ListaEncadeadaDupla **LED, int chave){
+	ListaEncadeadaDupla *aux;
+	aux = malloc(sizeof(ListaEncadeadaDupla));
+	aux->chave = chave;
+	aux->ant = NULL;
+	aux->prox = (*LED);
+	if(*LED != NULL){
+		(*LED)->ant = aux;
+	}
+	(*LED) = aux;
+}
+ 
+void removerChaveListaEncadeadaDupla(ListaEncadeadaDupla **LED, int chave){
+	ListaEncadeadaDupla *aux;
+	if(LED != NULL){
+		while((*LED) != NULL){
+			if((*LED)->chave == chave){
+				aux = (*LED)->prox;
+				if(aux != NULL){
+					aux->ant = (*LED)->ant;
+				}
+				free(*LED);
+				(*LED) = aux;
+				return;
+			}
+			LED = &(*LED)->prox;
+		}
+	}
+}
+
+ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeada *LED, int chave){
+	ListaEncadeadaDupla *aux = LED;
+	while (aux != NULL)
+	{
+		if(aux->chave == chave){
+			return aux;
+		}
+		aux = aux->prox;
+	}
+	return NULL;	
 }
