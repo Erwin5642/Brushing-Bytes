@@ -173,6 +173,20 @@ void desalocarListaEncadeadaCircular(ListaEncadeadaDupla **LEC){
 	}
 }
 
-void inserirChavevListaEncadeadaCircular(ListaEncadeadaDupla **LEC){
 
+void inserirChaveListaEncadeadaCircular(ListaEncadeadaDupla **LEC, int chave){
+    ListaEncadeadaDupla *aux = malloc(sizeof(ListaEncadeadaDupla));
+    ListaEncadeadaDupla *auxMais2 = aux;
+    aux->chave = chave;
+    if((*LEC) == NULL){
+        aux->prox = aux;
+        aux->ant = aux;
+    }
+    else{
+        aux->prox = (*LEC);
+        aux->ant = (*LEC)->ant;
+        (*LEC)->ant->prox = aux;
+        (*LEC)->ant = aux;
+    }
+    (*LEC) = aux;
 }
