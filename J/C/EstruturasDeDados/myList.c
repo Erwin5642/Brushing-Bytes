@@ -154,3 +154,25 @@ ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeada *LED, int cha
 	}
 	return NULL;	
 }
+
+
+//Operações numa lista encadeada circular
+void desalocarListaEncadeadaCircular(ListaEncadeadaDupla **LEC){
+	ListaEncadeadaDupla *aux, *ultimo = (*LEC)->ant;
+	if(LEC != NULL){
+		while((*LEC) != NULL){
+            if(ultimo != (*LEC)){
+                aux = (*LEC)->prox;
+            }
+            else{
+                aux = NULL;
+            }
+			free(*LEC);
+			(*LEC) = aux;
+		}
+	}
+}
+
+void inserirChavevListaEncadeadaCircular(ListaEncadeadaDupla **LEC){
+
+}
