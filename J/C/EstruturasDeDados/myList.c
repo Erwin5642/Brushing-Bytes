@@ -16,6 +16,7 @@ Funções Implementadas:
 -Buscar chave
 */
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct{
 	int *L;
@@ -23,9 +24,9 @@ typedef struct{
 }ListaSequencial;
 
 //Lista Encadeada Simples
-typedef struct{
+typedef struct ListaEncadeada{
 	int chave;
-	int *prox;
+	struct ListaEncadeada *prox;
 }ListaEncadeada;
 
 //Operações na Lista Encadeada Simples
@@ -40,7 +41,7 @@ void desalocarListaEncadeada(ListaEncadeada **LE){
 	}
 }
 
-void imprimirListaEncadeada(ListaEncadeada *LE, int chave){
+void imprimirListaEncadeada(ListaEncadeada *LE){
 	ListaEncadeada *aux = LE;
 	while(aux != NULL){
 		printf("[%d]->", aux->chave);
@@ -86,10 +87,10 @@ ListaEncadeada *buscarChaveListaEncadeada(ListaEncadeada *LE, int chave){
 }
 
 //Lista encadeada dupla
-typedef struct{
+typedef struct ListaEncadeadaDupla{
 	int chave;
-	int *prox;
-	int *ant;
+	struct ListaEncadeadaDupla *prox;
+	struct ListaEncadeadaDupla *ant;
 }ListaEncadeadaDupla;
 
 //Operações com Lista Encadeada Dupla
@@ -104,7 +105,7 @@ void desalocarListaEncadeadaDupla(ListaEncadeadaDupla **LED){
 	}
 }
 
-void imprimirListaEncadeadaDupla(ListaEncadeadaDupla *LED, int chave){
+void imprimirListaEncadeadaDupla(ListaEncadeadaDupla *LED){
 	ListaEncadeadaDupla *aux = LED;
 	while(aux != NULL){
 		printf("<-[%d]->", aux->chave);
@@ -143,7 +144,7 @@ void removerChaveListaEncadeadaDupla(ListaEncadeadaDupla **LED, int chave){
 	}
 }
 
-ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeada *LED, int chave){
+ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeadaDupla *LED, int chave){
 	ListaEncadeadaDupla *aux = LED;
 	while (aux != NULL)
 	{
@@ -176,7 +177,6 @@ void desalocarListaEncadeadaCircular(ListaEncadeadaDupla **LEC){
 
 void inserirChaveListaEncadeadaCircular(ListaEncadeadaDupla **LEC, int chave){
     ListaEncadeadaDupla *aux = malloc(sizeof(ListaEncadeadaDupla));
-    ListaEncadeadaDupla *auxMais2 = aux;
     aux->chave = chave;
     if((*LEC) == NULL){
         aux->prox = aux;
