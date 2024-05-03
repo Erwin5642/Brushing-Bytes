@@ -16,6 +16,9 @@ cntrl + enter: executa uma dada linha e mantem o cursor estático
 shift + enter: executa uma dada linha e avança o cursor para a próxima linha
 alt + enter: executa o arquivo inteiro
 
+-Atualizando Julia
+
+
 #Vantagens entre os tipos Array, NamedTuple, Dict
 Tuplas são eficientes para armazenar e retornar dados, mas são pouco flexíveis por serem imutáveis.
 Dificultando seu uso para conjuntos de dados muito grandes.
