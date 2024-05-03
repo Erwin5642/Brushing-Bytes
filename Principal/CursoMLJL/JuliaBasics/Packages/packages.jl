@@ -15,7 +15,7 @@
 
 # Defina o ambiente de trabalho para:
 using Pkg
-repo = "/home/Brushing-Bytes/Principal/CursoMLJL/JuliaBasics/Packages"
+repo
 #atribua a repo o caminho para o diretório "/Brushing-Bytes/Principal/CursoMLJL/JuliaBasics/Packages"
 Pkg.activate(repo)
 cd(repo)
