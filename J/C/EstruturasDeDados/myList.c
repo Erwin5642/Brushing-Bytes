@@ -240,6 +240,28 @@ void removerChaveListaEncadeadaCircular(ListaEncadeadaDupla **LEC, int chave)
 	ListaEncadeadaDupla *aux;
 	if ((LEC != NULL) && ((*LEC) != NULL))
 	{
-		
+		aux = (*LEC)->prox;
+		if ((aux == (*LEC)) && (aux->chave == chave))
+		{
+			free(*LEC);
+			(*LEC) = NULL;
+			return;
+		}
+		while (aux != (*LEC))
+		{
+			if(aux->chave == chave){
+				aux->ant->prox = aux->prox;
+				aux->prox->ant = aux->ant;
+				free(aux); 
+				return;
+			}
+			if(aux->prox->chave == chave){
+				aux->prox = aux->prox->prox;
+				aux->prox->prox->ant = aux->prox->ant;
+				free(aux->prox);
+				return;
+			}
+			aux = aux->prox;
+		}
 	}
 }
