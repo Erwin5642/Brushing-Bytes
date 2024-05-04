@@ -1,29 +1,20 @@
 /*
-Listas impLLmentadas:
--Lista sequencial
-	-Tamanho fixo
-	-Dinâmica
+Listas implementadas:
 -Lista Encadeada
 	-Simples
 	-Dupla
 	-Circular
 
 Funções Implementadas:
--Iniciar lista vazia
--Desalocar lista
--Imprimir lista
+-Iniciar estrutura vazia
+-Desalocar estrutura
+-Imprimir estrutura
 -Inserir chave
 -Remover chave
 -Buscar chave
 */
 #include <stdlib.h>
 #include <stdio.h>
-
-typedef struct Array
-{
-	int *L;
-	int n;
-}Array;
 
 // Lista Encadeada Simples
 typedef struct LinkedList
@@ -33,7 +24,7 @@ typedef struct LinkedList
 } LinkedList;
 
 // Operações na Lista Encadeada Simples
-void createEmptyLinkedList(LinkedList **LL){
+void createLinkedList(LinkedList **LL){
 	(*LL) = NULL;
 }
 
@@ -116,7 +107,7 @@ typedef struct DoublyLinkedList
 } DoublyLinkedList;
 
 // Operações com Lista Encadeada Dupla
-void createEmptyDoublyLinkedList(DoublyLinkedList **DLL){
+void createDoublyLinkedList(DoublyLinkedList **DLL){
 	(*DLL) = NULL;
 }
 
@@ -199,8 +190,10 @@ DoublyLinkedList *searchKeyDoublyLinkedList(DoublyLinkedList *DLL, int chave)
 	return NULL;
 }
 
+// Estrutura da lista circular é identica a estrutura da lista dupla
+
 // Operações numa lista encadeada circular
-void createEmptyCircularLinkedList(DoublyLinkedList **CLL){
+void createCircularLinkedList(DoublyLinkedList **CLL){
 	(*CLL) = NULL;
 }
 

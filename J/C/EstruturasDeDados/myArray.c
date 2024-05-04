@@ -1,63 +1,99 @@
+/*
+Listas implementadas:
+-Lista Sequencial
+    -Array de tamanho fixo
+    -Array de tamanho dinâmico
+
+Funções Implementadas:
+-Array fixo
+    -Alocar array
+    -Desalocar array
+    -Imprimir
+    -Inserir chave
+        -No lugar de uma chave
+        -Num índice
+    -Buscar chave
+-Array dinamico
+    -Alocar array
+    -Desalocar array
+    -Realocar array com novo tamanho
+    -Imprimir array
+    -Inserir chave
+        -No inicio deslocando para direita
+        -No fim deslocando para esquerda
+        -No lugar de uma chave
+        -Num índice
+    -Buscar chave
+*/
+#include <stdio.h>
 #include <stdlib.h>
-// Vetor
-// Operações: read - O(1), insert - O(n), delete - (n)
-typedef struct V
-{
-    int *v;
+#include <string.h>
 
-    int n;
-} Vetor;
-
-void inicializarVetor(Vetor vetor)
+// Array de tamanho fixo
+typedef struct Array
 {
-    vetor.v = malloc(sizeof(int));
-    vetor.v[0] = 0;
-    vetor.n = 0;
+    int *V;
+    unsigned n;
+} Array;
+
+// Operações gerais em array:
+void createArray(Array *A, unsigned size)
+{
+    int i;
+    A->n = size;
+    A->V = malloc(sizeof(int) * size);
+    memset(A->V, 0, sizeof(int) * A->n);
 }
 
-void inserirVetor(Vetor vetor, int x)
+void deleteArray(Array *A)
 {
-    int i, j;
-    vetor.n++;
-    vetor.v = realloc(vetor.v, sizeof(int) * vetor.n);
-    for (i = 0; i < vetor.n; i++)
+    A->n = 0;
+    free(A->V);
+    A->V = NULL;
+}
+
+void printArray(Array A)
+{
+    int i;
+    printf("[");
+    for (i = 0; i < A.n; i++)
     {
-        if (vetor.n - 1 == i)
+        printf(" %d ", A.V[i]);
+    }
+    printf("]\n");
+}
+
+int searchKeyArray(Array A, int key)
+{
+    int i;
+    for (i = 0; i < A.n; i++)
+    {
+        if (key == A.V[i])
         {
-            vetor.v[i] = x;
-        }
-        if (vetor.v[i] >= x)
-        {
-            for (j = vetor.n - 1; j > i; j--)
-            {
-                vetor.v[j] = vetor.v[j - 1];
-            }
-            vetor.v[i] = x;
-            i = vetor.n;
+            return i;
         }
     }
+    return -1;
 }
 
-void deletarVetor(Vetor vetor, int x)
+int insertKeyAtIndexArray(Array *A, int index, int key)
 {
-    int i, j;
-    for (i = 0; i < vetor.n; i++)
-    {
-        if (vetor.v[i] == x)
-        {
-            while (i < vetor.n - 1)
-            {
-                vetor.v[i] = vetor.v[i + 1];
-                i++;
-            }
-            vetor.v[i] = 0;
-            vetor.n--;
-            vetor.v = realloc(vetor.v, sizeof(int) * vetor.n);
-        }
+    if ((index > 0) && (index < A->n))
+    {  
+        A->V[index] = key;
+        return 1;
     }
+    return 0;
 }
 
-void encerrarVetor(Vetor vetor)
+int insertKeyAtKeyArray(Array *A, int key)
 {
-    free(vetor.v);
+    int index = searchKeyArray(*A, key);
+    if(index > 0){
+        A->V[index] = key;
+        return 1;
+    }
+    return 0;
 }
+
+//Operações em Array Dinâmico
