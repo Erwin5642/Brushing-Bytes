@@ -1,5 +1,5 @@
 /*
-Listas implementadas:
+Listas impLLmentadas:
 -Lista sequencial
 	-Tamanho fixo
 	-Dinâmica
@@ -9,6 +9,7 @@ Listas implementadas:
 	-Circular
 
 Funções Implementadas:
+-Iniciar lista vazia
 -Desalocar lista
 -Imprimir lista
 -Inserir chave
@@ -18,37 +19,41 @@ Funções Implementadas:
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct
+typedef struct Array
 {
 	int *L;
 	int n;
-} ListaSequencial;
+}Array;
 
 // Lista Encadeada Simples
-typedef struct ListaEncadeada
+typedef struct LinkedList
 {
 	int chave;
-	struct ListaEncadeada *prox;
-} ListaEncadeada;
+	struct LinkedList *prox;
+} LinkedList;
 
 // Operações na Lista Encadeada Simples
-void desalocarListaEncadeada(ListaEncadeada **LE)
+void createEmptyLinkedList(LinkedList **LL){
+	(*LL) = NULL;
+}
+
+void deleteLinkedList(LinkedList **LL)
 {
-	ListaEncadeada *aux;
-	if (LE != NULL)
+	LinkedList *aux;
+	if (LL != NULL)
 	{
-		while ((*LE) != NULL)
+		while ((*LL) != NULL)
 		{
-			aux = (*LE)->prox;
-			free(*LE);
-			(*LE) = aux;
+			aux = (*LL)->prox;
+			free(*LL);
+			(*LL) = aux;
 		}
 	}
 }
 
-void imprimirListaEncadeada(ListaEncadeada *LE)
+void printLinkedList(LinkedList *LL)
 {
-	ListaEncadeada *aux = LE;
+	LinkedList *aux = LL;
 	while (aux != NULL)
 	{
 		printf("[%d]->", aux->chave);
@@ -57,40 +62,40 @@ void imprimirListaEncadeada(ListaEncadeada *LE)
 	printf("[NULL]\n");
 }
 
-void inserirChaveListaEncadeada(ListaEncadeada **LE, int chave)
+void insertKeyLinkedList(LinkedList **LL, int chave)
 {
-	ListaEncadeada *aux;
-	if (LE != NULL)
+	LinkedList *aux;
+	if (LL != NULL)
 	{
-		aux = malloc(sizeof(ListaEncadeada));
+		aux = malloc(sizeof(LinkedList));
 		aux->chave = chave;
-		aux->prox = (*LE);
-		(*LE) = aux;
+		aux->prox = (*LL);
+		(*LL) = aux;
 	}
 }
 
-void removerChaveListaEncadeada(ListaEncadeada **LE, int chave)
+void removeKeyLinkedList(LinkedList **LL, int chave)
 {
-	ListaEncadeada *aux;
-	if (LE != NULL)
+	LinkedList *aux;
+	if (LL != NULL)
 	{
-		while ((*LE) != NULL)
+		while ((*LL) != NULL)
 		{
-			if ((*LE)->chave == chave)
+			if ((*LL)->chave == chave)
 			{
-				aux = (*LE)->prox;
-				free(*LE);
-				(*LE) = aux;
+				aux = (*LL)->prox;
+				free(*LL);
+				(*LL) = aux;
 				return;
 			}
-			LE = &(*LE)->prox;
+			LL = &(*LL)->prox;
 		}
 	}
 }
 
-ListaEncadeada *buscarChaveListaEncadeada(ListaEncadeada *LE, int chave)
+LinkedList *searchKeyLinkedList(LinkedList *LL, int chave)
 {
-	ListaEncadeada *aux = LE;
+	LinkedList *aux = LL;
 	while (aux != NULL)
 	{
 		if (aux->chave == chave)
@@ -103,31 +108,35 @@ ListaEncadeada *buscarChaveListaEncadeada(ListaEncadeada *LE, int chave)
 }
 
 // Lista encadeada dupla
-typedef struct ListaEncadeadaDupla
+typedef struct DoublyLinkedList
 {
 	int chave;
-	struct ListaEncadeadaDupla *prox;
-	struct ListaEncadeadaDupla *ant;
-} ListaEncadeadaDupla;
+	struct DoublyLinkedList *prox;
+	struct DoublyLinkedList *ant;
+} DoublyLinkedList;
 
 // Operações com Lista Encadeada Dupla
-void desalocarListaEncadeadaDupla(ListaEncadeadaDupla **LED)
+void createEmptyDoublyLinkedList(DoublyLinkedList **DLL){
+	(*DLL) = NULL;
+}
+
+void deleteDoublyLinkedList(DoublyLinkedList **DLL)
 {
-	ListaEncadeadaDupla *aux;
-	if (LED != NULL)
+	DoublyLinkedList *aux;
+	if (DLL != NULL)
 	{
-		while ((*LED) != NULL)
+		while ((*DLL) != NULL)
 		{
-			aux = (*LED)->prox;
-			free(*LED);
-			(*LED) = aux;
+			aux = (*DLL)->prox;
+			free(*DLL);
+			(*DLL) = aux;
 		}
 	}
 }
 
-void imprimirListaEncadeadaDupla(ListaEncadeadaDupla *LED)
+void printDoublyLinkedList(DoublyLinkedList *DLL)
 {
-	ListaEncadeadaDupla *aux = LED;
+	DoublyLinkedList *aux = DLL;
 	while (aux != NULL)
 	{
 		printf("<-[%d]->", aux->chave);
@@ -136,49 +145,49 @@ void imprimirListaEncadeadaDupla(ListaEncadeadaDupla *LED)
 	printf("[NULL]\n");
 }
 
-void inserirChaveListaEncadeadaDupla(ListaEncadeadaDupla **LED, int chave)
+void insertKeyDoublyLinkedList(DoublyLinkedList **DLL, int chave)
 {
-	ListaEncadeadaDupla *aux;
-	if (LED != NULL)
+	DoublyLinkedList *aux;
+	if (DLL != NULL)
 	{
-		aux = malloc(sizeof(ListaEncadeadaDupla));
+		aux = malloc(sizeof(DoublyLinkedList));
 		aux->chave = chave;
 		aux->ant = NULL;
-		aux->prox = (*LED);
-		if (*LED != NULL)
+		aux->prox = (*DLL);
+		if (*DLL != NULL)
 		{
-			(*LED)->ant = aux;
+			(*DLL)->ant = aux;
 		}
-		(*LED) = aux;
+		(*DLL) = aux;
 	}
 }
 
-void removerChaveListaEncadeadaDupla(ListaEncadeadaDupla **LED, int chave)
+void removeKeyDoublyLinkedList(DoublyLinkedList **DLL, int chave)
 {
-	ListaEncadeadaDupla *aux;
-	if (LED != NULL)
+	DoublyLinkedList *aux;
+	if (DLL != NULL)
 	{
-		while ((*LED) != NULL)
+		while ((*DLL) != NULL)
 		{
-			if ((*LED)->chave == chave)
+			if ((*DLL)->chave == chave)
 			{
-				aux = (*LED)->prox;
+				aux = (*DLL)->prox;
 				if (aux != NULL)
 				{
-					aux->ant = (*LED)->ant;
+					aux->ant = (*DLL)->ant;
 				}
-				free(*LED);
-				(*LED) = aux;
+				free(*DLL);
+				(*DLL) = aux;
 				return;
 			}
-			LED = &(*LED)->prox;
+			DLL = &(*DLL)->prox;
 		}
 	}
 }
 
-ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeadaDupla *LED, int chave)
+DoublyLinkedList *searchKeyDoublyLinkedList(DoublyLinkedList *DLL, int chave)
 {
-	ListaEncadeadaDupla *aux = LED;
+	DoublyLinkedList *aux = DLL;
 	while (aux != NULL)
 	{
 		if (aux->chave == chave)
@@ -191,63 +200,67 @@ ListaEncadeadaDupla *buscarChaveListaEncadeadaDupla(ListaEncadeadaDupla *LED, in
 }
 
 // Operações numa lista encadeada circular
-void desalocarListaEncadeadaCircular(ListaEncadeadaDupla **LEC)
+void createEmptyCircularLinkedList(DoublyLinkedList **CLL){
+	(*CLL) = NULL;
+}
+
+void deleteCircularLinkedList(DoublyLinkedList **CLL)
 {
-	ListaEncadeadaDupla *aux, *ultimo = (*LEC)->ant;
-	if (LEC != NULL)
+	DoublyLinkedList *aux, *ultimo = (*CLL)->ant;
+	if (CLL != NULL)
 	{
-		while ((*LEC) != NULL)
+		while ((*CLL) != NULL)
 		{
-			if (ultimo != (*LEC))
+			if (ultimo != (*CLL))
 			{
-				aux = (*LEC)->prox;
+				aux = (*CLL)->prox;
 			}
 			else
 			{
 				aux = NULL;
 			}
-			free(*LEC);
-			(*LEC) = aux;
+			free(*CLL);
+			(*CLL) = aux;
 		}
 	}
 }
 
-void inserirChaveListaEncadeadaCircular(ListaEncadeadaDupla **LEC, int chave)
+void insertKeyLinkedListCircular(DoublyLinkedList **CLL, int chave)
 {
-	ListaEncadeadaDupla *aux;
-	if (LEC != NULL)
+	DoublyLinkedList *aux;
+	if (CLL != NULL)
 	{
-		aux = malloc(sizeof(ListaEncadeadaDupla));
+		aux = malloc(sizeof(DoublyLinkedList));
 		aux->chave = chave;
-		if ((*LEC) == NULL)
+		if ((*CLL) == NULL)
 		{
 			aux->prox = aux;
 			aux->ant = aux;
 		}
 		else
 		{
-			aux->prox = (*LEC);
-			aux->ant = (*LEC)->ant;
-			(*LEC)->ant->prox = aux;
-			(*LEC)->ant = aux;
+			aux->prox = (*CLL);
+			aux->ant = (*CLL)->ant;
+			(*CLL)->ant->prox = aux;
+			(*CLL)->ant = aux;
 		}
-		(*LEC) = aux;
+		(*CLL) = aux;
 	}
 }
 
-void removerChaveListaEncadeadaCircular(ListaEncadeadaDupla **LEC, int chave)
+void removeKeyLinkedListCircular(DoublyLinkedList **CLL, int chave)
 {
-	ListaEncadeadaDupla *aux;
-	if ((LEC != NULL) && ((*LEC) != NULL))
+	DoublyLinkedList *aux;
+	if ((CLL != NULL) && ((*CLL) != NULL))
 	{
-		aux = (*LEC)->prox;
-		if ((aux == (*LEC)) && (aux->chave == chave))
+		aux = (*CLL)->prox;
+		if ((aux == (*CLL)) && (aux->chave == chave))
 		{
-			free(*LEC);
-			(*LEC) = NULL;
+			free(*CLL);
+			(*CLL) = NULL;
 			return;
 		}
-		while (aux != (*LEC))
+		while (aux != (*CLL))
 		{
 			if(aux->chave == chave){
 				aux->ant->prox = aux->prox;
