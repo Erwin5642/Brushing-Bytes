@@ -59,9 +59,10 @@ int isFullArrayStack(ArrayStack S){
     return S.topo == (S.A.n - 1);
 }
 
-int pushArrayStack(ArrayStack *S){
+int pushArrayStack(ArrayStack *S, int key){
     if(!isFullArrayStack(*S)){
         S->topo++;
+        S->A.V[topo] = key;
         return  1;
     }
     return 0;
