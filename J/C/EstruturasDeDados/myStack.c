@@ -63,6 +63,7 @@ int isFullArrayStack(ArrayStack S){
 int pushArrayStack(ArrayStack *S, int key){
     if(!isFullArrayStack(*S)){
         S->topo++;
+        S->A.V[S->topo]  = key;
         return  1;
     }
     return 0;
