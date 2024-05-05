@@ -39,6 +39,7 @@ void deleteArrayStack(ArrayStack *S){
     S->topo = -1;
     S->A.n = 0;
     free(S->A.V);
+    S->A.V = NULL; 
 }
 
 void printArrayStack(ArrayStack S){
@@ -59,9 +60,10 @@ int isFullArrayStack(ArrayStack S){
     return S.topo == (S.A.n - 1);
 }
 
-int pushArrayStack(ArrayStack *S){
+int pushArrayStack(ArrayStack *S, int key){
     if(!isFullArrayStack(*S)){
         S->topo++;
+        S->A.V[S->topo] = key;
         return  1;
     }
     return 0;
