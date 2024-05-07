@@ -98,6 +98,21 @@ LinkedList *searchKeyLinkedList(LinkedList *LL, int chave)
 	return NULL;
 }
 
+void mergeLinkedList(LinkedList **L1, LinkedList **L2){
+	LinkedList *aux;
+	if((*L2) != NULL){
+		if((*L1) != NULL){
+			aux = (*L2)->prox;
+			(*L2)->prox = (*L1)->prox;
+			(*L1)->prox = (*L2);
+            mergeLinkedList(&(*L2)->prox, &aux);
+		}
+		else{
+			(*L1) = (*L2);
+		}
+    }
+}
+
 // Lista encadeada dupla
 typedef struct DoublyLinkedList
 {
