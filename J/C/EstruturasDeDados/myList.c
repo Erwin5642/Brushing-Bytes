@@ -98,19 +98,23 @@ LinkedList *searchKeyLinkedList(LinkedList *LL, int chave)
 	return NULL;
 }
 
-void mergeLinkedList(LinkedList **L1, LinkedList **L2){
-	LinkedList *aux;
-	if((*L2) != NULL){
+LinkedList *mergeLinkedList(LinkedList **L1, LinkedList **L2){
+	LinkedList *aux2, *aux1, *raiz = *L1;
+	while((*L2) != NULL){
 		if((*L1) != NULL){
-			aux = (*L2)->prox;
+			aux2 = (*L2)->prox;
 			(*L2)->prox = (*L1)->prox;
 			(*L1)->prox = (*L2);
-            mergeLinkedList(&(*L2)->prox, &aux);
-		}
+			L1 = &(*L2)->prox;
+			aux1 = aux2;
+			L2 = &aux1;
+      	}
 		else{
 			(*L1) = (*L2);
+			return raiz;
 		}
     }
+	return raiz;
 }
 
 // Lista encadeada dupla
@@ -285,4 +289,39 @@ void removeKeyLinkedListCircular(DoublyLinkedList **CLL, int chave)
 			aux = aux->prox;
 		}
 	}
+}
+
+
+int main(){
+    LinkedList *A, *B, *R;
+
+	createLinkedList(&A);
+	createLinkedList(&B);
+	createLinkedList(&R);
+
+    insertKeyLinkedList(&A, 0);
+    insertKeyLinkedList(&A, 5);
+    insertKeyLinkedList(&A, 3);
+    insertKeyLinkedList(&A, 2);
+    insertKeyLinkedList(&A, 7);
+    insertKeyLinkedList(&A, 12);
+
+    insertKeyLinkedList(&B, 4);
+    insertKeyLinkedList(&B, 15);
+    insertKeyLinkedList(&B, 9);
+    insertKeyLinkedList(&B, 10);
+    insertKeyLinkedList(&B, 1);
+
+    printLinkedList(A);
+    printLinkedList(B);
+
+    R = mergeLinkedList(&A, &B);
+    
+    printLinkedList(R);
+    
+    deleteLinkedList(&R);
+    
+    printLinkedList(R);
+
+    return 0;
 }
