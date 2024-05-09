@@ -2,17 +2,17 @@
 
 using namespace std;
 
-template <typename T> class Array {
+template <typename T> class ArrayTree{
 private:
     T* ptr;
     int size;
 
 public:
-    Array(T arr[], int s);
+    ArrayTree(T arr[], int s);
     void print();
 };
 
-template <typename T> Array<T>::Array(T arr[], int s)
+template <typename T> ArrayTree<T>::ArrayTree(T arr[], int s)
 {
     ptr = new T[s];
     size = s;
@@ -20,7 +20,7 @@ template <typename T> Array<T>::Array(T arr[], int s)
         ptr[i] = arr[i];
 }
 
-template <typename T> void Array<T>::print()
+template <typename T> void ArrayTree<T>::print()
 {
     for (int i = 0; i < size; i++)
         cout << " " << *(ptr + i);
