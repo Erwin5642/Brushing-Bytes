@@ -1,105 +1,184 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __unix__
-    #include <unistd.h>
-    #include <stdlib.h>
+const short TRAVOU = 0;
+const short NOT_ELEM = -1;
+const unsigned MAX_INPUT = 30;
+const unsigned MAX_SET = 10;
 
-#elif defined(_WIN32) || defined(WIN32)
-
-   #define OS_Windows
-
-   #include <windows.h>
-
-#endif
-
-#define TRAVOU 'x'
-
-int split (char *fonte, char *destino, char token)
+typedef enum
 {
-    int i, j, tam;
-    for(i = 0, tam = 0, j = 0; *fonte != '\0'; i++, tam++){
-        if(fonte[i] != token){
-            destino[j] = fonte[i];
+    false,
+    true
+} bool;
+
+typedef struct
+{
+    char *S;
+    unsigned tamS;
+} string;
+
+void relacionaString(string *dest, char *src, unsigned tam)
+{
+    dest->S = src;
+    dest->tamS = tam;
+}
+
+int readString(string str)
+{
+    unsigned end;
+    fgets(str.S, str.tamS, stdin);
+    str.S[end = strlen(str.S) - 1] = '\0';
+    return end;
+}
+
+unsigned split(string src, string dest, char token)
+{
+    unsigned i, j;
+    for (i = 0, j = 0; (i < dest.tamS) && (src.S[i]); i++)
+    {
+        if (src.S[i] != token)
+        {            
+            dest.S[j] = src.S[i];
             j++;
         }
     }
-    destino[tam] = '\0';
-    return tam;
+    return j;
 }
 
-char transicao(char q, char c, char *estados, char *alfabeto, char **delta){
-    char *i, *j;
-    if(( i = strchr(estados, q)) && (j = strchr(alfabeto, c)){
-        
+int indexElem(string set, char elem)
+{
+    unsigned i;
+    for (i = 0; i < set.tamS; i++)
+    {
+        if (set.S[i] == elem)
+        {
+            return i;
+        }
+    }
+    return NOT_ELEM;
+}
+
+char transita(char q, char c, string Q, string A, char D[MAX_SET][MAX_SET])
+{
+    int i, j;
+    if (((i = indexElem(Q, q)) != NOT_ELEM) && ((j = indexElem(A, c)) != NOT_ELEM))
+    {
+        return D[i][j];
     }
     return TRAVOU;
 }
 
-int read(char *str, int t){
-     fgets(str,t,stdin); 
-     return strlen(str);
+void limpaEntrada()
+{
+    int c;
+    while (((c = getchar()) != '\n') && (c != EOF))
+        ;
+}
+
+int readChar()
+{
+    int c;
+    while ((c = getchar()) < '!')
+        ;
+    limpaEntrada();
+    return c;
+}
+
+bool verificaSubconjunto(string subset, string set)
+{
+    unsigned i;
+    for (i = 0; i < subset.tamS; i++)
+    {
+        if (indexElem(set, subset.S[i]) == NOT_ELEM)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 int main()
 {
-    char input[30], alfabeto[11], estados[11], finais[11], delta[11][11], q0;
-    int novaPalavra = 0, novoAutomato = 0, naoTravou = 1, qtdEstados, qtdSimbolos, qtdFinais, i, j, k;
-    do{
-        printf("Criando novo automato");
+    char w[MAX_INPUT], a[MAX_SET], q[MAX_SET], estadoInicial, f[MAX_SET], funcaoPrograma[MAX_SET][MAX_SET], proxq;
+    string input, alfabeto, estados, estadosFinais, temp;
+    int novoAutomato, novaPalavra, finaisCorreto;
+    unsigned i, j, k;
 
-        printf("\nEntre com o conjunto de Estados, separados por vigulas: ");
-        read(input, 30);
-        qtdEstados = split(input, estados, ',');
-        printf("\nEntre os si­mbolos do alfabeto, separados por vi­gulas: ");
-        read(input, 30);
-        qtdSimbolos = split(input, alfabeto, ',');
-        printf("\nEntre com o estado inicial: ");
-        scanf("%c%*[^\n]", &q0);
-        printf("\nEntre os estados de F, separados por vi­gulas: ");
-        read(input, 30);
-        qtdFinais = split(input, finais, ',');
+    do
+    {
+        printf("Criando novo automato\n");
+        relacionaString(&input, w, MAX_INPUT);
+        relacionaString(&alfabeto, a, MAX_SET);
+        relacionaString(&estados, q, MAX_SET);
+        relacionaString(&estadosFinais, f, MAX_SET);
+
+        printf("Entre com o conjunto de estados, separados por virgulas:\n");
+        input.tamS = readString(input);
+        estados.tamS = split(input, estados, ',');
         
-        printf("\nLeitura da Funcao Delta:");
-        for(i = 0; i < qtdEstados; i++){
-            for(j = 0; j < qtdSimbolos; j++){
-                printf("\ndelta(%c, %c) = ", estados[i], alfabeto[j]);
-	            scanf(" %c%*[^\n]",&delta[i][j]);
-            }
-        }
+        printf("Entre com os simbolos do alfabeto, separados por virgulas:\n");
+        input.tamS = readString(input);
+        alfabeto.tamS = split(input, alfabeto, ',');
 
-        do{
-            printf("\nEntre com a palavra a ser verificada:");
-            read(input, 30);
-            k = 0;
-            printf("\nSequencia de Estados: \n");
-            while((input[k] != '\0')&&(naoTravou)){
-                q0 = transicao(q0, input[k], estados, alfabeto, delta);
-                if(q0 == TRAVOU){
-                    printf("Travou!\n");
-                    naoTravou = 0;
+        printf("Entre com o estado inicial:\n");
+        estadoInicial = readChar();
+
+        do
+        {
+            printf("Entre com os estados finais, separados por virgula:\n");
+            input.tamS = readString(input);
+            estadosFinais.tamS = split(input, estadosFinais, ',');
+            finaisCorreto = verificaSubconjunto(estadosFinais, estados);
+            if (!finaisCorreto)
+            {
+                printf("[ERRO] Pelo menos um dos estados informados é invalido, por favor tente novamente\n");
+            }
+        } while (!finaisCorreto);
+
+        // printf("Entre com os dados da função de programa:\n");
+        // for (i = 0; i < estados.tamS; i++)
+        // {
+        //     for (j = 0; j < alfabeto.tamS; j++)
+        //     {
+        //         printf("delta(%c, %c) = ", estados.S[i], alfabeto.S[j]);
+        //         funcaoPrograma[i][j] = readChar();
+        //     }
+        // }
+
+        do
+        {
+            printf("Entre com a palavra a ser verificada:\n");
+            input.tamS = readString(input);
+
+            printf("Sequencia de estados:\n");
+            proxq = estadoInicial;
+            for(k = 0; (k < input.tamS) && (input.S[k]); k++){
+                if(proxq == TRAVOU){
+                    k = input.tamS;
+                    printf("O automato travou!\n");
                 }
                 else{
-                    printf("%c\n", q0);
+                    printf("%c\n", proxq);
                 }
-                k++;
+                proxq = transita(proxq, input.S[k], estados, alfabeto, funcaoPrograma);
             }
-            if((naoTravou) && (strchr(finais, q0))){
-                printf("Palavra nao aceita\n");
-            }
+            temp.tamS = 1;
+            temp.S = &proxq;
+            if(verificaSubconjunto(temp, estadosFinais)){
+                printf("Palavra foi aceita\n");
+            }   
             else{
-                printf("Palavra aceita\n");
-            }
+                printf("Palavra nao foi aceita\n");
+            } 
 
-            printf("\nDeseja inserir uma nova palavra?\n0 - Nao\n1 - Sim\n");
+            printf("\nDeseja insesir uma nova palavra?\n0 - Nao\n 1 - Sim\n");
             scanf("%d", &novaPalavra);
-        }while(novaPalavra);
-
-        printf("\nDeseja inserir um novo automato?\n0 - Nao\n1 - Sim\n");
+        } while (novaPalavra);
+    
+        printf("\nDeseja começar um novo automato ou encerrar o programa?\n0 - Encerrar\n 1 - Novo automato\n");
         scanf("%d", &novoAutomato);
-    }while(novoAutomato);
+    } while (novoAutomato);
 
     return 0;
 }
-
-
