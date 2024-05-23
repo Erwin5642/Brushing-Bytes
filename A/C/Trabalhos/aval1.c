@@ -1,11 +1,30 @@
+/*  
+    Trabalho de Linguagens Formais e Automatos
+    Aluno: Arthur Kenji Murakami
+    Série: 2º Ano
+    Data: 23/05/2024
+*/
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 
 #define TRAVOU '-'
 
+void clear_screen()
+{
+#ifdef __unix__
+    system("clear");
+#elif defined(_WIN32) || defined(WIN32)
+   #define OS_Windows
+   #include <windows.h>
+   system("cls");
+#endif
+}
+
 void gets(char *str, int t, int *tamW){
-    char c;	
-    c=fgets(str,t,stdin);  //   coloca \n e \0 no fim stdin Ã© entrada padrao (teclado)
+    fgets(str,t,stdin);  //   coloca \n e \0 no fim stdin Ã© entrada padrao (teclado)
     *tamW=strlen(str)-1;
     str[*tamW]='\0';
 }
@@ -62,8 +81,10 @@ int main()
 {
     char W[20], Q[10], A[10], qo, F[10], q, mDelta[10][10], c, str[30];
     int tamQ, tamF, tamA, tamW, i, j, p=0, falha=0, pal=1, pg=2, pert=0, inicio=-1, mat=-1;
-    printf("\nAutomato\n");
+
     do {
+        clear_screen();
+        printf("Automato\n");
         falha=0;
         pert=-1;
         inicio=-1;
@@ -110,8 +131,8 @@ int main()
         for (i=0; i<tamQ; i++)
         {
             for(j=0;j<tamA;j++){
-                mat=-1;
                 do {
+                    mat=-1;
                     printf("\ndelta(%c, %c) = ",Q[i],A[j]);
                     scanf(" %c%*[^\n]",&mDelta[i][j]);      //  espaco em " %c%*[^n]" faz a leitura do buffer com '\n' e ignora
                     fflush(stdin);
@@ -132,7 +153,7 @@ int main()
             printf("\nEntre com a palavra a ser verificada: ");
             gets(W,30,&tamW);
             fflush(stdin);
-            printf("\nPalavra : %s\n",W);
+            printf("\nPalavra: %s\n",W);
             q=qo;
             c=W[p++];
             printf("\nSequencia de estados: ");
@@ -156,14 +177,14 @@ int main()
                 printf("\nPalavra reconhecida\n");
 
             //  Menu para para insercao de uma nova palavra
-            printf("\nDeseja inserir uma nova palavra?\n[1] - Sim\n[2] - Nao\n");
+            printf("\nDeseja inserir uma nova palavra?\n[1] - Sim\n[2] - Nao\nDigite uma opcao: ");
             scanf("%d", &pal);
             fflush(stdin);
             getchar();
-            system("clear");
         } while(pal==1);
         //  Menu para encerrar o programa ou informar outro automato
-        printf("\nDeseja encerrar o programa?\n[1] - Sim\n[2] - Não, desejo inserir outro automato\n");
+        clear_screen();
+        printf("Deseja encerrar o programa?\n[1] - Sim\n[2] - Não, desejo inserir outro automato\nDigite uma opcao: ");
         scanf("%d", &pg);
         fflush(stdin);
         getchar();
