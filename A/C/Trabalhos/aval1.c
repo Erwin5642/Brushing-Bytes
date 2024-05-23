@@ -12,24 +12,25 @@
 
 #define TRAVOU '-'
 
+//  Funcao para limpara a tela do terminal
 void clear_screen()
 {
 #ifdef __unix__
     system("clear");
 #elif defined(_WIN32) || defined(WIN32)
-   #define OS_Windows
-   #include <windows.h>
-   system("cls");
+    #define OS_Windows
+    system("cls");
 #endif
 }
 
+//  Funcao para a entrada de uma string
 void gets(char *str, int t, int *tamW){
     fgets(str,t,stdin);  //   coloca \n e \0 no fim stdin Ã© entrada padrao (teclado)
     *tamW=strlen(str)-1;
     str[*tamW]='\0';
 }
 
-//  Separa cada elemento de tamanho 1 caracter de acordo com o separador.
+//  Funcao para separar cada elemento de tamanho 1 caracter de acordo com o separador.
 void split (char *Q, char *str, char sep, int *tam)
 {
     int i,j=0;
@@ -40,7 +41,7 @@ void split (char *Q, char *str, char sep, int *tam)
 
 }
 
-//  Verifica se um simbolo pertence a um conjunto de estados e retorna a posicao
+//  Funcao para verificar se um simbolo pertence a um conjunto de estados, e se pertence, retorna a posicao
 int pertence(char *Str, char c, int tam)
 {
     int i;
@@ -52,7 +53,7 @@ int pertence(char *Str, char c, int tam)
     return -1;
 }
 
-//  Verifica se um conjunto de estados pertence a outro conjunto de estados
+//  Funcao para verificar se um conjunto de estados pertence a outro conjunto de estados
 int pertFim(char *Q, char *F, int tamQ, int tamF)
 {
     int i, resp;
@@ -65,7 +66,7 @@ int pertFim(char *Q, char *F, int tamQ, int tamF)
     return 1;
 }
 
-//  Verifica para qual estado o automato vai ir em relacao ao simbolo de uma palavra
+//  Funcao para verificar para qual estado o automato vai ir de acordo com determinado simbolo de uma palavra
 char delta(char q, char c, char *Q, char *A, int tamQ, int tamA,char mDelta[10][10], int *falha)
 {
     for(int i = 0; i < tamQ; i++)
@@ -74,17 +75,26 @@ char delta(char q, char c, char *Q, char *A, int tamQ, int tamA,char mDelta[10][
                 if (A[j]==c)
                     return mDelta[i][j];
     *falha=1;
+    //  Retorna falha caso o simbolo nao possui estado
     return TRAVOU;
 }
 
 int main()
 {
+    //  Variaveis para armazenamento do automato
     char W[20], Q[10], A[10], qo, F[10], q, mDelta[10][10], c, str[30];
-    int tamQ, tamF, tamA, tamW, i, j, p=0, falha=0, pal=1, pg=2, pert=0, inicio=-1, mat=-1;
+    //  Variaveis para armazenamento doi tamanho do conjunto dos estados
+    int tamQ, tamF, tamA, tamW;
+    //  Variaveis para contagem
+    int i, j, p=0;
+    //  Variaveis para o menu
+    int falha=0, pal=1, pg=2, pert=0, inicio=-1, mat=-1;
 
     do {
         clear_screen();
         printf("Automato\n");
+
+        //  Atribuicao de valores para as variaveis do menu
         falha=0;
         pert=-1;
         inicio=-1;
@@ -96,7 +106,7 @@ int main()
         fflush(stdin);
         split(Q, str, ',', &tamQ);
 
-        //Leitura do alfabeto
+        //  Leitura do alfabeto
         printf("\nEntre os simbolos do alfabeto, separados por virgulas: ");
         gets(str,30,&tamA);
         fflush(stdin);
@@ -109,6 +119,7 @@ int main()
             fflush(stdin);
             setbuf(stdin,NULL);
             inicio = pertence(Q, qo, tamQ);
+            //  Se a funcao pertence retornar -1, repete o processo de input do estado inicial
             if(inicio==-1) {
                 printf("\nEste estado nao pertence ao conjunto de estados!\n");
             }
@@ -122,6 +133,7 @@ int main()
             setbuf(stdin,NULL);
             split(F,str,',',&tamF);
             pert = pertFim(Q, F, tamQ, tamF);
+            //  Se a funcao pertFim retornar -1, repete o processo de input dos estados f
             if(pert==-1) {
                 printf("\nUm ou mais estados finais nao existem no conjunto de estados\n");
             }
@@ -137,7 +149,9 @@ int main()
                     scanf(" %c%*[^\n]",&mDelta[i][j]);      //  espaco em " %c%*[^n]" faz a leitura do buffer com '\n' e ignora
                     fflush(stdin);
                     mat=pertence(Q, mDelta[i][j], tamQ);
+                    // Se o input de transicao for '-', sai do laco de repeticao
                     if(mDelta[i][j]=='-') mat=1;
+                    //  Se o input de transicao nao pertencer ao conjunto de estados, repete o input de transicao
                     if(mat==-1) {
                         printf("\nO elemento [%c] nao esta conjunto de estados\n", mDelta[i][j]);
                     }
@@ -154,7 +168,9 @@ int main()
             gets(W,30,&tamW);
             fflush(stdin);
             printf("\nPalavra: %s\n",W);
+            //  Atribui o primeiro estado no estado inicial
             q=qo;
+            //  Atribui a primeira letra da palavra
             c=W[p++];
             printf("\nSequencia de estados: ");
             printf("%c", q);
@@ -170,19 +186,21 @@ int main()
                 c=W[p++];
                 printf(" -> %c",q);
             }
+            //  Atribui valor 0 para a variavel de contagem da palavra
             p=0;
-            if ((pertence(F, q, tamF)==-1) || falha==1)      // Retorna se a palavra eh conhecida ou nao
+            //  Retorna printa se a palavra eh conhecida ou nao pelo automato
+            if ((pertence(F, q, tamF)==-1) || falha==1)
                 printf("\nPalavra nao reconhecida\n");
             else
                 printf("\nPalavra reconhecida\n");
 
-            //  Menu para para insercao de uma nova palavra
+            //  Menu de escolha para insercao de uma nova palavra
             printf("\nDeseja inserir uma nova palavra?\n[1] - Sim\n[2] - Nao\nDigite uma opcao: ");
             scanf("%d", &pal);
             fflush(stdin);
             getchar();
         } while(pal==1);
-        //  Menu para encerrar o programa ou informar outro automato
+        //  Menu de escolha para encerrar o programa ou informar outro automato
         clear_screen();
         printf("Deseja encerrar o programa?\n[1] - Sim\n[2] - Não, desejo inserir outro automato\nDigite uma opcao: ");
         scanf("%d", &pg);
