@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 const char TRAVOU = '-';
 const short NOT_ELEM = -1;
@@ -137,21 +138,23 @@ int main()
             }
 
         } while (!finaisCorreto);
-
         printf("Entre com os dados da função de programa:\n");
         for (i = 0; i < estados.tamS; i++)
         {
             for (j = 0; j < alfabeto.tamS; j++)
             {
                 printf("delta(%c, %c) = ", estados.S[i], alfabeto.S[j]);
-                funcaoPrograma[i][j] = readChar();
+                funcaoPrograma[i][j] = readChar();        
+                relacionaString(&temp, &funcaoPrograma[i][j], 1);
+                if(!verificaSubconjunto(temp, estados)){
+                    funcaoPrograma[i][j] = '-';
+                }     
             }
         }
 
         relacionaString(&temp, &proxq, 1);
         do
         {
-
             printf("Entre com a palavra a ser verificada:\n");
             input.tamS = readString(input);
 
