@@ -110,6 +110,7 @@ int main()
         for (i=0; i<tamQ; i++)
         {
             for(j=0;j<tamA;j++){
+                mat=-1;
                 do {
                     printf("\ndelta(%c, %c) = ",Q[i],A[j]);
                     scanf(" %c%*[^\n]",&mDelta[i][j]);      //  espaco em " %c%*[^n]" faz a leitura do buffer com '\n' e ignora
