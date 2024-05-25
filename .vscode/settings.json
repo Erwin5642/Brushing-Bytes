@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "iostream": "cpp",
-        "exception": "cpp"
+        "exception": "cpp",
+        "iosfwd": "cpp",
+        "*.tcc": "cpp",
+        "istream": "cpp",
+        "streambuf": "cpp"
     }
 }
