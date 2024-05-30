@@ -10,24 +10,28 @@ const unsigned short g_X_LIST_ORIGIN = g_X_NODE_SIZE;
 const unsigned short g_Y_LIST_ORIGIN = g_Y_NODE_SIZE;
 const unsigned short g_NODES_DISTANCE = 25;
 
-// Lista Encadeada Simples
+// Declaração do tipo Lista Encadeada Simples
 typedef struct LinkedList
 {
     int valor;
     struct LinkedList *prox;
 } LinkedList;
 
-// Operações na Lista Encadeada Simples
+//### Operações na Lista Encadeada Simples ###
+//Inicializa uma Lista Encadeada Simples como vazia
 void createLinkedList(LinkedList **LL)
 {
     (*LL) = NULL;
 }
 
+//Desaloca os nós da Lista Encadeada Simples
 void deleteLinkedList(LinkedList **LL)
 {
     LinkedList *aux;
+    //Garante que o ponteiro apontava para algo
     if (LL != NULL)
     {
+        //Enquanto não chegar no fim da Lista desaloca o próximo nó e avança
         while ((*LL) != NULL)
         {
             aux = (*LL)->prox;
@@ -37,10 +41,12 @@ void deleteLinkedList(LinkedList **LL)
     }
 }
 
-void insertKeyLinkedListOrd(LinkedList **LL, int valor)
+//Insere um valor numa Lista Encadeada Simples de forma Ordenada
+void insertKeyOrderedLinkedList(LinkedList **LL, int valor)
 {
     LinkedList *aux;
     int stop = 1;
+
     if (LL != NULL)
     {
         while ((*LL) != NULL && stop)
@@ -245,7 +251,7 @@ int main()
                 case '2':
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
-                    insertKeyLinkedListOrd(&L, inputValue);
+                    insertKeyOrderedLinkedList(&L, inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
