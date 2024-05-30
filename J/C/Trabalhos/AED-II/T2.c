@@ -2,12 +2,10 @@
 #include <stdio.h>
 #include "gfx.h"
 
-const unsigned short g_X_NODE_SIZE = 75;
+const unsigned short g_X_NODE_SIZE = 50;
 const unsigned short g_Y_NODE_SIZE = 50;
 const unsigned short g_X_SCREEN_SIZE = 800;
 const unsigned short g_Y_SCREEN_SIZE = 600;
-static int g_X_NODE = g_X_NODE_SIZE;
-static int g_Y_NODE = g_Y_NODE_SIZE;
 
 // Lista Encadeada Simples
 typedef struct LinkedList
@@ -155,29 +153,27 @@ char *intToString(int valor, char *str){
     inverteString(str, i);
     return str;
 }
-void drawNode(int valor){
+void drawNode(int x, int y, int valor){
     char v[4];
-    gfx_rectangle(g_X_NODE, g_Y_NODE, g_X_NODE + g_X_NODE_SIZE, g_Y_NODE + g_Y_NODE_SIZE);
+    gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
     intToString(valor, v);
-    gfx_text((g_X_NODE_SIZE)/2 + g_X_NODE, (g_Y_NODE_SIZE)/2 + g_Y_NODE - 5, v);
-    g_X_NODE += g_X_NODE_SIZE + 50;
+    gfx_text((g_X_NODE_SIZE)/2 + x, (g_Y_NODE_SIZE)/2 + y - 5, v);
 }
 
-void drawArrow(){
-    int x = g_X_NODE - 35, y = g_Y_NODE + g_Y_NODE_SIZE/2;
+void drawArrow(int x, int y){
     gfx_line(x, y, x + 20, y);
     gfx_line(x + 10, y + 10, x + 20, y);
     gfx_line(x + 10, y - 10, x + 20, y);
 }
 
 void drawLinkedList(LinkedList *L){
+    int x = g_X_NODE_SIZE, y = g_Y_NODE_SIZE;
     gfx_clear();
-    g_X_NODE = g_X_NODE_SIZE;
-    g_Y_NODE = g_Y_NODE_SIZE;
     while(L != NULL){
-        drawNode(L->valor);
-        drawArrow();
+        drawNode(x, y, L->valor);
+        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE)/2);
         L = L->prox;
+        x += g_X_NODE_SIZE + 20;
     }
     gfx_paint();
 }

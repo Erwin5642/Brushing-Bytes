@@ -6,8 +6,81 @@ const unsigned short g_X_NODE_SIZE = 75;
 const unsigned short g_Y_NODE_SIZE = 50;
 const unsigned short g_X_SCREEN_SIZE = 800;
 const unsigned short g_Y_SCREEN_SIZE = 600;
-static int g_X_NODE = g_X_NODE_SIZE;
-static int g_Y_NODE = g_Y_NODE_SIZE;
+
+typedef struct Tree
+{
+    int value;
+    struct Tree *left;
+    struct Tree *right;
+} Tree;
+
+void deleteSearchTree(Tree **T)
+{
+    if (T)
+    {
+        if (*T)
+        {
+            if ((*T)->left)
+            {
+                deleteSearchTree(&(*T)->left);
+            }
+            if ((*T)->right)
+            {
+                deleteSearchTree(&(*T)->right);
+            }
+            free((*T));
+            *T = NULL;
+        }
+    }
+}
+
+void insertSearchTree(Tree **T, int value)
+{
+    Tree *aux;
+    if (T)
+    {
+        while (*T)
+        {
+            if ((*T)->value > value)
+            {
+                T = &(*T)->left;
+            }
+            else
+            {
+                T = &(*T)->right;
+            }
+        }
+        aux = malloc(sizeof(Tree));
+        aux->value = value;
+        aux->left = NULL;
+        aux->right = NULL;
+        (*T) = aux;
+    }
+}
+void printSearchTree(Tree *T)
+{
+    if (T)
+    {
+        if (T->left)
+        {
+            printSearchTree(T->left);
+        }
+        printf("%d ", T->value);
+        if(T->right){
+            printSearchTree(T->right);
+        }
+    }
+}
+
+int minSearchTree(Tree *T){
+    if(T){
+        while(T->left){
+            T = T->left;
+        }
+        return T->value;
+    }
+    return 0; 
+}
 
 void inverteString(char str[], int length){
     int start = 0, end = length - 1;
@@ -44,39 +117,46 @@ char *intToString(int valor, char *str){
     inverteString(str, i);
     return str;
 }
-void drawNode(int valor){
+void drawNode(int valor, int x, int y){
     char v[4];
+    x += g_X_NODE;
+    y += g_Y_NODE;
     gfx_rectangle(g_X_NODE, g_Y_NODE, g_X_NODE + g_X_NODE_SIZE, g_Y_NODE + g_Y_NODE_SIZE);
     intToString(valor, v);
     gfx_text((g_X_NODE_SIZE)/2 + g_X_NODE, (g_Y_NODE_SIZE)/2 + g_Y_NODE - 5, v);
-    g_X_NODE += g_X_NODE_SIZE + 50;
 }
 
-void drawArrow(){
-    int x = g_X_NODE - 35, y = g_Y_NODE + g_Y_NODE_SIZE/2;
+void drawArrow(int x, int y){
+    x += g_X_NODE - 35;
+    y += g_Y_NODE + g_Y_NODE_SIZE/2;
     gfx_line(x, y, x + 20, y);
     gfx_line(x + 10, y + 10, x + 20, y);
     gfx_line(x + 10, y - 10, x + 20, y);
 }
-//void drawLinkedList(LinkedList *L, int qtd){
-//
-//}
 
-int main(){
-    gfx_init(g_X_SCREEN_SIZE, g_Y_SCREEN_SIZE, "Teste");
-
-    drawNode(1);
-    drawArrow();
-    drawNode(2);
-    drawArrow();
-    drawNode(3);
-    drawArrow();
-    drawNode(4);
-    drawArrow();
-
+void drawTree(Tree *T){
+    gfx_clear();
+    int i, j;
+    g_X_NODE = g_X_NODE_SIZE;
+    g_Y_NODE = g_Y_NODE_SIZE;
+    
     gfx_paint();
-    getchar();
+}
 
-    gfx_quit();
+int main()
+{
+    Tree *root = NULL;
+    insertSearchTree(&root, 3);
+    insertSearchTree(&root, 1);
+    insertSearchTree(&root, 2);
+    insertSearchTree(&root, 7);
+    insertSearchTree(&root, 5);
+    insertSearchTree(&root, 4);
+    insertSearchTree(&root, -1);
+    printSearchTree(root);
+    printf("\n");
+    printf("%d", minSearchTree(root));
+    printf("\n");
+    deleteSearchTree(&root);
     return 0;
 }
