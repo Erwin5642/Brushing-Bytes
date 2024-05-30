@@ -100,6 +100,13 @@ LinkedList *searchKeyLinkedList(LinkedList *LL, int valor)
     return NULL;
 }
 
+typedef struct DoublyLinkedList
+{
+    int valor;
+    struct DoublyLinkedList *ant;
+    struct DoublyLinkedList *prox;
+}DoublyLinkedList;
+
 //Inputs
 char readChar()
 {
