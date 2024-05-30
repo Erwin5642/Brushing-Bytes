@@ -6,6 +6,9 @@ const unsigned short g_X_NODE_SIZE = 50;
 const unsigned short g_Y_NODE_SIZE = 50;
 const unsigned short g_X_SCREEN_SIZE = 800;
 const unsigned short g_Y_SCREEN_SIZE = 600;
+const unsigned short g_X_LIST_ORIGIN = g_X_NODE_SIZE;
+const unsigned short g_Y_LIST_ORIGIN = g_Y_NODE_SIZE;
+const unsigned short g_NODES_DISTANCE = 25;
 
 // Lista Encadeada Simples
 typedef struct LinkedList
@@ -166,14 +169,33 @@ void drawArrow(int x, int y){
     gfx_line(x + 10, y - 10, x + 20, y);
 }
 
+void drawnUnderArrow(int x1, int y1, int x2, int y2){
+    gfx_line(x1, y1, x1, y1 + 20);
+    gfx_line(x1, y1 + 20, x2, y2 + 20);
+    gfx_line(x2, y2, x2, y2 + 20);
+    gfx_line(x2 - 10, y2 + 10, x2, y2);
+    gfx_line(x2 + 10, y2 + 10, x2, y2);
+}
+
+void drawTwoArrow(int x, int y){
+    gfx_line(x + 0, y - 10, x + 20, y - 10);
+    gfx_line(x + 10, y, x + 20, y - 10);
+    gfx_line(x + 10, y - 20, x + 20, y - 10);
+    
+    gfx_line(x - g_X_NODE_SIZE, y + 10, x - g_X_NODE_SIZE - 20, y + 10);
+    gfx_line(x - g_X_NODE_SIZE - 10, y, x - g_X_NODE_SIZE - 20, y + 10);
+    gfx_line(x - g_X_NODE_SIZE - 10, y + 20, x - g_X_NODE_SIZE - 20, y + 10);    
+}
+
+
 void drawLinkedList(LinkedList *L){
-    int x = g_X_NODE_SIZE, y = g_Y_NODE_SIZE;
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_clear();
     while(L != NULL){
         drawNode(x, y, L->valor);
         drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE)/2);
         L = L->prox;
-        x += g_X_NODE_SIZE + 20;
+        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
     }
     gfx_paint();
 }
