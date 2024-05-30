@@ -37,17 +37,6 @@ void deleteLinkedList(LinkedList **LL)
     }
 }
 
-void printLinkedList(LinkedList *LL)
-{
-    LinkedList *aux = LL;
-    while (aux != NULL)
-    {
-        printf("[%d]->", aux->valor);
-        aux = aux->prox;
-    }
-    printf("[NULL]\n");
-}
-
 void insertKeyLinkedListOrd(LinkedList **LL, int valor)
 {
     LinkedList *aux;
@@ -104,7 +93,6 @@ LinkedList *searchKeyLinkedList(LinkedList *LL, int valor)
     }
     return NULL;
 }
-
 
 //Inputs
 char readChar()
