@@ -265,6 +265,70 @@ int deQueue(Queue *Q)
     return 0;
 }
 
+//### Nó para Pilha ### 
+typedef struct SNode{
+    int valor;
+    struct SNode *prox;
+}SNode;
+
+//### Pilha ###
+typedef struct Stack{
+    SNode *topo;
+}Stack;
+
+
+
+
+//### Operações com Pilha ###
+void createStack(Stack *S)
+{
+    if (S)
+    {
+        S->topo = NULL;
+    }
+}
+
+void deleteStack(Stack *S)
+{
+    SNode *aux;
+    if (S)
+    {
+        while (S->topo)
+        {
+            aux = S->topo->prox;
+            free(S->topo);
+            S->topo = aux;
+        }
+    }
+}
+
+void push(Stack *S, int valor)
+{
+    SNode *aux;
+    if (S)
+    {
+        aux = malloc(sizeof(SNode));
+        aux->valor = valor;
+        aux->prox = S->topo;
+        S->topo = aux;
+    }
+}
+
+int pop(Stack *S)
+{
+    SNode *aux;
+    if (S)
+    {
+        if (S->topo)
+        {
+            aux = S->topo->prox;
+            free(S->topo);
+            S->topo = aux;
+            return 1;
+        }
+    }
+    return 0;
+}
 // Inputs
 char readChar()
 {
@@ -400,12 +464,26 @@ void drawQueue(Queue Q){
     gfx_paint();
 }
 
+void drawStack(Stack S){
+   int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+    gfx_clear();
+    while (S.topo)
+    {
+        drawNode(x, y, S.topo->valor);
+        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+        S.topo = S.topo->prox;
+        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+    }
+    gfx_paint();
+}
+
 int main()
 {
     char opcEstrutura, opcAcao;
     LinkedList *ListaOrdenada;
     DoublyLinkedList Cabeca;
     Queue Fila;
+    Stack Pilha;
     int inputValue;
     createLinkedList(&ListaOrdenada);
     createDoublyLinkedList(&Cabeca);
@@ -604,6 +682,7 @@ int main()
         case '5':
             while (opcAcao != '0')
             {
+                drawStack(Pilha);
                 printf("### Pilha ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -616,10 +695,18 @@ int main()
                 case '0':
                     break;
                 case '1':
-
+                    printf("### Inserção ###\nDigite o valor que deverá ser inserido no topo da pilha: ");
+                    scanf("%d", &inputValue);
+                    push(&Pilha, inputValue);
                     break;
                 case '2':
-
+                    printf("### Remoção ###\n");
+                    if(pop(&Pilha)){
+                        printf("Removido o valor no topo da pilha\n");
+                    }
+                    else{
+                        printf("A pilha já está vazia\n");
+                    }
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
@@ -636,5 +723,6 @@ int main()
     deleteLinkedList(&ListaOrdenada);
     deleteDoublyLinkedList(&Cabeca);
     deleteQueue(&Fila);
+    deleteStack(&Pilha);
     return 0;
 }
