@@ -289,6 +289,22 @@ void drawLinkedList(LinkedList *L)
     gfx_paint();
 }
 
+void drawDoublyLinkedList(DoublyLinkedList head){
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+    gfx_clear();
+
+    gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
+    drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2);
+    while(head.prox){
+        x += g_NODES_DISTANCE + g_X_NODE_SIZE;
+        drawNode(x, y, head.prox->valor);
+        drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2);
+        head = *(head.prox);
+    }
+
+    gfx_paint();
+}
+
 int main()
 {
     char opcEstrutura, opcAcao;
@@ -323,6 +339,7 @@ int main()
         case '1':
             while (opcAcao != '0')
             {
+                drawLinkedList(L);
                 printf("### Lista simplesmente encadeada sem nó cabeça ordenada ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -368,7 +385,6 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
-                drawLinkedList(L);
             }
             break;
         case '2':
@@ -405,6 +421,7 @@ int main()
         case '3':
             while (opcAcao != '0')
             {
+                drawDoublyLinkedList(head);
                 printf("### Lista duplamente encadeada com nó cabeça ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -450,7 +467,6 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
-                printDoublyLinkedList(head);
             }
             break;
         case '4':
