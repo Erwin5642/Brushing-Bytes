@@ -185,6 +185,86 @@ DoublyLinkedList *searchValueDoublyLinkedList(DoublyLinkedList DLL, int valor)
     return NULL;
 }
 
+// ### Nó para fila ###
+typedef struct QNode
+{
+    int valor;
+    struct QNode *prox;
+} QNode;
+
+// ### Fila ###
+typedef struct Queue
+{
+    struct QNode *frente, *tras;
+} Queue;
+
+// ### Operações com Fila
+void createQueue(Queue *Q)
+{
+    if (Q)
+    {
+        Q->frente = NULL;
+        Q->tras = NULL;
+    }
+}
+
+void deleteQueue(Queue *Q)
+{
+    QNode *aux;
+    if (Q)
+    {
+        while (Q->frente)
+        {
+            aux = Q->frente->prox;
+            free(Q->frente);
+            Q->frente = aux;
+        }
+        Q->tras = NULL;
+    }
+}
+
+void enQueue(Queue *Q, int valor)
+{
+    QNode *aux;
+    if (Q)
+    {
+        aux = malloc(sizeof(QNode));
+        aux->valor = valor;
+        aux->prox = NULL;
+
+        if (Q->tras)
+        {
+            Q->tras->prox = aux;
+            Q->tras = aux;
+        }
+        else
+        {
+            Q->tras = aux;
+            Q->frente = aux;
+        }
+    }
+}
+
+int deQueue(Queue *Q)
+{
+    QNode *aux;
+    if (Q)
+    {
+        if (Q->frente)
+        {
+            aux = Q->frente->prox;
+            free(Q->frente);
+            Q->frente = aux;
+            if (Q->frente == NULL)
+            {
+                Q->tras = NULL;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
 // Inputs
 char readChar()
 {
@@ -289,30 +369,47 @@ void drawLinkedList(LinkedList *L)
     gfx_paint();
 }
 
-void drawDoublyLinkedList(DoublyLinkedList head){
+void drawDoublyLinkedList(DoublyLinkedList head)
+{
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_clear();
 
     gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
-    drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2);
-    while(head.prox){
+    drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
+    while (head.prox)
+    {
         x += g_NODES_DISTANCE + g_X_NODE_SIZE;
         drawNode(x, y, head.prox->valor);
-        drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2);
+        drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
         head = *(head.prox);
     }
 
     gfx_paint();
 }
 
+void drawQueue(Queue Q){
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+    gfx_clear();
+    while (Q.frente)
+    {
+        drawNode(x, y, Q.frente->valor);
+        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+        Q.frente = Q.frente->prox;
+        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+    }
+    gfx_paint();
+}
+
 int main()
 {
     char opcEstrutura, opcAcao;
-    LinkedList *L;
-    DoublyLinkedList head;
+    LinkedList *ListaOrdenada;
+    DoublyLinkedList Cabeca;
+    Queue Fila;
     int inputValue;
-    createLinkedList(&L);
-    createDoublyLinkedList(&head);
+    createLinkedList(&ListaOrdenada);
+    createDoublyLinkedList(&Cabeca);
+    createQueue(&Fila);
     gfx_init(g_X_SCREEN_SIZE, g_Y_SCREEN_SIZE, "Alocação Encadeada");
     opcEstrutura = 1;
     while (opcEstrutura != '0')
@@ -339,7 +436,7 @@ int main()
         case '1':
             while (opcAcao != '0')
             {
-                drawLinkedList(L);
+                drawLinkedList(ListaOrdenada);
                 printf("### Lista simplesmente encadeada sem nó cabeça ordenada ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -355,7 +452,7 @@ int main()
                 case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     scanf("%d", &inputValue);
-                    if (searchKeyLinkedList(L, inputValue) != NULL)
+                    if (searchKeyLinkedList(ListaOrdenada, inputValue) != NULL)
                     {
                         printf("O valor está presente na lista\n");
                     }
@@ -367,12 +464,12 @@ int main()
                 case '2':
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
-                    insertKeyOrderedLinkedList(&L, inputValue);
+                    insertKeyOrderedLinkedList(&ListaOrdenada, inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     scanf("%d", &inputValue);
-                    if (removeKeyLinkedList(&L, inputValue))
+                    if (removeKeyLinkedList(&ListaOrdenada, inputValue))
                     {
                         printf("Removido da lista uma instância do valor\n");
                     }
@@ -421,7 +518,7 @@ int main()
         case '3':
             while (opcAcao != '0')
             {
-                drawDoublyLinkedList(head);
+                drawDoublyLinkedList(Cabeca);
                 printf("### Lista duplamente encadeada com nó cabeça ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -437,7 +534,7 @@ int main()
                 case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     scanf("%d", &inputValue);
-                    if (searchValueDoublyLinkedList(head, inputValue) != NULL)
+                    if (searchValueDoublyLinkedList(Cabeca, inputValue) != NULL)
                     {
                         printf("O valor está presente na lista\n");
                     }
@@ -449,12 +546,12 @@ int main()
                 case '2':
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
-                    insertValueDoublyLinkedList(&head, inputValue);
+                    insertValueDoublyLinkedList(&Cabeca, inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     scanf("%d", &inputValue);
-                    if (removeValueDoublyLinkedList(&head, inputValue))
+                    if (removeValueDoublyLinkedList(&Cabeca, inputValue))
                     {
                         printf("Removido da lista uma instância do valor\n");
                     }
@@ -470,9 +567,9 @@ int main()
             }
             break;
         case '4':
-
             while (opcAcao != '0')
             {
+                drawQueue(Fila);
                 printf("### Fila ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -485,10 +582,18 @@ int main()
                 case '0':
                     break;
                 case '1':
-
+                    printf("### Inserção ###\nDigite o valor que deverá ser inserido no fim fila: ");
+                    scanf("%d", &inputValue);
+                    enQueue(&Fila, inputValue);
                     break;
                 case '2':
-
+                    printf("### Remoção ###\n");
+                    if(deQueue(&Fila)){
+                        printf("Removido o valor na frente da fila\n");
+                    }
+                    else{
+                        printf("A lista já está vazia\n");
+                    }
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
@@ -528,7 +633,8 @@ int main()
         }
     }
     gfx_quit();
-    deleteLinkedList(&L);
-    deleteDoublyLinkedList(&head);
+    deleteLinkedList(&ListaOrdenada);
+    deleteDoublyLinkedList(&Cabeca);
+    deleteQueue(&Fila);
     return 0;
 }
