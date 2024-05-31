@@ -17,21 +17,21 @@ typedef struct LinkedList
     struct LinkedList *prox;
 } LinkedList;
 
-//### Operações na Lista Encadeada Simples ###
-//Inicializa uma Lista Encadeada Simples como vazia
+// ### Operações na Lista Encadeada Simples ###
+// Inicializa uma Lista Encadeada Simples como vazia
 void createLinkedList(LinkedList **LL)
 {
     (*LL) = NULL;
 }
 
-//Desaloca os nós da Lista Encadeada Simples
+// Desaloca os nós da Lista Encadeada Simples
 void deleteLinkedList(LinkedList **LL)
 {
     LinkedList *aux;
-    //Garante que o ponteiro apontava para algo
+    // Garante que o ponteiro apontava para algo
     if (LL != NULL)
     {
-        //Enquanto não chegar no fim da Lista desaloca o próximo nó e avança
+        // Enquanto não chegar no fim da Lista desaloca o próximo nó e avança
         while ((*LL) != NULL)
         {
             aux = (*LL)->prox;
@@ -41,7 +41,7 @@ void deleteLinkedList(LinkedList **LL)
     }
 }
 
-//Insere um valor numa Lista Encadeada Simples de forma Ordenada
+// Insere um valor numa Lista Encadeada Simples de forma Ordenada
 void insertKeyOrderedLinkedList(LinkedList **LL, int valor)
 {
     LinkedList *aux;
@@ -55,7 +55,8 @@ void insertKeyOrderedLinkedList(LinkedList **LL, int valor)
             {
                 LL = &((*LL)->prox);
             }
-            else{
+            else
+            {
                 stop = 0;
             }
         }
@@ -105,9 +106,97 @@ typedef struct DoublyLinkedList
     int valor;
     struct DoublyLinkedList *ant;
     struct DoublyLinkedList *prox;
-}DoublyLinkedList;
+} DoublyLinkedList;
 
-//Inputs
+void createDoublyLinkedList(DoublyLinkedList *DLL)
+{
+    if (DLL)
+    {
+        DLL->prox = NULL;
+        DLL->ant = NULL;
+    }
+}
+
+void deleteDoublyLinkedList(DoublyLinkedList *DLL)
+{
+    DoublyLinkedList *aux;
+    if (DLL)
+    {
+        while (DLL->prox)
+        {
+            aux = DLL->prox->prox;
+            free(DLL->prox);
+            DLL->prox = aux;
+        }
+    }
+}
+
+void insertValueDoublyLinkedList(DoublyLinkedList *DLL, int valor)
+{
+    DoublyLinkedList *aux;
+    if (DLL)
+    {
+        aux = malloc(sizeof(DoublyLinkedList));
+        aux->valor = valor;
+        aux->ant = DLL;
+        aux->prox = DLL->prox;
+        if (DLL->prox)
+        {
+            DLL->prox->ant = aux;
+        }
+        DLL->prox = aux;
+    }
+}
+
+int removeValueDoublyLinkedList(DoublyLinkedList *DLL, int valor)
+{
+    DoublyLinkedList *aux;
+    if (DLL)
+    {
+        while (DLL->prox)
+        {
+            if (DLL->prox->valor == valor)
+            {
+                aux = DLL->prox->prox;
+                free(DLL->prox);
+                if (aux)
+                {
+                    aux->ant = DLL;
+                }
+                DLL->prox = aux;
+                return 1;
+            }
+            DLL = DLL->prox;
+        }
+    }
+    return 0;
+}
+
+DoublyLinkedList *searchValueDoublyLinkedList(DoublyLinkedList DLL, int valor)
+{
+    while (DLL.prox)
+    {
+        if (DLL.prox->valor == valor)
+        {
+            return DLL.prox;
+        }
+        DLL = *(DLL.prox);
+    }
+    return NULL;
+}
+
+void printDoublyLinkedList(DoublyLinkedList DLL)
+{
+    printf("<- [] -> ");
+    while (DLL.prox)
+    {
+        printf("<- [%d] -> ", DLL.prox->valor);
+        DLL = *(DLL.prox);
+    }
+    printf("[NULL]\n");
+}
+
+// Inputs
 char readChar()
 {
     char c;
@@ -121,8 +210,8 @@ char readChar()
     return c;
 }
 
-
-void inverteString(char str[], int length){
+void inverteString(char str[], int length)
+{
     int start = 0, end = length - 1;
     char temp;
     while (start < end)
@@ -135,42 +224,50 @@ void inverteString(char str[], int length){
     }
 }
 
-char *intToString(int valor, char *str){
+char *intToString(int valor, char *str)
+{
     int i = 0, isNegative = 0;
-    if(valor == 0){
+    if (valor == 0)
+    {
         str[i++] = '0';
         str[i] = '\0';
         return str;
     }
-    if(valor < 0){
+    if (valor < 0)
+    {
         isNegative = 1;
         valor = -valor;
     }
-    while(valor != 0){
-        str[i++] ='0' + (valor % 10);
+    while (valor != 0)
+    {
+        str[i++] = '0' + (valor % 10);
         valor = valor / 10;
     }
-    if(isNegative){
+    if (isNegative)
+    {
         str[i++] = '-';
     }
     str[i] = '\0';
     inverteString(str, i);
     return str;
 }
-void drawNode(int x, int y, int valor){
+void drawNode(int x, int y, int valor)
+{
     char v[4];
     gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
     intToString(valor, v);
-    gfx_text((g_X_NODE_SIZE)/2 + x, (g_Y_NODE_SIZE)/2 + y - 5, v);
+    gfx_text((g_X_NODE_SIZE) / 2 + x, (g_Y_NODE_SIZE) / 2 + y - 5, v);
 }
 
-void drawArrow(int x, int y){
+void drawArrow(int x, int y)
+{
     gfx_line(x, y, x + 20, y);
     gfx_line(x + 10, y + 10, x + 20, y);
     gfx_line(x + 10, y - 10, x + 20, y);
 }
 
-void drawnUnderArrow(int x1, int y1, int x2, int y2){
+void drawnUnderArrow(int x1, int y1, int x2, int y2)
+{
     gfx_line(x1, y1, x1, y1 + 20);
     gfx_line(x1, y1 + 20, x2, y2 + 20);
     gfx_line(x2, y2, x2, y2 + 20);
@@ -178,23 +275,25 @@ void drawnUnderArrow(int x1, int y1, int x2, int y2){
     gfx_line(x2 + 10, y2 + 10, x2, y2);
 }
 
-void drawTwoArrow(int x, int y){
+void drawTwoArrow(int x, int y)
+{
     gfx_line(x + 0, y - 10, x + 20, y - 10);
     gfx_line(x + 10, y, x + 20, y - 10);
     gfx_line(x + 10, y - 20, x + 20, y - 10);
-    
+
     gfx_line(x - g_X_NODE_SIZE, y + 10, x - g_X_NODE_SIZE - 20, y + 10);
     gfx_line(x - g_X_NODE_SIZE - 10, y, x - g_X_NODE_SIZE - 20, y + 10);
-    gfx_line(x - g_X_NODE_SIZE - 10, y + 20, x - g_X_NODE_SIZE - 20, y + 10);    
+    gfx_line(x - g_X_NODE_SIZE - 10, y + 20, x - g_X_NODE_SIZE - 20, y + 10);
 }
 
-
-void drawLinkedList(LinkedList *L){
+void drawLinkedList(LinkedList *L)
+{
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_clear();
-    while(L != NULL){
+    while (L != NULL)
+    {
         drawNode(x, y, L->valor);
-        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE)/2);
+        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
         L = L->prox;
         x += g_X_NODE_SIZE + g_NODES_DISTANCE;
     }
@@ -205,8 +304,10 @@ int main()
 {
     char opcEstrutura, opcAcao;
     LinkedList *L;
+    DoublyLinkedList head;
     int inputValue;
     createLinkedList(&L);
+    createDoublyLinkedList(&head);
     gfx_init(g_X_SCREEN_SIZE, g_Y_SCREEN_SIZE, "Alocação Encadeada");
     opcEstrutura = 1;
     while (opcEstrutura != '0')
@@ -248,10 +349,12 @@ int main()
                 case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     scanf("%d", &inputValue);
-                    if(searchKeyLinkedList(L, inputValue) != NULL){
+                    if (searchKeyLinkedList(L, inputValue) != NULL)
+                    {
                         printf("O valor está presente na lista\n");
                     }
-                    else{
+                    else
+                    {
                         printf("O valor não está presente na lista\n");
                     }
                     break;
@@ -263,10 +366,12 @@ int main()
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     scanf("%d", &inputValue);
-                    if(removeKeyLinkedList(&L, inputValue)){
+                    if (removeKeyLinkedList(&L, inputValue))
+                    {
                         printf("Removido da lista uma instância do valor\n");
                     }
-                    else{
+                    else
+                    {
                         printf("O valor não estava presente na lista\n");
                     }
                     break;
@@ -324,18 +429,39 @@ int main()
                 case '0':
                     break;
                 case '1':
-
+                    printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
+                    scanf("%d", &inputValue);
+                    if (searchValueDoublyLinkedList(head, inputValue) != NULL)
+                    {
+                        printf("O valor está presente na lista\n");
+                    }
+                    else
+                    {
+                        printf("O valor não está presente na lista\n");
+                    }
                     break;
                 case '2':
-
+                    printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
+                    scanf("%d", &inputValue);
+                    insertValueDoublyLinkedList(&head, inputValue);
                     break;
                 case '3':
-
+                    printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
+                    scanf("%d", &inputValue);
+                    if (removeValueDoublyLinkedList(&head, inputValue))
+                    {
+                        printf("Removido da lista uma instância do valor\n");
+                    }
+                    else
+                    {
+                        printf("O valor não estava presente na lista\n");
+                    }
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
+                printDoublyLinkedList(head);
             }
             break;
         case '4':
@@ -398,5 +524,6 @@ int main()
     }
     gfx_quit();
     deleteLinkedList(&L);
+    deleteDoublyLinkedList(&head);
     return 0;
 }
