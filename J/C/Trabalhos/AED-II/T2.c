@@ -185,17 +185,6 @@ DoublyLinkedList *searchValueDoublyLinkedList(DoublyLinkedList DLL, int valor)
     return NULL;
 }
 
-void printDoublyLinkedList(DoublyLinkedList DLL)
-{
-    printf("<- [] -> ");
-    while (DLL.prox)
-    {
-        printf("<- [%d] -> ", DLL.prox->valor);
-        DLL = *(DLL.prox);
-    }
-    printf("[NULL]\n");
-}
-
 // Inputs
 char readChar()
 {
