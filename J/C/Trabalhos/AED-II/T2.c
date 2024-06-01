@@ -92,6 +92,51 @@ LinkedList *searchValueLinkedList(LinkedList *LL, int valor)
     return NULL;
 }
 
+//### Lista Circular Simplesmente Encadeada Ordenada ###
+void deleteCircularLinkedList(LinkedList **CLL){
+    LinkedList *aux;
+    if(CLL && *CLL){
+        aux = (*CLL)->prox;
+        (*CLL)->prox = NULL;
+        (*CLL) = aux;
+        while(*CLL){
+            aux = (*CLL)->prox;
+            free(*CLL);
+            (*CLL) = aux;
+        }
+    }
+}
+
+void insertValueOrderedCircularLinkedList(LinkedList **CLL, int valor){
+    LinkedList *new;
+    if (CLL)
+    {
+        new = malloc(sizeof(LinkedList));
+        new->valor = valor;
+        if(*CLL){
+            if((*CLL)->valor <= valor || (*CLL)->prox->valor >= valor){
+                new->prox = (*CLL)->prox;
+                (*CLL)->prox = new;
+                if((*CLL)->valor <= valor){
+                    (*CLL) = new;
+                }
+            }
+            else{
+                CLL = &((*CLL)->prox->prox);
+                while((*CLL)->valor < valor){
+                    CLL = &((*CLL)->prox);
+                }
+                new->prox = (*CLL);
+                (*CLL) = new;
+            }
+        }
+        else{
+            new->prox = new;
+            (*CLL) = new;
+        }
+    }    
+}
+
 //### Lista duplamente encadeada
 typedef struct DoublyLinkedList
 {
@@ -470,13 +515,16 @@ int main()
 {
     char opcEstrutura, opcAcao;
     LinkedList *ListaOrdenada;
+    LinkedList *ListaCircular;
     DoublyLinkedList Cabeca;
     Queue Fila;
     Stack Pilha;
     int inputValue;
     createLinkedList(&ListaOrdenada);
+    createLinkedList(&ListaCircular);
     createDoublyLinkedList(&Cabeca);
     createQueue(&Fila);
+    createStack(&Pilha);
     gfx_init(g_X_SCREEN_SIZE, g_Y_SCREEN_SIZE, "Alocação Encadeada");
     opcEstrutura = 1;
     while (opcEstrutura != '0')
@@ -567,14 +615,16 @@ int main()
                 {
                 case '0':
                     break;
-                case '1':
-
+               case '1':
+                    printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     break;
                 case '2':
-
+                    printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
+                    scanf("%d", &inputValue);
+                    insertValueOrderedCircularLinkedList(&ListaCircular, inputValue);
                     break;
                 case '3':
-
+                    printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
@@ -713,5 +763,6 @@ int main()
     deleteDoublyLinkedList(&Cabeca);
     deleteQueue(&Fila);
     deleteStack(&Pilha);
+    deleteCircularLinkedList(&ListaCircular);
     return 0;
 }
