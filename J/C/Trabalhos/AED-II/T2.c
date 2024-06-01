@@ -42,23 +42,14 @@ void deleteLinkedList(LinkedList **LL)
 }
 
 // Insere um valor numa Lista Encadeada Simples de forma Ordenada
-void insertKeyOrderedLinkedList(LinkedList **LL, int valor)
+void insertValueOrderedLinkedList(LinkedList **LL, int valor)
 {
     LinkedList *aux;
-    int stop = 1;
-
     if (LL != NULL)
     {
-        while ((*LL) != NULL && stop)
+        while ((*LL) != NULL && (*LL)->valor < valor)
         {
-            if ((*LL)->valor < valor)
-            {
-                LL = &((*LL)->prox);
-            }
-            else
-            {
-                stop = 0;
-            }
+            LL = &((*LL)->prox);
         }
         aux = malloc(sizeof(LinkedList));
         aux->valor = valor;
@@ -67,7 +58,7 @@ void insertKeyOrderedLinkedList(LinkedList **LL, int valor)
     }
 }
 
-int removeKeyLinkedList(LinkedList **LL, int valor)
+int removeValueLinkedList(LinkedList **LL, int valor)
 {
     LinkedList *aux;
     if (LL != NULL)
@@ -87,7 +78,7 @@ int removeKeyLinkedList(LinkedList **LL, int valor)
     return 0;
 }
 
-LinkedList *searchKeyLinkedList(LinkedList *LL, int valor)
+LinkedList *searchValueLinkedList(LinkedList *LL, int valor)
 {
     LinkedList *aux = LL;
     while (aux != NULL)
@@ -101,6 +92,7 @@ LinkedList *searchKeyLinkedList(LinkedList *LL, int valor)
     return NULL;
 }
 
+//### Lista duplamente encadeada
 typedef struct DoublyLinkedList
 {
     int valor;
@@ -275,9 +267,6 @@ typedef struct SNode{
 typedef struct Stack{
     SNode *topo;
 }Stack;
-
-
-
 
 //### Operações com Pilha ###
 void createStack(Stack *S)
@@ -530,7 +519,7 @@ int main()
                 case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     scanf("%d", &inputValue);
-                    if (searchKeyLinkedList(ListaOrdenada, inputValue) != NULL)
+                    if (searchValueLinkedList(ListaOrdenada, inputValue) != NULL)
                     {
                         printf("O valor está presente na lista\n");
                     }
@@ -542,12 +531,12 @@ int main()
                 case '2':
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
-                    insertKeyOrderedLinkedList(&ListaOrdenada, inputValue);
+                    insertValueOrderedLinkedList(&ListaOrdenada, inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     scanf("%d", &inputValue);
-                    if (removeKeyLinkedList(&ListaOrdenada, inputValue))
+                    if (removeValueLinkedList(&ListaOrdenada, inputValue))
                     {
                         printf("Removido da lista uma instância do valor\n");
                     }
