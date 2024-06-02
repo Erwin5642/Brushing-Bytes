@@ -162,10 +162,10 @@ int removeValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
             }
             return 0;
         }
-        
+
         if ((*CLL)->valor == valor)
         {
-            //Avança com a ponteiro "raiz" da lista até encontrar o novo fim 
+            // Avança com a ponteiro "raiz" da lista até encontrar o novo fim
             fim = *CLL;
             while ((*CLL)->prox != fim)
             {
@@ -176,12 +176,15 @@ int removeValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
             return 1;
         }
 
-        if((*CLL)->valor > valor && (*CLL)->prox->valor <= valor){
+        if ((*CLL)->valor > valor && (*CLL)->prox->valor <= valor)
+        {
             CLL = &(*CLL)->prox;
-            while((*CLL)->valor < valor){
+            while ((*CLL)->valor < valor)
+            {
                 CLL = &(*CLL)->prox;
             }
-            if((*CLL)->valor == valor){
+            if ((*CLL)->valor == valor)
+            {
                 aux = (*CLL)->prox;
                 free(*CLL);
                 (*CLL) = aux;
@@ -195,14 +198,18 @@ int removeValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
 LinkedList *searchValueCircularLinkedList(LinkedList *LL, int valor)
 {
     LinkedList *fim = LL;
-    if(LL){
-        if(LL->valor >= valor && LL->prox->valor <= valor){
-            do{ 
-                if(LL->valor == valor){
+    if (LL)
+    {
+        if (LL->valor >= valor && LL->prox->valor <= valor)
+        {
+            do
+            {
+                if (LL->valor == valor)
+                {
                     return LL;
                 }
                 LL = LL->prox;
-            }while(LL != fim);
+            } while (LL != fim);
         }
     }
     return NULL;
@@ -493,10 +500,12 @@ char *intToString(int valor, char *str)
 }
 void drawNode(int x, int y, int valor)
 {
-    char v[4];
+    char v[10];
+    int largura, altura;
     gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
     intToString(valor, v);
-    gfx_text((g_X_NODE_SIZE) / 2 + x, (g_Y_NODE_SIZE) / 2 + y - 5, v);
+    gfx_get_text_size(v, &largura, &altura);
+    gfx_text(x + g_X_NODE_SIZE/2 - largura/2, y + g_Y_NODE_SIZE/2 - altura/2, v);
 }
 
 void drawArrow(int x, int y)
@@ -508,8 +517,9 @@ void drawArrow(int x, int y)
 
 void drawnUnderArrow(int x1, int y1, int x2, int y2)
 {
-    gfx_line(x1, y1, x1, y1 + 20);
-    gfx_line(x1, y1 + 20, x2, y2 + 20);
+    gfx_line(x1, y1, x1 + 10, y1);
+    gfx_line(x1 + 10, y1, x1 + 10, y1 + g_Y_NODE_SIZE/2 + 20);
+    gfx_line(x1 + 10, y1 + g_Y_NODE_SIZE/2 + 20, x2, y2 + 20);
     gfx_line(x2, y2, x2, y2 + 20);
     gfx_line(x2 - 10, y2 + 10, x2, y2);
     gfx_line(x2 + 10, y2 + 10, x2, y2);
@@ -536,6 +546,30 @@ void drawLinkedList(LinkedList *L)
         drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
         L = L->prox;
         x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+    }
+    gfx_paint();
+}
+
+void drawCircularList(LinkedList *CLL)
+{
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+    LinkedList *inicio;
+    gfx_clear();
+    if (CLL)
+    {
+        inicio = CLL->prox;
+        do
+        {
+            CLL = CLL->prox;
+            drawNode(x, y, CLL->valor);
+            if(CLL->prox == inicio){
+                drawnUnderArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2, g_X_LIST_ORIGIN + g_X_NODE_SIZE/2, g_Y_LIST_ORIGIN + g_Y_NODE_SIZE);
+            }
+            else{
+                drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+            }
+            x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+        } while(CLL->prox != inicio);
     }
     gfx_paint();
 }
@@ -677,6 +711,7 @@ int main()
         case '2':
             while (opcAcao != '0')
             {
+                drawCircularList(ListaCircular);
                 printf("### lista circular simplesmente encadeada sem nó cabeça ordenada ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
@@ -717,7 +752,7 @@ int main()
                     else
                     {
                         printf("O valor não estava presente na lista\n");
-                    }                    
+                    }
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
