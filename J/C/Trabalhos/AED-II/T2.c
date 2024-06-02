@@ -92,14 +92,17 @@ LinkedList *searchValueLinkedList(LinkedList *LL, int valor)
     return NULL;
 }
 
-//### Lista Circular Simplesmente Encadeada Ordenada ###
-void deleteCircularLinkedList(LinkedList **CLL){
+// ### Lista Circular Simplesmente Encadeada Ordenada ###
+void deleteCircularLinkedList(LinkedList **CLL)
+{
     LinkedList *aux;
-    if(CLL && *CLL){
+    if (CLL && *CLL)
+    {
         aux = (*CLL)->prox;
         (*CLL)->prox = NULL;
         (*CLL) = aux;
-        while(*CLL){
+        while (*CLL)
+        {
             aux = (*CLL)->prox;
             free(*CLL);
             (*CLL) = aux;
@@ -107,37 +110,105 @@ void deleteCircularLinkedList(LinkedList **CLL){
     }
 }
 
-void insertValueOrderedCircularLinkedList(LinkedList **CLL, int valor){
+void insertValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
+{
     LinkedList *new;
     if (CLL)
     {
         new = malloc(sizeof(LinkedList));
         new->valor = valor;
-        if(*CLL){
-            if((*CLL)->valor <= valor || (*CLL)->prox->valor >= valor){
+        if (*CLL)
+        {
+            if ((*CLL)->valor <= valor || (*CLL)->prox->valor >= valor)
+            {
                 new->prox = (*CLL)->prox;
                 (*CLL)->prox = new;
-                if((*CLL)->valor <= valor){
+                if ((*CLL)->valor <= valor)
+                {
                     (*CLL) = new;
                 }
             }
-            else{
+            else
+            {
                 CLL = &((*CLL)->prox->prox);
-                while((*CLL)->valor < valor){
+                while ((*CLL)->valor < valor)
+                {
                     CLL = &((*CLL)->prox);
                 }
                 new->prox = (*CLL);
                 (*CLL) = new;
             }
         }
-        else{
+        else
+        {
             new->prox = new;
             (*CLL) = new;
         }
-    }    
+    }
 }
 
-//### Lista duplamente encadeada
+int removeValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
+{
+    LinkedList *fim, *aux;
+    if (CLL && *CLL)
+    {
+        if ((*CLL)->prox == *CLL)
+        {
+            if ((*CLL)->valor == valor)
+            {
+                free(*CLL);
+                *CLL = NULL;
+                return 1;
+            }
+            return 0;
+        }
+        
+        if ((*CLL)->valor == valor)
+        {
+            //Avança com a ponteiro "raiz" da lista até encontrar o novo fim 
+            fim = *CLL;
+            while ((*CLL)->prox != fim)
+            {
+                (*CLL) = (*CLL)->prox;
+            }
+            (*CLL)->prox = fim->prox;
+            free(fim);
+            return 1;
+        }
+
+        if((*CLL)->valor > valor && (*CLL)->prox->valor <= valor){
+            CLL = &(*CLL)->prox;
+            while((*CLL)->valor < valor){
+                CLL = &(*CLL)->prox;
+            }
+            if((*CLL)->valor == valor){
+                aux = (*CLL)->prox;
+                free(*CLL);
+                (*CLL) = aux;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+LinkedList *searchValueCircularLinkedList(LinkedList *LL, int valor)
+{
+    LinkedList *fim = LL;
+    if(LL){
+        if(LL->valor >= valor && LL->prox->valor <= valor){
+            do{ 
+                if(LL->valor == valor){
+                    return LL;
+                }
+                LL = LL->prox;
+            }while(LL != fim);
+        }
+    }
+    return NULL;
+}
+
+// ### Lista duplamente encadeada
 typedef struct DoublyLinkedList
 {
     int valor;
@@ -302,18 +373,20 @@ int deQueue(Queue *Q)
     return 0;
 }
 
-//### Nó para Pilha ### 
-typedef struct SNode{
+// ### Nó para Pilha ###
+typedef struct SNode
+{
     int valor;
     struct SNode *prox;
-}SNode;
+} SNode;
 
-//### Pilha ###
-typedef struct Stack{
+// ### Pilha ###
+typedef struct Stack
+{
     SNode *topo;
-}Stack;
+} Stack;
 
-//### Operações com Pilha ###
+// ### Operações com Pilha ###
 void createStack(Stack *S)
 {
     if (S)
@@ -485,7 +558,8 @@ void drawDoublyLinkedList(DoublyLinkedList head)
     gfx_paint();
 }
 
-void drawQueue(Queue Q){
+void drawQueue(Queue Q)
+{
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_clear();
     while (Q.frente)
@@ -498,8 +572,9 @@ void drawQueue(Queue Q){
     gfx_paint();
 }
 
-void drawStack(Stack S){
-   int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+void drawStack(Stack S)
+{
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_clear();
     while (S.topo)
     {
@@ -615,8 +690,17 @@ int main()
                 {
                 case '0':
                     break;
-               case '1':
+                case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
+                    scanf("%d", &inputValue);
+                    if (searchValueCircularLinkedList(ListaCircular, inputValue) != NULL)
+                    {
+                        printf("O valor está presente na lista\n");
+                    }
+                    else
+                    {
+                        printf("O valor não está presente na lista\n");
+                    }
                     break;
                 case '2':
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
@@ -625,6 +709,15 @@ int main()
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
+                    scanf("%d", &inputValue);
+                    if (removeValueOrderedCircularLinkedList(&ListaCircular, inputValue))
+                    {
+                        printf("Removido da lista uma instância do valor\n");
+                    }
+                    else
+                    {
+                        printf("O valor não estava presente na lista\n");
+                    }                    
                     break;
                 default:
                     printf("Opção inválida! Tente novamente\n");
@@ -705,10 +798,12 @@ int main()
                     break;
                 case '2':
                     printf("### Remoção ###\n");
-                    if(deQueue(&Fila)){
+                    if (deQueue(&Fila))
+                    {
                         printf("Removido o valor na frente da fila\n");
                     }
-                    else{
+                    else
+                    {
                         printf("A lista já está vazia\n");
                     }
                     break;
@@ -740,10 +835,12 @@ int main()
                     break;
                 case '2':
                     printf("### Remoção ###\n");
-                    if(pop(&Pilha)){
+                    if (pop(&Pilha))
+                    {
                         printf("Removido o valor no topo da pilha\n");
                     }
-                    else{
+                    else
+                    {
                         printf("A pilha já está vazia\n");
                     }
                     break;
