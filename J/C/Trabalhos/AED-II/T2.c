@@ -515,11 +515,11 @@ void drawArrow(int x, int y)
     gfx_line(x + 10, y - 10, x + 20, y);
 }
 
-void drawnUnderArrow(int x1, int y1, int x2, int y2)
+void drawUnderArrow(int x1, int y1, int x2, int y2)
 {
-    gfx_line(x1, y1, x1 + 10, y1);
-    gfx_line(x1 + 10, y1, x1 + 10, y1 + g_Y_NODE_SIZE/2 + 20);
-    gfx_line(x1 + 10, y1 + g_Y_NODE_SIZE/2 + 20, x2, y2 + 20);
+    gfx_line(x1, y1, x1 + 20, y1);
+    gfx_line(x1 + 20, y1, x1 + 20, y1 + g_Y_NODE_SIZE/2 + 20);
+    gfx_line(x1 + 20, y1 + g_Y_NODE_SIZE/2 + 20, x2, y2 + 20);
     gfx_line(x2, y2, x2, y2 + 20);
     gfx_line(x2 - 10, y2 + 10, x2, y2);
     gfx_line(x2 + 10, y2 + 10, x2, y2);
@@ -536,10 +536,19 @@ void drawTwoArrow(int x, int y)
     gfx_line(x - g_X_NODE_SIZE - 10, y + 20, x - g_X_NODE_SIZE - 20, y + 10);
 }
 
+void drawLambda(int x, int y){
+    gfx_line(x + 7, y + 15, x + g_X_NODE_SIZE - 27, y + g_Y_NODE_SIZE - 15);
+    gfx_line(x + 7, y + g_Y_NODE_SIZE - 15, x + (g_X_NODE_SIZE - 20)/2, y + g_Y_NODE_SIZE/2);
+}
+
 void drawLinkedList(LinkedList *L)
 {
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
-    gfx_clear();
+    gfx_text(g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN - 20, "Lista Ordenada Simplesmente Encadeada");
+    gfx_set_color(0, 0, 0);
+    gfx_filled_rectangle(0, g_Y_LIST_ORIGIN, g_X_SCREEN_SIZE, g_Y_LIST_ORIGIN + g_Y_NODE_SIZE + 20);
+    gfx_set_color(255, 255, 255);
+    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
     while (L != NULL)
     {
         drawNode(x, y, L->valor);
@@ -547,14 +556,19 @@ void drawLinkedList(LinkedList *L)
         L = L->prox;
         x += g_X_NODE_SIZE + g_NODES_DISTANCE;
     }
+    drawLambda(x, y);
     gfx_paint();
 }
 
 void drawCircularList(LinkedList *CLL)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_Y_NODE_SIZE + 50;
     LinkedList *inicio;
-    gfx_clear();
+    gfx_text(x, y - 20, "Lista Ordenada Circular Simplesmente Encadeada");
+    gfx_set_color(0, 0, 0);
+    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_set_color(255, 255, 255);    
+    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
     if (CLL)
     {
         inicio = CLL->prox;
@@ -563,7 +577,7 @@ void drawCircularList(LinkedList *CLL)
             CLL = CLL->prox;
             drawNode(x, y, CLL->valor);
             if(CLL->prox == inicio){
-                drawnUnderArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2, g_X_LIST_ORIGIN + g_X_NODE_SIZE/2, g_Y_LIST_ORIGIN + g_Y_NODE_SIZE);
+                drawUnderArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2, g_X_LIST_ORIGIN + g_X_NODE_SIZE/2, y + g_Y_NODE_SIZE);
             }
             else{
                 drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
@@ -571,31 +585,44 @@ void drawCircularList(LinkedList *CLL)
             x += g_X_NODE_SIZE + g_NODES_DISTANCE;
         } while(CLL->prox != inicio);
     }
+    else{
+        drawLambda(x, y);
+    }
     gfx_paint();
 }
 
 void drawDoublyLinkedList(DoublyLinkedList head)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
-    gfx_clear();
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*(g_Y_NODE_SIZE + 50);
+    gfx_text(x, y - 20, "Lista Duplamente Encadeada com No Cabeca");
+    gfx_set_color(0, 0, 0);
+    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_set_color(255, 255, 255);    
 
     gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
     drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
+    x += g_NODES_DISTANCE + g_X_NODE_SIZE;
     while (head.prox)
     {
-        x += g_NODES_DISTANCE + g_X_NODE_SIZE;
         drawNode(x, y, head.prox->valor);
         drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
         head = *(head.prox);
+        x += g_NODES_DISTANCE + g_X_NODE_SIZE;
     }
-
+    drawLambda(x, y - 10);
     gfx_paint();
 }
 
 void drawQueue(Queue Q)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
-    gfx_clear();
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*(g_Y_NODE_SIZE + 50);
+
+    gfx_text(x, y - 20, "Fila");
+    gfx_set_color(0, 0, 0);
+    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_set_color(255, 255, 255);    
+    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
+
     while (Q.frente)
     {
         drawNode(x, y, Q.frente->valor);
@@ -603,13 +630,20 @@ void drawQueue(Queue Q)
         Q.frente = Q.frente->prox;
         x += g_X_NODE_SIZE + g_NODES_DISTANCE;
     }
+    drawLambda(x, y);
     gfx_paint();
 }
 
 void drawStack(Stack S)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
-    gfx_clear();
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * (g_Y_NODE_SIZE + 50);
+
+    gfx_text(x, y - 20, "Pilha");
+    gfx_set_color(0, 0, 0);
+    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_set_color(255, 255, 255);    
+
+    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
     while (S.topo)
     {
         drawNode(x, y, S.topo->valor);
@@ -617,6 +651,7 @@ void drawStack(Stack S)
         S.topo = S.topo->prox;
         x += g_X_NODE_SIZE + g_NODES_DISTANCE;
     }
+    drawLambda(x, y);
     gfx_paint();
 }
 
