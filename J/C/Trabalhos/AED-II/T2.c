@@ -2,339 +2,438 @@
 #include <stdio.h>
 #include "gfx.h"
 
-const unsigned short g_X_NODE_SIZE = 50;
-const unsigned short g_Y_NODE_SIZE = 50;
-const unsigned short g_X_SCREEN_SIZE = 800;
-const unsigned short g_Y_SCREEN_SIZE = 600;
-const unsigned short g_X_LIST_ORIGIN = g_X_NODE_SIZE;
-const unsigned short g_Y_LIST_ORIGIN = g_Y_NODE_SIZE;
-const unsigned short g_NODES_DISTANCE = 25;
+//Constantes para regular a visualização das listas
+#define g_NODE_LENGTH 50
+#define g_NODE_HEIGHT 50
+#define g_SCREEN_LENGTH 800
+#define g_SCREEN_HEIGHT 600
+#define g_X_LIST_ORIGIN g_NODE_LENGTH
+#define g_Y_LIST_ORIGIN g_NODE_HEIGHT
+#define g_NODES_DISTANCE 25
 
-// Declaração do tipo Lista Encadeada Simples
+// Declaração do tipo Lista Ordenada Simplesmente Encadeada e Lista Circular Ordenada Simplesmente Encadeada
 typedef struct LinkedList
 {
-    int valor;
-    struct LinkedList *prox;
+    int value;
+    struct LinkedList *next;
 } LinkedList;
 
 // ### Operações na Lista Encadeada Simples ###
-// Inicializa uma Lista Encadeada Simples como vazia
-void createLinkedList(LinkedList **LL)
+// Inicializa a lista como vazia
+void createLinkedList(LinkedList **L)
 {
-    (*LL) = NULL;
+    *L = NULL;
 }
 
 // Desaloca os nós da Lista Encadeada Simples
-void deleteLinkedList(LinkedList **LL)
+void deleteLinkedList(LinkedList **L)
 {
     LinkedList *aux;
     // Garante que o ponteiro apontava para algo
-    if (LL != NULL)
+    if (L != NULL)
     {
-        // Enquanto não chegar no fim da Lista desaloca o próximo nó e avança
-        while ((*LL) != NULL)
+        // Enquanto não chegar no fim da lista, salva o próximo nó à *L em aux, desaloca *L
+        // e reconecta *L com o restante da lista em aux 
+        while (*L != NULL)
         {
-            aux = (*LL)->prox;
-            free(*LL);
-            (*LL) = aux;
+            aux = (*L)->next;
+            free(*L);
+            *L = aux;
         }
     }
 }
 
 // Insere um valor numa Lista Encadeada Simples de forma Ordenada
-void insertValueOrderedLinkedList(LinkedList **LL, int valor)
+void insertValueOrderedLinkedList(LinkedList **L, int newValue)
 {
-    LinkedList *aux;
-    if (LL != NULL)
+    LinkedList *newNode;
+    // Garante que o ponteiro apontava para algo
+    if (L != NULL)
     {
-        while ((*LL) != NULL && (*LL)->valor < valor)
+        //Enquanto não estiver no fim da lista e o novo valor for maior que os valores de cada nó
+        //avança para o próximo ponteiro na lista
+        while ((*L != NULL) && ((*L)->value < newValue))
         {
-            LL = &((*LL)->prox);
+            L = &((*L)->next);
         }
-        aux = malloc(sizeof(LinkedList));
-        aux->valor = valor;
-        aux->prox = (*LL);
-        (*LL) = aux;
+        //Ao chegar no fim da lista, ou encontrar um número maior que o novo valor, insere um novo nó
+        //após o nó apontado pelo ponteiro *L 
+        newNode = malloc(sizeof(LinkedList));
+        newNode->value = newValue;
+        newNode->next = *L;
+        *L = newNode;
     }
 }
 
-int removeValueLinkedList(LinkedList **LL, int valor)
+/* Remove a primeira ocorrência de um valor na lista
+    Retornando 0 se o valor não estava na lista e 1 caso contrário*/
+int removeValueOrderedLinkedList(LinkedList **L, int rValue)
 {
     LinkedList *aux;
-    if (LL != NULL)
+    //Garante que o ponteiro apontava para algo
+    if (L != NULL)
     {
-        while ((*LL) != NULL)
+        //Enquanto não chegar ao fim da lista ou houverem valores maiores que o valor a ser removido
+        while ((*L != NULL) && ((*L)->value >= rValue))
         {
-            if ((*LL)->valor == valor)
+            //Se o valor no nó apontado por *L for igual ao valor a ser removido, desaloca ele
+            if ((*L)->value == rValue)
             {
-                aux = (*LL)->prox;
-                free(*LL);
-                (*LL) = aux;
+                aux = (*L)->next;
+                free(*L);
+                *L = aux;
                 return 1;
             }
-            LL = &(*LL)->prox;
+            //Se não, avança para o próximo ponteiro na lista
+            L = &(*L)->next;
         }
     }
+    //Retorna zero se o elemento não estava na lista
     return 0;
 }
 
-LinkedList *searchValueLinkedList(LinkedList *LL, int valor)
+/*Busca um valor numa lista encadeada, retornando o endereço do nó com o valor desejado
+ou NULL caso o valor não esteja na lista*/
+LinkedList *searchValueOrderedLinkedList(LinkedList *L, int sValue)
 {
-    LinkedList *aux = LL;
-    while (aux != NULL)
+    //Enquanto não chegar ao fim da lista ou houverem valores maiores que o valor a ser removido
+    while ((L != NULL) && (L->value >= sValue))
     {
-        if (aux->valor == valor)
+        //Se o valor no nó apontado por L for igual ao valor procurado, retorna o endereço desse nó
+        if (L->value == sValue)
         {
-            return aux;
+            return L;
         }
-        aux = aux->prox;
+        //Se não, avança o ponteiro L para o próximo nó na lista
+        L = L->next;
     }
+    //Se o valor não estiver na lista, retorna NULL
     return NULL;
 }
 
-// ### Lista Circular Simplesmente Encadeada Ordenada ###
-void deleteCircularLinkedList(LinkedList **CLL)
+//Mesma estrutrura para lista simplesmente encadeada e lista circular
+//Exceto que o ponteiro para lista circular aponta para o último elemento
+//Essa escolha foi feita pra garantir inserção no inicio e fim da lista com complexidade O(1)
+
+// ### Lista Circular Ordenada Simplesmente Encadeada ###
+
+//Mesma função que cria lista simples também cria lista circular
+
+//Desaloca todos os nós da Lista Circular Simplesmente Encadeada
+void deleteCircularLinkedList(LinkedList **CL)
 {
     LinkedList *aux;
-    if (CLL && *CLL)
+    //Se a lista for vazia, não faz nada
+    if ((CL != NULL) && (*CL != NULL))
     {
-        aux = (*CLL)->prox;
-        (*CLL)->prox = NULL;
-        (*CLL) = aux;
-        while (*CLL)
+        //Desmembra o último elemento da lista do primeiro elemento e atualiza o pointeiro para o 
+        //primeiro elemento, de forma que o ultimo nó aponte para NULL,
+        //resultando em uma lista não circular
+        aux = (*CL)->next;
+        (*CL)->next = NULL;
+        *CL = aux;
+        //Desaloca os nós da lista circular no mesmo processo que da lista não circular
+        while (*CL != NULL)
         {
-            aux = (*CLL)->prox;
-            free(*CLL);
-            (*CLL) = aux;
+            aux = (*CL)->next;
+            free(*CL);
+            *CL = aux;
         }
     }
 }
 
-void insertValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
+// Insere um valor numa Lista Circular Simplesmente Encadeada de forma Ordenada
+void insertValueOrderedCircularLinkedList(LinkedList **CL, int newValue)
 {
-    LinkedList *new;
-    if (CLL)
+    LinkedList *newNode;
+    //Garante que o ponteiro apontava para algo
+    if (CL != NULL)
     {
-        new = malloc(sizeof(LinkedList));
-        new->valor = valor;
-        if (*CLL)
+        //Cria um novo nó
+        newNode = malloc(sizeof(LinkedList));
+        newNode->value = newValue;
+
+        //Se a lista não estava vazia
+        if (*CL != NULL)
         {
-            if ((*CLL)->valor <= valor || (*CLL)->prox->valor >= valor)
-            {
-                new->prox = (*CLL)->prox;
-                (*CLL)->prox = new;
-                if ((*CLL)->valor <= valor)
+            //Se o novo valor for menor que o último e maior que o primeiro, insere ele na sua correespondente
+            //posição no meio da lista
+            if (((*CL)->value > newValue) && ((*CL)->next->value < newValue))
+            {      
+                //Pula o último e primeiro nó da lista, avançando para ponteiro no primeiro nó da lista
+                CL = &((*CL)->next->next);
+                //Procura pelo primeiro nó com o valor menor que o novo valor
+                while ((*CL)->value < newValue)
                 {
-                    (*CLL) = new;
+                    CL = &((*CL)->next);
                 }
+                //Insere o novo nó no ponteiro que aponta para o primeiro nó menor que o novo valor
+                newNode->next = (*CL);
+                *CL = newNode;
             }
             else
             {
-                CLL = &((*CLL)->prox->prox);
-                while ((*CLL)->valor < valor)
+                //Se não, insere no fim/inicio da lista
+                newNode->next = (*CL)->next;
+                (*CL)->next = newNode;
+                //Se o valor for maior ou igual que o maior elemento da lista, atualiza o ponteiro da lista 
+                //para o novo valor maior
+                if ((*CL)->value <= newValue)
                 {
-                    CLL = &((*CLL)->prox);
+                    *CL = newNode;
                 }
-                new->prox = (*CLL);
-                (*CLL) = new;
             }
         }
         else
         {
-            new->prox = new;
-            (*CLL) = new;
+            //Se não, insere o novo nó no inicio e faz ele apontar para si mesmo
+            newNode->next = newNode;
+            *CL = newNode;
         }
     }
 }
 
-int removeValueOrderedCircularLinkedList(LinkedList **CLL, int valor)
+/*Remove uma ocorrência de um valor na lista circular
+Retornando 0 caso o elemento não estava na lista ou 1 caso contrário*/
+int removeValueOrderedCircularLinkedList(LinkedList **CL, int rValue)
 {
-    LinkedList *fim, *aux;
-    if (CLL && *CLL)
+    LinkedList *end, *aux;
+    //Se a houver lista e ela não for vazia
+    if ((CL != NULL) && (*CL != NULL))
     {
-        if ((*CLL)->prox == *CLL)
+        // Se a lista possuir apenas um nó
+        if ((*CL)->next == *CL)
         {
-            if ((*CLL)->valor == valor)
+            // E esse nó possuir o elemento a ser removido
+            if ((*CL)->value == rValue)
             {
-                free(*CLL);
-                *CLL = NULL;
+                //Desaloca o nó e torna a lista vazia
+                free(*CL);
+                *CL = NULL;
                 return 1;
             }
+            //Se não for o elemento procurado somente retorna 0
             return 0;
         }
-
-        if ((*CLL)->valor == valor)
+        //Se o valor a ser removido for o último elemento
+        if ((*CL)->value == rValue)
         {
-            // Avança com a ponteiro "raiz" da lista até encontrar o novo fim
-            fim = *CLL;
-            while ((*CLL)->prox != fim)
+            // Avança com a ponteiro "raiz" da lista até encontrar o nó que será o novo fim
+            end = *CL;
+            while ((*CL)->next != end)
             {
-                (*CLL) = (*CLL)->prox;
+                *CL = (*CL)->next;
             }
-            (*CLL)->prox = fim->prox;
-            free(fim);
+            //Remove o último elemento e faz reconecta a lista
+            (*CL)->next = end->next;
+            free(end);
             return 1;
         }
-
-        if ((*CLL)->valor > valor && (*CLL)->prox->valor <= valor)
+        //Se o valor a ser removido estiver entre o maior e o menor valor da lista
+        if (((*CL)->value > rValue) && ((*CL)->next->value <= rValue))
         {
-            CLL = &(*CLL)->prox;
-            while ((*CLL)->valor < valor)
+            //Pula o ponteiro para o último nó
+            CL = &(*CL)->next;
+            //Enquanto for possível que o valor esteja na lista ou até que ele seja encontrado
+            //avança para o ponteiro no próximo nó
+            while ((*CL)->value < rValue)
             {
-                CLL = &(*CLL)->prox;
+                CL = &(*CL)->next;
             }
-            if ((*CLL)->valor == valor)
+            //Se o valor a ser removido foi encontrado, desaloca ele e reconecta a lista
+            if ((*CL)->value == rValue)
             {
-                aux = (*CLL)->prox;
-                free(*CLL);
-                (*CLL) = aux;
+                aux = (*CL)->next;
+                free(*CL);
+                (*CL) = aux;
                 return 1;
             }
         }
     }
+    //Se o valor não estava na lista retorna 0
     return 0;
 }
 
-LinkedList *searchValueCircularLinkedList(LinkedList *LL, int valor)
+/*Busca um valor numa lista circular, retornando o endereço do nó com o valor desejado
+ou NULL caso o valor não esteja na lista*/
+LinkedList *searchValueCircularLinkedList(LinkedList *CL, int sValue)
 {
-    LinkedList *fim = LL;
-    if (LL)
+    LinkedList *end = CL;
+    //Se a lista não for vazia
+    if (CL != NULL)
     {
-        if (LL->valor >= valor && LL->prox->valor <= valor)
+        //Se o valor estar no intervalo entre o maior e o menor valor da lista
+        if ((CL->value >= sValue) && (CL->next->value <= sValue))
         {
+            //Verifica se o valor no nó é o valor buscado ate que ele seja encontrado ou chegue o fim da lista
             do
             {
-                if (LL->valor == valor)
+                if (CL->value == sValor)
                 {
-                    return LL;
+                    return CL;
                 }
-                LL = LL->prox;
-            } while (LL != fim);
+                CL = CL->next;
+            } while (CL != end);
         }
     }
+    //Se o valor não estava na lista retorna NULL
     return NULL;
 }
 
 // ### Lista duplamente encadeada
 typedef struct DoublyLinkedList
 {
-    int valor;
-    struct DoublyLinkedList *ant;
-    struct DoublyLinkedList *prox;
+    int value;
+    struct DoublyLinkedList *prev;
+    struct DoublyLinkedList *next;
 } DoublyLinkedList;
 
-void createDoublyLinkedList(DoublyLinkedList *DLL)
+//### Operações com lista duplamente encadeada com nó cabeça
+
+//Ocupa um nó cabeça como uma lista vazia
+void createDoublyLinkedList(DoublyLinkedList *DL)
 {
-    if (DLL)
+    //Se foi passado um nó cabeça
+    if (DL != NULL)
     {
-        DLL->prox = NULL;
-        DLL->ant = NULL;
+        DL->next = NULL;
+        DL->prev = NULL;
     }
 }
 
-void deleteDoublyLinkedList(DoublyLinkedList *DLL)
+//Desaloca os nós da lista apontada pelo nós cabeça
+void deleteDoublyLinkedList(DoublyLinkedList *DL)
 {
     DoublyLinkedList *aux;
-    if (DLL)
+    //Garante que o ponteiro aponta para algo
+    if (DL != NULL)
     {
-        while (DLL->prox)
+        //Enquanto não chegar ao fim da lista, desaloca cada nó e reconecta o próximo com a lista
+        while (DL->next != NULL)
         {
-            aux = DLL->prox->prox;
-            free(DLL->prox);
-            DLL->prox = aux;
+            aux = DL->next->next;
+            free(DL->next);
+            DL->next = aux;
         }
     }
 }
 
-void insertValueDoublyLinkedList(DoublyLinkedList *DLL, int valor)
+// Insere um valor numa Lista Circular Simplesmente Encadeada de forma Ordenada
+void insertValueDoublyLinkedList(DoublyLinkedList *DL, int newValue)
 {
-    DoublyLinkedList *aux;
-    if (DLL)
+    DoublyLinkedList *newNode;
+    //Garantindo que o ponteiro aponte para algo
+    if (DL != NULL)
     {
-        aux = malloc(sizeof(DoublyLinkedList));
-        aux->valor = valor;
-        aux->ant = DLL;
-        aux->prox = DLL->prox;
-        if (DLL->prox)
+        //Insere um novo nó após o nó cabeça
+        newNode = malloc(sizeof(DoublyLinkedList));
+        newNode->value = newValue;
+        newNode->prev = DL;
+        newNode->next = DL->next;
+        //Se havia um nó após o nó cabeça, faz com que ele aponte para o novo nó
+        if (DL->next != NULL)
         {
-            DLL->prox->ant = aux;
+            DL->next->prev = newNode;
         }
-        DLL->prox = aux;
+        DL->next = newNode;
     }
 }
 
-int removeValueDoublyLinkedList(DoublyLinkedList *DLL, int valor)
+/*Remove uma ocorrência de um valor na lista duplamente encadeada
+Retornando 0 caso o elemento não estava na lista ou 1 caso contrário*/
+int removeValueDoublyLinkedList(DoublyLinkedList *DL, int rValue)
 {
     DoublyLinkedList *aux;
-    if (DLL)
+    //Garantindo que o ponteiro aponta para algo
+    if (DL != NULL)
     {
-        while (DLL->prox)
+        //Enquanto não chegar no fim da lista
+        while (DL->next != NULL)
         {
-            if (DLL->prox->valor == valor)
+            // Se encontrar o valor a ser removido
+            if (DL->next->value == rValue)
             {
-                aux = DLL->prox->prox;
-                free(DLL->prox);
-                if (aux)
+                //Remove o nó 
+                aux = DL->next->next;
+                free(DL->next);
+                //Se houver um outro nó após o que foi removido, reconecta ele com a lista
+                if (aux != NULL)
                 {
-                    aux->ant = DLL;
+                    aux->prev = DL;
                 }
-                DLL->prox = aux;
+                DL->next = aux;
                 return 1;
             }
-            DLL = DLL->prox;
+            //Se não, avança para o pŕoximo nó
+            DL = DL->next;
         }
     }
+    //Se o elemento não estava na lista retorna 0
     return 0;
 }
 
-DoublyLinkedList *searchValueDoublyLinkedList(DoublyLinkedList DLL, int valor)
+/*Busca um valor numa lista duplamente encadeada, retornando o endereço do nó com o valor desejado
+ou NULL caso o valor não esteja na lista*/
+DoublyLinkedList *searchValueDoublyLinkedList(DoublyLinkedList DL, int sValue)
 {
-    while (DLL.prox)
+    //Enquanto não chegar ao fim da lista
+    while (DL.next != NULL)
     {
-        if (DLL.prox->valor == valor)
+        //Se encontrar o valor procurado retorna ele
+        if (DL.next->value == sValue)
         {
-            return DLL.prox;
+            return DL.next;
         }
-        DLL = *(DLL.prox);
+        //Se não, avança para o próximo nó
+        DL = *(DL.next);
     }
+    //Se o valor não estava na lista, retorna NULL
     return NULL;
 }
 
 // ### Nó para fila ###
 typedef struct QNode
 {
-    int valor;
-    struct QNode *prox;
+    int value;
+    struct QNode *next;
 } QNode;
 
 // ### Fila ###
 typedef struct Queue
 {
-    struct QNode *frente, *tras;
+    struct QNode *front, *rear;
 } Queue;
 
 // ### Operações com Fila
+
+//Cria uma fila vazia
 void createQueue(Queue *Q)
 {
-    if (Q)
+    //Garante que o ponteiro apontava para algo
+    if (Q != NULL)
     {
-        Q->frente = NULL;
-        Q->tras = NULL;
+        //Aponta a fila pra uma lista vazia
+        Q->front = NULL;
+        Q->rear = NULL;
     }
 }
 
+//Desaloca uma lista apontada pela fila
 void deleteQueue(Queue *Q)
 {
     QNode *aux;
-    if (Q)
+    //Garante que o ponteiro apontava para algo
+    if (Q != NULL)
     {
-        while (Q->frente)
+        //Enquanto a frente não chegar no fim da lista
+        while (Q->front != NULL)
         {
-            aux = Q->frente->prox;
-            free(Q->frente);
-            Q->frente = aux;
+            //Desaloca os nós da lista e avança
+            aux = Q->front->next;
+            free(Q->front);
+            Q->front = aux;
         }
-        Q->tras = NULL;
+        Q->rear = NULL;
     }
 }
 
@@ -502,10 +601,10 @@ void drawNode(int x, int y, int valor)
 {
     char v[10];
     int largura, altura;
-    gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
+    gfx_rectangle(x, y, x + g_NODE_LENGTH, y + g_NODE_HEIGHT);
     intToString(valor, v);
     gfx_get_text_size(v, &largura, &altura);
-    gfx_text(x + g_X_NODE_SIZE/2 - largura/2, y + g_Y_NODE_SIZE/2 - altura/2, v);
+    gfx_text(x + g_NODE_LENGTH/2 - largura/2, y + g_NODE_HEIGHT/2 - altura/2, v);
 }
 
 void drawArrow(int x, int y)
@@ -518,8 +617,8 @@ void drawArrow(int x, int y)
 void drawUnderArrow(int x1, int y1, int x2, int y2)
 {
     gfx_line(x1, y1, x1 + 20, y1);
-    gfx_line(x1 + 20, y1, x1 + 20, y1 + g_Y_NODE_SIZE/2 + 20);
-    gfx_line(x1 + 20, y1 + g_Y_NODE_SIZE/2 + 20, x2, y2 + 20);
+    gfx_line(x1 + 20, y1, x1 + 20, y1 + g_NODE_HEIGHT/2 + 20);
+    gfx_line(x1 + 20, y1 + g_NODE_HEIGHT/2 + 20, x2, y2 + 20);
     gfx_line(x2, y2, x2, y2 + 20);
     gfx_line(x2 - 10, y2 + 10, x2, y2);
     gfx_line(x2 + 10, y2 + 10, x2, y2);
@@ -531,14 +630,14 @@ void drawTwoArrow(int x, int y)
     gfx_line(x + 10, y, x + 20, y - 10);
     gfx_line(x + 10, y - 20, x + 20, y - 10);
 
-    gfx_line(x - g_X_NODE_SIZE, y + 10, x - g_X_NODE_SIZE - 20, y + 10);
-    gfx_line(x - g_X_NODE_SIZE - 10, y, x - g_X_NODE_SIZE - 20, y + 10);
-    gfx_line(x - g_X_NODE_SIZE - 10, y + 20, x - g_X_NODE_SIZE - 20, y + 10);
+    gfx_line(x - g_NODE_LENGTH, y + 10, x - g_NODE_LENGTH - 20, y + 10);
+    gfx_line(x - g_NODE_LENGTH - 10, y, x - g_NODE_LENGTH - 20, y + 10);
+    gfx_line(x - g_NODE_LENGTH - 10, y + 20, x - g_NODE_LENGTH - 20, y + 10);
 }
 
 void drawLambda(int x, int y){
-    gfx_line(x + 7, y + 15, x + g_X_NODE_SIZE - 27, y + g_Y_NODE_SIZE - 15);
-    gfx_line(x + 7, y + g_Y_NODE_SIZE - 15, x + (g_X_NODE_SIZE - 20)/2, y + g_Y_NODE_SIZE/2);
+    gfx_line(x + 7, y + 15, x + g_NODE_LENGTH - 27, y + g_NODE_HEIGHT - 15);
+    gfx_line(x + 7, y + g_NODE_HEIGHT - 15, x + (g_NODE_LENGTH - 20)/2, y + g_NODE_HEIGHT/2);
 }
 
 void drawLinkedList(LinkedList *L)
@@ -546,15 +645,15 @@ void drawLinkedList(LinkedList *L)
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_text(g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN - 20, "Lista Ordenada Simplesmente Encadeada");
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, g_Y_LIST_ORIGIN, g_X_SCREEN_SIZE, g_Y_LIST_ORIGIN + g_Y_NODE_SIZE + 20);
+    gfx_filled_rectangle(0, g_Y_LIST_ORIGIN, g_SCREEN_LENGTH, g_Y_LIST_ORIGIN + g_NODE_HEIGHT + 20);
     gfx_set_color(255, 255, 255);
-    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
+    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
     while (L != NULL)
     {
         drawNode(x, y, L->valor);
-        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+        drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
         L = L->prox;
-        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+        x += g_NODE_LENGTH + g_NODES_DISTANCE;
     }
     drawLambda(x, y);
     gfx_paint();
@@ -562,13 +661,13 @@ void drawLinkedList(LinkedList *L)
 
 void drawCircularList(LinkedList *CLL)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_Y_NODE_SIZE + 50;
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_NODE_HEIGHT + 50;
     LinkedList *inicio;
     gfx_text(x, y - 20, "Lista Ordenada Circular Simplesmente Encadeada");
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
     gfx_set_color(255, 255, 255);    
-    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
+    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
     if (CLL)
     {
         inicio = CLL->prox;
@@ -577,12 +676,12 @@ void drawCircularList(LinkedList *CLL)
             CLL = CLL->prox;
             drawNode(x, y, CLL->valor);
             if(CLL->prox == inicio){
-                drawUnderArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE/2, g_X_LIST_ORIGIN + g_X_NODE_SIZE/2, y + g_Y_NODE_SIZE);
+                drawUnderArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT/2, g_X_LIST_ORIGIN + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
             }
             else{
-                drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+                drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
             }
-            x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+            x += g_NODE_LENGTH + g_NODES_DISTANCE;
         } while(CLL->prox != inicio);
     }
     else{
@@ -593,21 +692,21 @@ void drawCircularList(LinkedList *CLL)
 
 void drawDoublyLinkedList(DoublyLinkedList head)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*(g_Y_NODE_SIZE + 50);
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*(g_NODE_HEIGHT + 50);
     gfx_text(x, y - 20, "Lista Duplamente Encadeada com No Cabeca");
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
     gfx_set_color(255, 255, 255);    
 
-    gfx_rectangle(x, y, x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE);
-    drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
-    x += g_NODES_DISTANCE + g_X_NODE_SIZE;
+    gfx_rectangle(x, y, x + g_NODE_LENGTH, y + g_NODE_HEIGHT);
+    drawTwoArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT / 2);
+    x += g_NODES_DISTANCE + g_NODE_LENGTH;
     while (head.prox)
     {
         drawNode(x, y, head.prox->valor);
-        drawTwoArrow(x + g_X_NODE_SIZE, y + g_Y_NODE_SIZE / 2);
+        drawTwoArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT / 2);
         head = *(head.prox);
-        x += g_NODES_DISTANCE + g_X_NODE_SIZE;
+        x += g_NODES_DISTANCE + g_NODE_LENGTH;
     }
     drawLambda(x, y - 10);
     gfx_paint();
@@ -615,20 +714,20 @@ void drawDoublyLinkedList(DoublyLinkedList head)
 
 void drawQueue(Queue Q)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*(g_Y_NODE_SIZE + 50);
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*(g_NODE_HEIGHT + 50);
 
     gfx_text(x, y - 20, "Fila");
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
     gfx_set_color(255, 255, 255);    
-    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
+    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
 
     while (Q.frente)
     {
         drawNode(x, y, Q.frente->valor);
-        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+        drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
         Q.frente = Q.frente->prox;
-        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+        x += g_NODE_LENGTH + g_NODES_DISTANCE;
     }
     drawLambda(x, y);
     gfx_paint();
@@ -636,20 +735,20 @@ void drawQueue(Queue Q)
 
 void drawStack(Stack S)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * (g_Y_NODE_SIZE + 50);
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * (g_NODE_HEIGHT + 50);
 
     gfx_text(x, y - 20, "Pilha");
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_X_SCREEN_SIZE, y + g_Y_NODE_SIZE + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
     gfx_set_color(255, 255, 255);    
 
-    drawArrow(x - g_NODES_DISTANCE, y + g_Y_NODE_SIZE/2);
+    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
     while (S.topo)
     {
         drawNode(x, y, S.topo->valor);
-        drawArrow(x + g_X_NODE_SIZE, y + (g_Y_NODE_SIZE) / 2);
+        drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
         S.topo = S.topo->prox;
-        x += g_X_NODE_SIZE + g_NODES_DISTANCE;
+        x += g_NODE_LENGTH + g_NODES_DISTANCE;
     }
     drawLambda(x, y);
     gfx_paint();
@@ -669,7 +768,8 @@ int main()
     createDoublyLinkedList(&Cabeca);
     createQueue(&Fila);
     createStack(&Pilha);
-    gfx_init(g_X_SCREEN_SIZE, g_Y_SCREEN_SIZE, "Alocação Encadeada");
+    gfx_init(g_SCREEN_LENGTH, g_SCREEN_HEIGHT, "Alocação Encadeada");
+    
     opcEstrutura = 1;
     while (opcEstrutura != '0')
     {
