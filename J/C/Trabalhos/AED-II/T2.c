@@ -10,7 +10,7 @@
 #define g_X_LIST_ORIGIN 30
 #define g_Y_LIST_ORIGIN 30
 #define g_NODES_DISTANCE 25
-#define g_SECTION_SIZE (g_NODE_HEIGHT + 65)
+#define g_SECTION_SIZE 110
 
 // Declaração do tipo Lista Ordenada Simplesmente Encadeada e Lista Circular Ordenada Simplesmente Encadeada
 typedef struct LinkedList
@@ -75,7 +75,7 @@ int removeValueOrderedLinkedList(LinkedList **L, int rValue)
     if (L != NULL)
     {
         //Enquanto não chegar ao fim da lista ou houverem valores maiores que o valor a ser removido
-        while ((*L != NULL) && ((*L)->value >= rValue))
+        while ((*L != NULL) && ((*L)->value <= rValue))
         {
             //Se o valor no nó apontado por *L for igual ao valor a ser removido, desaloca ele
             if ((*L)->value == rValue)
@@ -98,7 +98,7 @@ ou NULL caso o valor não esteja na lista*/
 LinkedList *searchValueOrderedLinkedList(LinkedList *L, int sValue)
 {
     //Enquanto não chegar ao fim da lista ou houverem valores maiores que o valor a ser removido
-    while ((L != NULL) && (L->value >= sValue))
+    while ((L != NULL) && (L->value <= sValue))
     {
         //Se o valor no nó apontado por L for igual ao valor procurado, retorna o endereço desse nó
         if (L->value == sValue)
@@ -612,7 +612,7 @@ void drawToBackArrow(int x1, int y1, int x2, int y2)
     gfx_line(x2 - 10, y2 + 10, x2, y2);
     gfx_line(x2 + 10, y2 + 10, x2, y2);
 }
-
+//Desenha uma seta abaixo de um nó apontando para ele
 void drawUnderArrow(int x, int y){
     gfx_line(x, y, x, y + 10);
     gfx_line(x, y, x + 10, y + 5);
@@ -633,8 +633,8 @@ void drawTwoArrow(int x, int y)
 
 //Desenha a letra lambda
 void drawLambda(int x, int y){
-    gfx_line(x + 7, y + 15, x + g_NODE_LENGTH - 7, y + g_NODE_HEIGHT - 15);
-    gfx_line(x + 7, y + g_NODE_HEIGHT - 15, x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT/2);
+    gfx_line(x + 12, y + 15, x + g_NODE_LENGTH - 12, y + g_NODE_HEIGHT - 15);
+    gfx_line(x + 12, y + g_NODE_HEIGHT - 15, x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT/2);
 }
 
 //Desenha um lista simplesmente encadeada
@@ -642,11 +642,11 @@ void drawLinkedList(LinkedList *L)
 {
     //Começa a lista na origem das listas
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
-    gfx_text(g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN - 20, "Lista Ordenada Simplesmente Encadeada");
     //Limpa a seção da tela pertencente a lista simplesmente encadeada
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_filled_rectangle(0, y - 20, g_SCREEN_LENGTH, y + g_SECTION_SIZE - 20);
     gfx_set_color(255, 255, 255);
+    gfx_text(g_SCREEN_LENGTH/2 - 270/2, y - 20, "Lista Ordenada Simplesmente Encadeada");
     //Desenha a seta que representa o ponteiro da lista
     drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
     //Enquanto não chegar no fim da lista desenha cada nó
@@ -667,11 +667,13 @@ void drawCircularList(LinkedList *CL)
     //Começa a lista na segunda seção a partir da origem
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_SECTION_SIZE;
     LinkedList *begin;
-    gfx_text(x, y - 20, "Lista Ordenada Circular Simplesmente Encadeada");
     //Apaga a seção da tela dedicada a lista circular
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_filled_rectangle(0, y - 20, g_SCREEN_LENGTH, y + g_SECTION_SIZE - 20);
     gfx_set_color(255, 255, 255);    
+    //Titulo da estrutura
+    gfx_text(g_SCREEN_LENGTH/2 - 323/2, y - 20, "Lista Ordenada Circular Simplesmente Encadeada");
+
     //Desenha a seta que representa o ponteiro para lista
     drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
     if (CL != NULL)
@@ -703,12 +705,14 @@ void drawCircularList(LinkedList *CL)
 void drawDoublyLinkedList(DoublyLinkedList head)
 {
     //Começa a lista na terceira seção a partir da origem
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*g_SECTION_SIZE;
-    gfx_text(x, y - 20, "Lista Duplamente Encadeada com No Cabeca");
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*g_SECTION_SIZE;    
     // Apaga a seção dedicada a lista duplamente encadeada
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_filled_rectangle(0, y - 20, g_SCREEN_LENGTH, y + g_SECTION_SIZE - 20);
     gfx_set_color(255, 255, 255);    
+    //Titulo da estrutura
+    gfx_text(g_SCREEN_LENGTH/2 - 293/2, y - 20, "Lista Duplamente Encadeada com No Cabeca");
+
     //Desenha o nó cabeça
     gfx_rectangle(x, y, x + g_NODE_LENGTH, y + g_NODE_HEIGHT);
     drawTwoArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT / 2);
@@ -731,18 +735,21 @@ void drawQueue(Queue Q)
     //Começa a fila na quarta seção a partir da origem
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*g_SECTION_SIZE;
     QNode *aux;
-    gfx_text(x, y - 20, "Fila");
-    //Limpa a seção da fila
+        //Limpa a seção da fila
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_filled_rectangle(0, y - 20, g_SCREEN_LENGTH, y + g_SECTION_SIZE - 20);
     gfx_set_color(255, 255, 255);
+    //Titulo da estrutura
+    gfx_text(g_SCREEN_LENGTH/2 - 22/2, y - 20, "Fila");
 
+    //Desenha os ponteiros para frente a para atras
     if(Q.front == Q.rear){
         gfx_text(x + g_NODE_LENGTH/2 - 77/2, y + g_NODE_HEIGHT + 20, "Frente Tras");
         drawUnderArrow(x + g_NODE_LENGTH/2 + 10, y + g_NODE_HEIGHT);
         drawUnderArrow(x + g_NODE_LENGTH/2 - 10, y + g_NODE_HEIGHT);
     }
     else{
+        //Se não desenha a seta frente separada
         gfx_text(x + g_NODE_LENGTH/2 - 42/2, y + g_NODE_HEIGHT + 20, "Frente");
         drawUnderArrow(x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
     }
@@ -756,6 +763,7 @@ void drawQueue(Queue Q)
         x += g_NODE_LENGTH + g_NODES_DISTANCE;
     }
     if(Q.rear != Q.front){
+        //E a seta atras separada também
         gfx_text(x - g_NODES_DISTANCE - g_NODE_LENGTH/2 - 31/2, y + g_NODE_HEIGHT + 20, "Tras");
         drawUnderArrow(x - g_NODES_DISTANCE - g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
     }
@@ -768,11 +776,15 @@ void drawStack(Stack S)
 {
     //Começa a pilha na quinta seção da tela a partir da origem 
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * g_SECTION_SIZE;
+
     //Limpa a seção da pilha
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_filled_rectangle(0, y - 20, g_SCREEN_LENGTH, y + g_SECTION_SIZE - 20);
     gfx_set_color(255, 255, 255);    
+    //Titulo da estrutura
+    gfx_text(g_SCREEN_LENGTH/2 - 31/2, y - 20, "Pilha");
 
+    //Desenha o ponteiro topo
     gfx_text(x + g_NODE_LENGTH/2 - 34/2, y + g_NODE_HEIGHT + 20, "Topo");
     drawUnderArrow(x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
     //Desenha todos os nós até chegar no fim da pilha
