@@ -7,9 +7,10 @@
 #define g_NODE_HEIGHT 50
 #define g_SCREEN_LENGTH 800
 #define g_SCREEN_HEIGHT 600
-#define g_X_LIST_ORIGIN g_NODE_LENGTH
-#define g_Y_LIST_ORIGIN g_NODE_HEIGHT
+#define g_X_LIST_ORIGIN 30
+#define g_Y_LIST_ORIGIN 30
 #define g_NODES_DISTANCE 25
+#define g_SECTION_SIZE (g_NODE_HEIGHT + 65)
 
 // Declaração do tipo Lista Ordenada Simplesmente Encadeada e Lista Circular Ordenada Simplesmente Encadeada
 typedef struct LinkedList
@@ -268,7 +269,7 @@ LinkedList *searchValueCircularLinkedList(LinkedList *CL, int sValue)
             //Verifica se o valor no nó é o valor buscado ate que ele seja encontrado ou chegue o fim da lista
             do
             {
-                if (CL->value == sValor)
+                if (CL->value == sValue)
                 {
                     return CL;
                 }
@@ -437,42 +438,55 @@ void deleteQueue(Queue *Q)
     }
 }
 
-void enQueue(Queue *Q, int valor)
+//Enfileira um novo valor na fila inserindo um novo nó após o seu último
+void enQueue(Queue *Q, int newValue)
 {
-    QNode *aux;
-    if (Q)
+    QNode *newNode;
+    //Garante que o ponteiro apontava para algo
+    if (Q != NULL)
     {
-        aux = malloc(sizeof(QNode));
-        aux->valor = valor;
-        aux->prox = NULL;
+        //Cria um novo nó
+        newNode = malloc(sizeof(QNode));
+        newNode->value = newValue;
+        newNode->next = NULL;
 
-        if (Q->tras)
+        //Se a lista não estiver vazia
+        if (Q->rear != NULL)
         {
-            Q->tras->prox = aux;
-            Q->tras = aux;
+            //Insere o novo nó após o ultimo nó e atualiza o ponteiro para o útimo nó
+            Q->rear->next = newNode;
+            Q->rear = newNode;
         }
         else
         {
-            Q->tras = aux;
-            Q->frente = aux;
+            //Se não, insere o novo nó e faz com que o inicio e o fim apontem para o mesmo nó
+            Q->rear = newNode;
+            Q->front = newNode;
         }
     }
 }
 
+/*Desenfileira o primeiro valor da fila removendo o seu primeiro nó
+Retorna 0 se a fila estava vazia e 1 caso o primeiro elemento foi removido*/
 int deQueue(Queue *Q)
 {
     QNode *aux;
-    if (Q)
+    //Garante que o ponteiro apontava para algo
+    if (Q != NULL)
     {
-        if (Q->frente)
+        //Se a fila não estava vazia
+        if (Q->front != NULL)
         {
-            aux = Q->frente->prox;
-            free(Q->frente);
-            Q->frente = aux;
-            if (Q->frente == NULL)
+            //Salva o segundo nó e remove o primeiro
+            aux = Q->front->next;
+            free(Q->front);
+            Q->front = aux;
+            //Se a fila se tornar vazia, faz o ponteiro para o final também apontar para vazio
+            if (Q->front == NULL)
             {
-                Q->tras = NULL;
+                Q->rear = NULL;
             }
+            //Retorna 
             return 1;
         }
     }
@@ -493,20 +507,26 @@ typedef struct Stack
 } Stack;
 
 // ### Operações com Pilha ###
+
+//Cria uma pilha vazia
 void createStack(Stack *S)
 {
-    if (S)
+    //Garante que o ponteiro apontava para algo
+    if (S != NULL)
     {
+        //Faz o topo apontar para nenhum nó
         S->topo = NULL;
     }
 }
 
+//Desaloca os nós da pilha
 void deleteStack(Stack *S)
 {
     SNode *aux;
-    if (S)
+    if (S != NULL)
     {
-        while (S->topo)
+        //Enquanto a lista não for vazia remove os nós no topo em loop
+        while (S->topo != NULL)
         {
             aux = S->topo->prox;
             free(S->topo);
@@ -515,10 +535,11 @@ void deleteStack(Stack *S)
     }
 }
 
+//Insere um valor no topo da lista
 void push(Stack *S, int valor)
 {
     SNode *aux;
-    if (S)
+    if (S != NULL)
     {
         aux = malloc(sizeof(SNode));
         aux->valor = valor;
@@ -527,12 +548,15 @@ void push(Stack *S, int valor)
     }
 }
 
+/*Remove o valor no topo da pilha
+Retorna 0 se a pilha estava vazia e 1 caso contrário*/
 int pop(Stack *S)
 {
     SNode *aux;
-    if (S)
+    if (S != NULL)
     {
-        if (S->topo)
+        //Se a lista não for vazia, remove o topo e retorna 1
+        if (S->topo != NULL)
         {
             aux = S->topo->prox;
             free(S->topo);
@@ -540,14 +564,16 @@ int pop(Stack *S)
             return 1;
         }
     }
+    //Se a lista for vazia, somente retorna 0
     return 0;
 }
-// Inputs
+
+//Le apenas o primeiro caracter válido do buffer de teclado e descarta o resto
 char readChar()
 {
     char c;
     // Enquanto o caracter inserido for inválido, continue lendo do teclado
-    while ((c = getchar()) < '!')
+    while ((c = getchar()) < '0')
         ;
     // Após ler, descarta qualquer outro caracter no buffer de teclado
     while (getchar() != '\n')
@@ -556,57 +582,19 @@ char readChar()
     return c;
 }
 
-void inverteString(char str[], int length)
-{
-    int start = 0, end = length - 1;
-    char temp;
-    while (start < end)
-    {
-        temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        end--;
-        start++;
-    }
-}
-
-char *intToString(int valor, char *str)
-{
-    int i = 0, isNegative = 0;
-    if (valor == 0)
-    {
-        str[i++] = '0';
-        str[i] = '\0';
-        return str;
-    }
-    if (valor < 0)
-    {
-        isNegative = 1;
-        valor = -valor;
-    }
-    while (valor != 0)
-    {
-        str[i++] = '0' + (valor % 10);
-        valor = valor / 10;
-    }
-    if (isNegative)
-    {
-        str[i++] = '-';
-    }
-    str[i] = '\0';
-    inverteString(str, i);
-    return str;
-}
-void drawNode(int x, int y, int valor)
+//Desenha um nó qualquer
+void drawNode(int x, int y, int value)
 {
     char v[10];
     int largura, altura;
     gfx_rectangle(x, y, x + g_NODE_LENGTH, y + g_NODE_HEIGHT);
-    intToString(valor, v);
+    //Guarda o valor na string v
+    sprintf(v, "%d", value);
     gfx_get_text_size(v, &largura, &altura);
     gfx_text(x + g_NODE_LENGTH/2 - largura/2, y + g_NODE_HEIGHT/2 - altura/2, v);
 }
 
+//Desenha uma seta que aponta para direita
 void drawArrow(int x, int y)
 {
     gfx_line(x, y, x + 20, y);
@@ -614,7 +602,8 @@ void drawArrow(int x, int y)
     gfx_line(x + 10, y - 10, x + 20, y);
 }
 
-void drawUnderArrow(int x1, int y1, int x2, int y2)
+//Desenha uma seta que aponta para um nó anterior
+void drawToBackArrow(int x1, int y1, int x2, int y2)
 {
     gfx_line(x1, y1, x1 + 20, y1);
     gfx_line(x1 + 20, y1, x1 + 20, y1 + g_NODE_HEIGHT/2 + 20);
@@ -624,6 +613,13 @@ void drawUnderArrow(int x1, int y1, int x2, int y2)
     gfx_line(x2 + 10, y2 + 10, x2, y2);
 }
 
+void drawUnderArrow(int x, int y){
+    gfx_line(x, y, x, y + 10);
+    gfx_line(x, y, x + 10, y + 5);
+    gfx_line(x, y, x - 10, y + 5);
+}
+
+//Desenha uma seta que aponta para direita e outra que aponta para esquerda
 void drawTwoArrow(int x, int y)
 {
     gfx_line(x + 0, y - 10, x + 20, y - 10);
@@ -635,115 +631,152 @@ void drawTwoArrow(int x, int y)
     gfx_line(x - g_NODE_LENGTH - 10, y + 20, x - g_NODE_LENGTH - 20, y + 10);
 }
 
+//Desenha a letra lambda
 void drawLambda(int x, int y){
-    gfx_line(x + 7, y + 15, x + g_NODE_LENGTH - 27, y + g_NODE_HEIGHT - 15);
-    gfx_line(x + 7, y + g_NODE_HEIGHT - 15, x + (g_NODE_LENGTH - 20)/2, y + g_NODE_HEIGHT/2);
+    gfx_line(x + 7, y + 15, x + g_NODE_LENGTH - 7, y + g_NODE_HEIGHT - 15);
+    gfx_line(x + 7, y + g_NODE_HEIGHT - 15, x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT/2);
 }
 
+//Desenha um lista simplesmente encadeada
 void drawLinkedList(LinkedList *L)
 {
+    //Começa a lista na origem das listas
     int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN;
     gfx_text(g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN - 20, "Lista Ordenada Simplesmente Encadeada");
+    //Limpa a seção da tela pertencente a lista simplesmente encadeada
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, g_Y_LIST_ORIGIN, g_SCREEN_LENGTH, g_Y_LIST_ORIGIN + g_NODE_HEIGHT + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
     gfx_set_color(255, 255, 255);
+    //Desenha a seta que representa o ponteiro da lista
     drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
+    //Enquanto não chegar no fim da lista desenha cada nó
     while (L != NULL)
     {
-        drawNode(x, y, L->valor);
+        drawNode(x, y, L->value);
         drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
-        L = L->prox;
+        L = L->next;
         x += g_NODE_LENGTH + g_NODES_DISTANCE;
     }
     drawLambda(x, y);
     gfx_paint();
 }
 
-void drawCircularList(LinkedList *CLL)
+//Desenha uma lista circular simplesmente encadeada
+void drawCircularList(LinkedList *CL)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_NODE_HEIGHT + 50;
-    LinkedList *inicio;
+    //Começa a lista na segunda seção a partir da origem
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + g_SECTION_SIZE;
+    LinkedList *begin;
     gfx_text(x, y - 20, "Lista Ordenada Circular Simplesmente Encadeada");
+    //Apaga a seção da tela dedicada a lista circular
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
     gfx_set_color(255, 255, 255);    
+    //Desenha a seta que representa o ponteiro para lista
     drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
-    if (CLL)
+    if (CL != NULL)
     {
-        inicio = CLL->prox;
+        begin = CL->next;
         do
         {
-            CLL = CLL->prox;
-            drawNode(x, y, CLL->valor);
-            if(CLL->prox == inicio){
-                drawUnderArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT/2, g_X_LIST_ORIGIN + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
+            //Se a lista não for vazia, desenha cada próximo nó até ele ser o menor valor
+            CL = CL->next;
+            drawNode(x, y, CL->value);
+            //Se estiver desenhando o último nó, desenha a seta que aponta para o primeiro nó
+            if(CL->next == begin){
+                drawToBackArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT/2, g_X_LIST_ORIGIN + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
             }
             else{
                 drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
             }
             x += g_NODE_LENGTH + g_NODES_DISTANCE;
-        } while(CLL->prox != inicio);
+        } while(CL->next != begin);
     }
-    else{
+    else{ 
+        //Se a lista for vazia desenha apenas o lambda
         drawLambda(x, y);
     }
     gfx_paint();
 }
 
+//Desenha uma lista duplamente encadeada com nó cabeça
 void drawDoublyLinkedList(DoublyLinkedList head)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*(g_NODE_HEIGHT + 50);
+    //Começa a lista na terceira seção a partir da origem
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 2*g_SECTION_SIZE;
     gfx_text(x, y - 20, "Lista Duplamente Encadeada com No Cabeca");
+    // Apaga a seção dedicada a lista duplamente encadeada
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
     gfx_set_color(255, 255, 255);    
-
+    //Desenha o nó cabeça
     gfx_rectangle(x, y, x + g_NODE_LENGTH, y + g_NODE_HEIGHT);
     drawTwoArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT / 2);
     x += g_NODES_DISTANCE + g_NODE_LENGTH;
-    while (head.prox)
+    //Desenha cada um dos nós até chegar ao último
+    while (head.next != NULL)
     {
-        drawNode(x, y, head.prox->valor);
+        drawNode(x, y, head.next->value);
         drawTwoArrow(x + g_NODE_LENGTH, y + g_NODE_HEIGHT / 2);
-        head = *(head.prox);
+        head = *(head.next);
         x += g_NODES_DISTANCE + g_NODE_LENGTH;
     }
     drawLambda(x, y - 10);
     gfx_paint();
 }
 
+//Desenha uma fila
 void drawQueue(Queue Q)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*(g_NODE_HEIGHT + 50);
-
+    //Começa a fila na quarta seção a partir da origem
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 3*g_SECTION_SIZE;
+    QNode *aux;
     gfx_text(x, y - 20, "Fila");
+    //Limpa a seção da fila
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
-    gfx_set_color(255, 255, 255);    
-    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
+    gfx_set_color(255, 255, 255);
 
-    while (Q.frente)
+    if(Q.front == Q.rear){
+        gfx_text(x + g_NODE_LENGTH/2 - 77/2, y + g_NODE_HEIGHT + 20, "Frente Tras");
+        drawUnderArrow(x + g_NODE_LENGTH/2 + 10, y + g_NODE_HEIGHT);
+        drawUnderArrow(x + g_NODE_LENGTH/2 - 10, y + g_NODE_HEIGHT);
+    }
+    else{
+        gfx_text(x + g_NODE_LENGTH/2 - 42/2, y + g_NODE_HEIGHT + 20, "Frente");
+        drawUnderArrow(x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
+    }
+    //Desenha cada um dos nós da fila até chegar no seu último
+    aux = Q.front;
+    while (aux != NULL)
     {
-        drawNode(x, y, Q.frente->valor);
+        drawNode(x, y, aux->value);
         drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
-        Q.frente = Q.frente->prox;
+        aux = aux->next;
         x += g_NODE_LENGTH + g_NODES_DISTANCE;
+    }
+    if(Q.rear != Q.front){
+        gfx_text(x - g_NODES_DISTANCE - g_NODE_LENGTH/2 - 31/2, y + g_NODE_HEIGHT + 20, "Tras");
+        drawUnderArrow(x - g_NODES_DISTANCE - g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
     }
     drawLambda(x, y);
     gfx_paint();
 }
 
+//Desenha uma pilha
 void drawStack(Stack S)
 {
-    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * (g_NODE_HEIGHT + 50);
-
-    gfx_text(x, y - 20, "Pilha");
+    //Começa a pilha na quinta seção da tela a partir da origem 
+    int x = g_X_LIST_ORIGIN, y = g_Y_LIST_ORIGIN + 4 * g_SECTION_SIZE;
+    //Limpa a seção da pilha
     gfx_set_color(0, 0, 0);
-    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_NODE_HEIGHT + 20);
+    gfx_filled_rectangle(0, y, g_SCREEN_LENGTH, y + g_SECTION_SIZE);
     gfx_set_color(255, 255, 255);    
 
-    drawArrow(x - g_NODES_DISTANCE, y + g_NODE_HEIGHT/2);
-    while (S.topo)
+    gfx_text(x + g_NODE_LENGTH/2 - 34/2, y + g_NODE_HEIGHT + 20, "Topo");
+    drawUnderArrow(x + g_NODE_LENGTH/2, y + g_NODE_HEIGHT);
+    //Desenha todos os nós até chegar no fim da pilha
+    while (S.topo != NULL)
     {
         drawNode(x, y, S.topo->valor);
         drawArrow(x + g_NODE_LENGTH, y + (g_NODE_HEIGHT) / 2);
@@ -754,37 +787,38 @@ void drawStack(Stack S)
     gfx_paint();
 }
 
+//Programa principal
 int main()
 {
+    //Variaveis do Menu
     char opcEstrutura, opcAcao;
+    int inputValue;
+    //Estruturas do programa
     LinkedList *ListaOrdenada;
     LinkedList *ListaCircular;
     DoublyLinkedList Cabeca;
     Queue Fila;
     Stack Pilha;
-    int inputValue;
+    //Criação das estruturas
     createLinkedList(&ListaOrdenada);
     createLinkedList(&ListaCircular);
     createDoublyLinkedList(&Cabeca);
     createQueue(&Fila);
     createStack(&Pilha);
+    //Inicio da gfx
     gfx_init(g_SCREEN_LENGTH, g_SCREEN_HEIGHT, "Alocação Encadeada");
     
+    //Inicio do menu
     opcEstrutura = 1;
     while (opcEstrutura != '0')
     {
-        // 1 - Busca, inserção e remoção em lista simplesmente encadeada sem nó cabeça ordenada;
-        // 2 - Busca, inserção e remoção em lista circular simplesmente encadeada sem nó cabeça ordenada;
-        // 3 -Busca, inserção e remoção em lista duplamente encadeada com nó cabeça (sem ordenação);
-        // 4 -Inserção e remoção em fila (FIFO);
-        // 5 -Inserção e remoção em pilha (LIFO).
-        printf("0 - Encerrar programa\
-        \n1 - Busca, inserção e remoção em lista simplesmente encadeada sem nó cabeça ordenada;\
-        \n2 - Busca, inserção e remoção em lista circular simplesmente encadeada sem nó cabeça ordenada;\
-        \n3 - Busca, inserção e remoção em lista duplamente encadeada com nó cabeça (sem ordenação);\
-        \n4 - Inserção e remoção em fila (FIFO);\
-        \n5 - Inserção e remoção em pilha (LIFO).\
-        \nDigite uma opção: ");
+        printf("### Menu Principal ###\n0 - Encerrar programa\
+        \n1 - Lista Ordenada Simplesmente Encadeada;\
+        \n2 - Lista Ordenada Circular Simplesmente Encadeada;\
+        \n3 - Lista Duplamente Encadeada com Nó Cabeça;\
+        \n4 - Fila;\
+        \n5 - Pilha.\
+        \nDigite uma opção para escolher uma estrutura: ");
         opcEstrutura = readChar();
         system("clear");
         opcAcao = 1;
@@ -796,14 +830,15 @@ int main()
             while (opcAcao != '0')
             {
                 drawLinkedList(ListaOrdenada);
-                printf("### Lista simplesmente encadeada sem nó cabeça ordenada ###\n");
+                printf("### Lista Ordenada Simplesmente Encadeada ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
                 \n1 - Busca\
                 \n2 - Inserção\
                 \n3 - Remoção\
-                \nDigite uma opção:");
+                \nDigite uma opção: ");
                 opcAcao = readChar();
+                system("clear");
                 switch (opcAcao)
                 {
                 case '0':
@@ -811,7 +846,7 @@ int main()
                 case '1':
                     printf("### Busca ###\nDigite o valor que deverá ser buscado: ");
                     scanf("%d", &inputValue);
-                    if (searchValueLinkedList(ListaOrdenada, inputValue) != NULL)
+                    if (searchValueOrderedLinkedList(ListaOrdenada, inputValue) != NULL)
                     {
                         printf("O valor está presente na lista\n");
                     }
@@ -828,13 +863,13 @@ int main()
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
                     scanf("%d", &inputValue);
-                    if (removeValueLinkedList(&ListaOrdenada, inputValue))
+                    if (removeValueOrderedLinkedList(&ListaOrdenada, inputValue))
                     {
-                        printf("Removido da lista uma instância do valor\n");
+                        printf("Removido da lista a primeira ocorrência do valor\n");
                     }
                     else
                     {
-                        printf("O valor não estava presente na lista\n");
+                        printf("O valor não está presente na lista\n");
                     }
                     break;
                 default:
@@ -847,13 +882,13 @@ int main()
             while (opcAcao != '0')
             {
                 drawCircularList(ListaCircular);
-                printf("### lista circular simplesmente encadeada sem nó cabeça ordenada ###\n");
+                printf("### Lista Ordenada Circular Simplesmente Encadeada ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
                 \n1 - Busca\
                 \n2 - Inserção\
                 \n3 - Remoção\
-                \nDigite uma opção:");
+                \nDigite uma opção: ");
                 opcAcao = readChar();
                 system("clear");
                 switch (opcAcao)
@@ -882,11 +917,11 @@ int main()
                     scanf("%d", &inputValue);
                     if (removeValueOrderedCircularLinkedList(&ListaCircular, inputValue))
                     {
-                        printf("Removido da lista uma instância do valor\n");
+                        printf("Removido da lista a primeira ocorrência do valor\n");
                     }
                     else
                     {
-                        printf("O valor não estava presente na lista\n");
+                        printf("O valor não está presente na lista\n");
                     }
                     break;
                 default:
@@ -899,14 +934,15 @@ int main()
             while (opcAcao != '0')
             {
                 drawDoublyLinkedList(Cabeca);
-                printf("### Lista duplamente encadeada com nó cabeça ###\n");
+                printf("### Lista Duplamente Encadeada com Nó Cabeça ###\n");
                 printf("Lista de operações:\
                 \n0 - Voltar\
                 \n1 - Busca\
                 \n2 - Inserção\
                 \n3 - Remoção\
-                \nDigite uma opção:");
+                \nDigite uma opção: ");
                 opcAcao = readChar();
+                system("clear");
                 switch (opcAcao)
                 {
                 case '0':
@@ -933,7 +969,7 @@ int main()
                     scanf("%d", &inputValue);
                     if (removeValueDoublyLinkedList(&Cabeca, inputValue))
                     {
-                        printf("Removido da lista uma instância do valor\n");
+                        printf("Removido da lista a primeira ocorrência do valor\n");
                     }
                     else
                     {
@@ -955,8 +991,9 @@ int main()
                 \n0 - Voltar\
                 \n1 - Inserção\
                 \n2 - Remoção\
-                \nDigite uma opção:");
+                \nDigite uma opção: ");
                 opcAcao = readChar();
+                system("clear");
                 switch (opcAcao)
                 {
                 case '0':
@@ -992,8 +1029,9 @@ int main()
                 \n0 - Voltar\
                 \n1 - Inserção\
                 \n2 - Remoção\
-                \nDigite uma opção:");
+                \nDigite uma opção: ");
                 opcAcao = readChar();
+                system("clear");                
                 switch (opcAcao)
                 {
                 case '0':
@@ -1025,7 +1063,9 @@ int main()
             break;
         }
     }
+    //Fecha a janela
     gfx_quit();
+    //Deleta por completo cada uma das estruturas 
     deleteLinkedList(&ListaOrdenada);
     deleteDoublyLinkedList(&Cabeca);
     deleteQueue(&Fila);
