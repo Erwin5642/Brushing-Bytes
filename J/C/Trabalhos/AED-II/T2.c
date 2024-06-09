@@ -871,6 +871,7 @@ int main()
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
                     insertValueOrderedLinkedList(&ListaOrdenada, inputValue);
+                    printf("Inserido o valor %d na lista\n", inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
@@ -888,6 +889,7 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
+                printf("\n");
             }
             break;
         case '2':
@@ -923,6 +925,7 @@ int main()
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
                     insertValueOrderedCircularLinkedList(&ListaCircular, inputValue);
+                    printf("Inserido o valor %d na lista\n", inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
@@ -940,6 +943,7 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
+                printf("\n");
             }
             break;
         case '3':
@@ -975,6 +979,7 @@ int main()
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido na lista: ");
                     scanf("%d", &inputValue);
                     insertValueDoublyLinkedList(&Cabeca, inputValue);
+                    printf("Inserido o valor %d na lista\n", inputValue);
                     break;
                 case '3':
                     printf("### Remoção ###\nDigite o valor que deverá ser removido da lista: ");
@@ -992,7 +997,8 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
-            }
+                printf("\n");
+                }
             break;
         case '4':
             while (opcAcao != '0')
@@ -1014,6 +1020,7 @@ int main()
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido no fim fila: ");
                     scanf("%d", &inputValue);
                     enQueue(&Fila, inputValue);
+                    printf("Inserido o valor %d na fila\n", inputValue);
                     break;
                 case '2':
                     printf("### Remoção ###\n");
@@ -1030,6 +1037,7 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
+                printf("\n");
             }
             break;
         case '5':
@@ -1052,6 +1060,7 @@ int main()
                     printf("### Inserção ###\nDigite o valor que deverá ser inserido no topo da pilha: ");
                     scanf("%d", &inputValue);
                     push(&Pilha, inputValue);
+                    printf("Inserido o valor %d na lista\n", inputValue);
                     break;
                 case '2':
                     printf("### Remoção ###\n");
@@ -1068,6 +1077,7 @@ int main()
                     printf("Opção inválida! Tente novamente\n");
                     break;
                 }
+                printf("\n");
             }
             break;
         default:
