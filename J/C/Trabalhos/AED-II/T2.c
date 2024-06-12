@@ -1,3 +1,6 @@
+//Trabalho 2 de AED-II
+//Nome: João Vitor Antunes da Silva         RGM:48935
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "gfx.h"
