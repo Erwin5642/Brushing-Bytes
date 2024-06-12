@@ -31,6 +31,32 @@ void deleteSearchTree(Tree **T)
     }
 }
 
+Tree *minSearchTree(Tree *T)
+{
+    if (T)
+    {
+        while (T->left)
+        {
+            T = T->left;
+        }
+        return T;
+    }
+    return NULL;
+}
+
+Tree *maxSearchTree(Tree *T)
+{
+    if (T)
+    {
+        while (T->right)
+        {
+            T = T->right;
+        }
+        return T;
+    }
+    return NULL;
+}
+
 void insertValueSearchTree(Tree **T, int value)
 {
     Tree *aux;
@@ -57,7 +83,40 @@ void insertValueSearchTree(Tree **T, int value)
 
 void removeValueSearchTree(Tree **T, int value)
 {
-    
+    Tree *aux;
+    if(T){
+        while(*T){
+            if((*T)->value == value){
+                if((*T)->left && (*T)->right){
+                    aux = *T;
+                    //Progress
+                }
+                else if((*T)->left || (*T)->right){
+                    aux = *T;
+                    if((*T)->left){
+                        *T = (*T)->left;
+                    }
+                    else{
+                        *T = (*T)->right;
+                    }
+                    free(aux);
+                    
+                }
+                else{
+                    free(*T);
+                    *T = NULL;
+                }
+            }
+            if ((*T)->value > value)
+            {
+                T = &(*T)->left;
+            }
+            if((*T)->value < value)
+            {
+                T = &(*T)->right;
+            }
+        }
+    }
 }
 
 void printSearchTree(Tree *T)
@@ -74,32 +133,6 @@ void printSearchTree(Tree *T)
             printSearchTree(T->right);
         }
     }
-}
-
-int minSearchTree(Tree *T)
-{
-    if (T)
-    {
-        while (T->left)
-        {
-            T = T->left;
-        }
-        return T->value;
-    }
-    return 0;
-}
-
-int maxSearchTree(Tree *T)
-{
-    if (T)
-    {
-        while (T->right)
-        {
-            T = T->right;
-        }
-        return T->value;
-    }
-    return 0;
 }
 
 Tree *searchValueSearchTree(Tree *T, int value)
