@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "gfx.h"
+//#include "gfx.h"
 #include <time.h>
 
 #define g_NODE_WIDTH 30
@@ -161,6 +161,27 @@ Tree *searchValueSearchTree(Tree *T, int value)
     return NULL;
 }
 
+Tree *sucessorSearchTree(Tree *T, int value){
+    Tree *daddyNode = NULL;
+    while (T)
+    {
+        if(T->value < value){
+            daddyNode = T;
+            T = T->right;
+        }
+        else if(T->value > value){
+            T = T->left;
+        }
+        else if(T->right){
+            return minSearchTree(T->right);
+        }
+        else{
+            return daddyNode;
+        }
+    }
+    return NULL;
+}
+/*
 void drawNode(int x, int y, int value)
 {
     char v[10];
@@ -186,32 +207,103 @@ void drawTree(Tree *T, int x, int y, int dist){
         drawNode(x - g_NODE_WIDTH/2, y, T->value);
     }
 }
-
+*/
 int main()
 {
-    Tree *root = NULL;
-    gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
-    int i, n;    
-    srand(time(NULL));
-    for(i = 0; i < 10; i++){
-        insertValueSearchTree(&root, rand()%10 - 5);
+    Tree *root = NULL, *teste;
+    //gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
+
+    insertValueSearchTree(&root, 15);
+    insertValueSearchTree(&root, 18);
+    insertValueSearchTree(&root, 17);
+    insertValueSearchTree(&root, 20);
+    insertValueSearchTree(&root, 6);
+    insertValueSearchTree(&root, 3);
+    insertValueSearchTree(&root, 2);
+    insertValueSearchTree(&root, 4);
+    insertValueSearchTree(&root, 7);
+    insertValueSearchTree(&root, 13);
+    insertValueSearchTree(&root, 9);
+
+    if((teste = sucessorSearchTree(root, 15)) == NULL){
+        printf("0\n");
     }
-    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
-    gfx_paint();
-    getchar();
-    
-    for(i = 0; i < 10; i++){
-        n = rand()%10 - 5;
-        removeValueSearchTree(&root, n);
-        printf("%d\n", n);
+    else{
+        printf("15 %d\n", teste->value);
     }
-    gfx_clear();
-    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
-    gfx_paint();
-    getchar();
+    if((teste = sucessorSearchTree(root, 6)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("6 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 3)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("3 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 2)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("2 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 4)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("4 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 7)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("7 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 13)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("13 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 9)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("9 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 18)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("18 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 17)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("17 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 20)) == NULL){
+        printf("0\n");
+    }
+    else{
+        printf("20 %d\n", teste->value);
+    }if((teste = sucessorSearchTree(root, 21)) == NULL){
+        printf("21 0\n");
+    }
+    else{
+        printf("21 %d\n", teste->value);
+    }
+    if((teste = sucessorSearchTree(root, 0)) == NULL){
+        printf("0 0\n");
+    }
+    else{
+        printf("0 %d\n", teste->value);
+    }
+    //drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
+    //gfx_paint();
+    //getchar();
+   
+    //gfx_clear();
+    //drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
+    //gfx_paint();
+    //getchar();
     
     
-    gfx_quit();
+    //gfx_quit();
     deleteSearchTree(&root);
     return 0;
 }
