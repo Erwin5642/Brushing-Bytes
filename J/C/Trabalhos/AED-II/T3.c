@@ -87,31 +87,36 @@ void removeValueSearchTree(Tree **T, int value)
     if(T){
         while(*T){
             if((*T)->value == value){
+                aux = *T;
                 if((*T)->left && (*T)->right){
-                    aux = *T;
-                    //Progress
+                    T = &(*T)->right;
+                    while((*T)->left){
+                        T = &(*T)->left;
+                    }
+                    aux->value = (*T)->value;
+                    value = aux->value;
                 }
-                else if((*T)->left || (*T)->right){
-                    aux = *T;
-                    if((*T)->left){
-                        *T = (*T)->left;
-                    }
-                    else{
-                        *T = (*T)->right;
-                    }
+                else if((*T)->left){
+                    *T = (*T)->left;
                     free(aux);
-                    
+                    return;
+                }
+                else if((*T)->right){
+                    *T = (*T)->right;
+                    free(aux);
+                    return;                    
                 }
                 else{
                     free(*T);
                     *T = NULL;
+                    return;
                 }
             }
-            if ((*T)->value > value)
+            else if ((*T)->value > value)
             {
                 T = &(*T)->left;
             }
-            if((*T)->value < value)
+            else if((*T)->value < value)
             {
                 T = &(*T)->right;
             }
@@ -166,17 +171,40 @@ Tree *searchValueSearchTree(Tree *T, int value)
 int main()
 {
     Tree *root = NULL;
-    insertSearchTree(&root, 3);
-    insertSearchTree(&root, 1);
-    insertSearchTree(&root, 2);
-    insertSearchTree(&root, 7);
-    insertSearchTree(&root, 5);
-    insertSearchTree(&root, 4);
-    insertSearchTree(&root, -1);
+    insertValueSearchTree(&root, 2);
+    insertValueSearchTree(&root, 1);
+    insertValueSearchTree(&root, 6);
+    insertValueSearchTree(&root, 4);
+    insertValueSearchTree(&root, 3);
+    insertValueSearchTree(&root, 5);
+    insertValueSearchTree(&root, 8);
+    insertValueSearchTree(&root, 7);
+    insertValueSearchTree(&root, 9);
+
     printSearchTree(root);
     printf("\n");
-    printf("%d", minSearchTree(root));
+    printf("%d", minSearchTree(root)->value);
     printf("\n");
+    //Remover valor fora da arvore
+    removeValueSearchTree(&root, 0);
+    printSearchTree(root);
+    printf("\n");
+
+    //Remover folha
+    removeValueSearchTree(&root, 1);
+    printSearchTree(root);
+    printf("\n");
+
+    //Remover nó com um filho
+    removeValueSearchTree(&root, 6);
+    printSearchTree(root);
+    printf("\n");
+
+    //Remover nó com dois filhos
+    removeValueSearchTree(&root, 4);
+    printSearchTree(root);
+    printf("\n");
+
     deleteSearchTree(&root);
     return 0;
 }

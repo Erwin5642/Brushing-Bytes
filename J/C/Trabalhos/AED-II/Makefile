@@ -1,9 +1,9 @@
 T2:
-	gcc -o T2 T2.c -I$(PWD)/gfx -L$(PWD)/gfx -lgfx -lSDL -lSDL_gfx -lSDL_ttf -Wall -Wextra -pedantic
+	gcc -o T3 T3.c -I$(PWD)/gfx -L$(PWD)/gfx -lgfx -lSDL -lSDL_gfx -lSDL_ttf -Wall -Wextra -pedantic
 
 debug:
-	gcc -o T1 T1.c -g -I$(PWD)/gfx -L$(PWD)/gfx -lgfx -lSDL -lSDL_gfx -lSDL_ttf -Wall -Wextra -pedantic
-	gdb ./T1
+	gcc -o T3 T3.c -g -I$(PWD)/gfx -L$(PWD)/gfx -lgfx -lSDL -lSDL_gfx -lSDL_ttf -Wall -Wextra -pedantic
+	gdb ./T3
 
 clean:
-	rm T2
+	rm T3
