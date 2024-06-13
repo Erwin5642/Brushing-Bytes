@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "gfx.h"
+#include <time.h>
+
+#define g_NODE_WIDTH 30
+#define g_NODE_HEIGHT 30
+#define g_SCREEN_WIDTH 1200
+#define g_SCREEN_HEIGHT 800
+#define g_X_LIST_ORIGIN 600
+#define g_Y_LIST_ORIGIN 30
+#define g_NODES_DISTANCE 50
 
 typedef struct Tree
 {
@@ -124,22 +133,6 @@ void removeValueSearchTree(Tree **T, int value)
     }
 }
 
-void printSearchTree(Tree *T)
-{
-    if (T)
-    {
-        if (T->left)
-        {
-            printSearchTree(T->left);
-        }
-        printf("%d ", T->value);
-        if (T->right)
-        {
-            printSearchTree(T->right);
-        }
-    }
-}
-
 Tree *searchValueSearchTree(Tree *T, int value)
 {
     while (T)
@@ -168,43 +161,57 @@ Tree *searchValueSearchTree(Tree *T, int value)
     return NULL;
 }
 
+void drawNode(int x, int y, int value)
+{
+    char v[10];
+    int largura, altura;
+    gfx_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
+    //Guarda o valor na string v
+    sprintf(v, "%d", value);
+    gfx_get_text_size(v, &largura, &altura);
+    gfx_text(x + g_NODE_WIDTH/2 - largura/2, y + g_NODE_HEIGHT/2 - altura/2, v);
+}
+
+void drawTree(Tree *T, int x, int y, int dist){
+    if(T){
+        dist /= 2;
+        if(T->left){
+            gfx_line(x - g_NODE_WIDTH/2, y + 2*g_NODE_HEIGHT/3, x - dist + g_NODE_WIDTH/2, y + g_NODES_DISTANCE + g_NODE_HEIGHT/3);
+            drawTree(T->left, x - dist, y + g_NODES_DISTANCE, dist);
+        }
+        if(T->right){
+            gfx_line(x + g_NODE_WIDTH/2, y + 2*g_NODE_HEIGHT/3, x + dist - g_NODE_WIDTH/2, y + g_NODES_DISTANCE + g_NODE_HEIGHT/3);
+            drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
+        }
+        drawNode(x - g_NODE_WIDTH/2, y, T->value);
+    }
+}
+
 int main()
 {
     Tree *root = NULL;
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 1);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 3);
-    insertValueSearchTree(&root, 5);
-    insertValueSearchTree(&root, 8);
-    insertValueSearchTree(&root, 7);
-    insertValueSearchTree(&root, 9);
-
-    printSearchTree(root);
-    printf("\n");
-    printf("%d", minSearchTree(root)->value);
-    printf("\n");
-    //Remover valor fora da arvore
-    removeValueSearchTree(&root, 0);
-    printSearchTree(root);
-    printf("\n");
-
-    //Remover folha
-    removeValueSearchTree(&root, 1);
-    printSearchTree(root);
-    printf("\n");
-
-    //Remover nó com um filho
-    removeValueSearchTree(&root, 6);
-    printSearchTree(root);
-    printf("\n");
-
-    //Remover nó com dois filhos
-    removeValueSearchTree(&root, 4);
-    printSearchTree(root);
-    printf("\n");
-
+    gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
+    int i, n;    
+    srand(time(NULL));
+    for(i = 0; i < 10; i++){
+        insertValueSearchTree(&root, rand()%10 - 5);
+    }
+    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
+    gfx_paint();
+    getchar();
+    
+    for(i = 0; i < 10; i++){
+        n = rand()%10 - 5;
+        removeValueSearchTree(&root, n);
+        printf("%d\n", n);
+    }
+    gfx_clear();
+    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
+    gfx_paint();
+    getchar();
+    
+    
+    gfx_quit();
     deleteSearchTree(&root);
     return 0;
 }
