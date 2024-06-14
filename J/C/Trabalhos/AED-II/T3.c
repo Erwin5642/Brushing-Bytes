@@ -162,21 +162,42 @@ Tree *searchValueSearchTree(Tree *T, int value)
 }
 
 Tree *sucessorSearchTree(Tree *T, int value){
-    Tree *daddyNode = NULL;
+    Tree *ancestralNode = NULL;
     while (T)
     {
         if(T->value < value){
             T = T->right;
         }
         else if(T->value > value){
-            daddyNode = T;
+            ancestralNode = T;
             T = T->left;
         }
         else if(T->right){
             return minSearchTree(T->right);
         }
         else{
-            return daddyNode;
+            return ancestralNode;
+        }
+    }
+    return NULL;
+}
+
+Tree *predecessorSearchTree(Tree *T, int value){
+    Tree *ancestralNode = NULL;
+    while (T)
+    {
+        if(T->value < value){
+            ancestralNode = T;
+            T = T->right;
+        }
+        else if(T->value > value){
+            T = T->left;
+        }
+        else if(T->left){
+            return maxSearchTree(T->left);
+        }
+        else{
+            return ancestralNode;
         }
     }
     return NULL;
@@ -226,69 +247,69 @@ int main()
     insertValueSearchTree(&root, 13);
     insertValueSearchTree(&root, 9);
 
-    if((teste = sucessorSearchTree(root, 15)) == NULL){
+    if((teste = predecessorSearchTree(root, 15)) == NULL){
         printf("0\n");
     }
     else{
         printf("15 %d\n", teste->value);
     }
-    if((teste = sucessorSearchTree(root, 6)) == NULL){
+    if((teste = predecessorSearchTree(root, 6)) == NULL){
         printf("0\n");
     }
     else{
         printf("6 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 3)) == NULL){
+    }if((teste = predecessorSearchTree(root, 3)) == NULL){
         printf("0\n");
     }
     else{
         printf("3 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 2)) == NULL){
-        printf("0\n");
+    }if((teste = predecessorSearchTree(root, 2)) == NULL){
+        printf("2 0\n");
     }
     else{
         printf("2 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 4)) == NULL){
+    }if((teste = predecessorSearchTree(root, 4)) == NULL){
         printf("0\n");
     }
     else{
         printf("4 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 7)) == NULL){
+    }if((teste = predecessorSearchTree(root, 7)) == NULL){
         printf("0\n");
     }
     else{
         printf("7 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 13)) == NULL){
+    }if((teste = predecessorSearchTree(root, 13)) == NULL){
         printf("0\n");
     }
     else{
         printf("13 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 9)) == NULL){
+    }if((teste = predecessorSearchTree(root, 9)) == NULL){
         printf("0\n");
     }
     else{
         printf("9 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 18)) == NULL){
+    }if((teste = predecessorSearchTree(root, 18)) == NULL){
         printf("0\n");
     }
     else{
         printf("18 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 17)) == NULL){
+    }if((teste = predecessorSearchTree(root, 17)) == NULL){
         printf("0\n");
     }
     else{
         printf("17 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 20)) == NULL){
+    }if((teste = predecessorSearchTree(root, 20)) == NULL){
         printf("20 0\n");
     }
     else{
         printf("20 %d\n", teste->value);
-    }if((teste = sucessorSearchTree(root, 21)) == NULL){
+    }if((teste = predecessorSearchTree(root, 21)) == NULL){
         printf("21 0\n");
     }
     else{
         printf("21 %d\n", teste->value);
     }
-    if((teste = sucessorSearchTree(root, 0)) == NULL){
+    if((teste = predecessorSearchTree(root, 0)) == NULL){
         printf("0 0\n");
     }
     else{
