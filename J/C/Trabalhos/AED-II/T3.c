@@ -166,10 +166,10 @@ Tree *sucessorSearchTree(Tree *T, int value){
     while (T)
     {
         if(T->value < value){
-            daddyNode = T;
             T = T->right;
         }
         else if(T->value > value){
+            daddyNode = T;
             T = T->left;
         }
         else if(T->right){
@@ -181,6 +181,7 @@ Tree *sucessorSearchTree(Tree *T, int value){
     }
     return NULL;
 }
+
 /*
 void drawNode(int x, int y, int value)
 {
@@ -277,7 +278,7 @@ int main()
     else{
         printf("17 %d\n", teste->value);
     }if((teste = sucessorSearchTree(root, 20)) == NULL){
-        printf("0\n");
+        printf("20 0\n");
     }
     else{
         printf("20 %d\n", teste->value);
