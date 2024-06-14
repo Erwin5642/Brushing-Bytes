@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-//#include "gfx.h"
+#include "gfx.h"
 #include <time.h>
 
 #define g_NODE_WIDTH 30
@@ -93,29 +93,37 @@ void insertValueSearchTree(Tree **T, int value)
 void removeValueSearchTree(Tree **T, int value)
 {
     Tree *aux;
-    if(T){
-        while(*T){
-            if((*T)->value == value){
+    if (T)
+    {
+        while (*T)
+        {
+            if ((*T)->value == value)
+            {
                 aux = *T;
-                if((*T)->left && (*T)->right){
+                if ((*T)->left && (*T)->right)
+                {
                     T = &(*T)->right;
-                    while((*T)->left){
+                    while ((*T)->left)
+                    {
                         T = &(*T)->left;
                     }
                     aux->value = (*T)->value;
                     value = aux->value;
                 }
-                else if((*T)->left){
+                else if ((*T)->left)
+                {
                     *T = (*T)->left;
                     free(aux);
                     return;
                 }
-                else if((*T)->right){
+                else if ((*T)->right)
+                {
                     *T = (*T)->right;
                     free(aux);
-                    return;                    
+                    return;
                 }
-                else{
+                else
+                {
                     free(*T);
                     *T = NULL;
                     return;
@@ -125,7 +133,7 @@ void removeValueSearchTree(Tree **T, int value)
             {
                 T = &(*T)->left;
             }
-            else if((*T)->value < value)
+            else if ((*T)->value < value)
             {
                 T = &(*T)->right;
             }
@@ -161,79 +169,149 @@ Tree *searchValueSearchTree(Tree *T, int value)
     return NULL;
 }
 
-Tree *sucessorSearchTree(Tree *T, int value){
+Tree *sucessorSearchTree(Tree *T, int value)
+{
     Tree *ancestralNode = NULL;
     while (T)
     {
-        if(T->value < value){
+        if (T->value < value)
+        {
             T = T->right;
         }
-        else if(T->value > value){
+        else if (T->value > value)
+        {
             ancestralNode = T;
             T = T->left;
         }
-        else if(T->right){
+        else if (T->right)
+        {
             return minSearchTree(T->right);
         }
-        else{
+        else
+        {
             return ancestralNode;
         }
     }
     return NULL;
 }
 
-Tree *predecessorSearchTree(Tree *T, int value){
+Tree *predecessorSearchTree(Tree *T, int value)
+{
     Tree *ancestralNode = NULL;
     while (T)
     {
-        if(T->value < value){
+        if (T->value < value)
+        {
             ancestralNode = T;
             T = T->right;
         }
-        else if(T->value > value){
+        else if (T->value > value)
+        {
             T = T->left;
         }
-        else if(T->left){
+        else if (T->left)
+        {
             return maxSearchTree(T->left);
         }
-        else{
+        else
+        {
             return ancestralNode;
         }
     }
     return NULL;
 }
 
-/*
+// Operações em Arquivo
+struct s_arq_no
+{
+    int32_t chave : 30;
+    uint32_t esq : 1;
+    uint32_t dir : 1;
+};
+
+FILE *openFile(const char *name, const char *mode)
+{
+    FILE *file;
+    if ((file = fopen(name, mode)) == NULL)
+    {
+        printf("Nao foi possivel abrir o arquivo %s\n", name);
+    }
+    return file;
+}
+
+void saveSearchTreeInFile(Tree *T, FILE *dest)
+{
+
+    if (T && dest)
+    {
+        struct s_arq_no temp = {T->value, 0, 0};
+        if (T->left)
+        {
+            temp.esq = 1;
+        }
+        if (T->right)
+        {
+            temp.dir = 1;
+        }
+        fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
+        if (T->left)
+        {
+            saveSearchTreeInFile(T->left, dest);
+        }
+        if (T->right)
+        {
+            saveSearchTreeInFile(T->right, dest);
+        }
+    }
+}
+
+void readSearchTreeFromFile(FILE *src)
+{
+    struct s_arq_no temp;
+    if (src != NULL)
+    {
+        while (fread(&temp, sizeof(struct s_arq_no), 1, src))
+        {
+            printf("Valor: %d Filho Esquerdo: %d Filho Direito: %d\n", temp.chave, temp.esq, temp.dir);
+        }
+    }
+}
+
 void drawNode(int x, int y, int value)
 {
     char v[10];
     int largura, altura;
     gfx_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
-    //Guarda o valor na string v
+    // Guarda o valor na string v
     sprintf(v, "%d", value);
     gfx_get_text_size(v, &largura, &altura);
-    gfx_text(x + g_NODE_WIDTH/2 - largura/2, y + g_NODE_HEIGHT/2 - altura/2, v);
+    gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y + g_NODE_HEIGHT / 2 - altura / 2, v);
 }
 
-void drawTree(Tree *T, int x, int y, int dist){
-    if(T){
+void drawTree(Tree *T, int x, int y, int dist)
+{
+    if (T)
+    {
         dist /= 2;
-        if(T->left){
-            gfx_line(x - g_NODE_WIDTH/2, y + 2*g_NODE_HEIGHT/3, x - dist + g_NODE_WIDTH/2, y + g_NODES_DISTANCE + g_NODE_HEIGHT/3);
+        if (T->left)
+        {
+            gfx_line(x - g_NODE_WIDTH / 2, y + 2 * g_NODE_HEIGHT / 3, x - dist + g_NODE_WIDTH / 2, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 3);
             drawTree(T->left, x - dist, y + g_NODES_DISTANCE, dist);
         }
-        if(T->right){
-            gfx_line(x + g_NODE_WIDTH/2, y + 2*g_NODE_HEIGHT/3, x + dist - g_NODE_WIDTH/2, y + g_NODES_DISTANCE + g_NODE_HEIGHT/3);
+        if (T->right)
+        {
+            gfx_line(x + g_NODE_WIDTH / 2, y + 2 * g_NODE_HEIGHT / 3, x + dist - g_NODE_WIDTH / 2, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 3);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
-        drawNode(x - g_NODE_WIDTH/2, y, T->value);
+        drawNode(x - g_NODE_WIDTH / 2, y, T->value);
     }
 }
-*/
+
 int main()
 {
-    Tree *root = NULL, *teste;
-    //gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
+    Tree *root = NULL;
+    FILE *treeFile;
+    gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
     insertValueSearchTree(&root, 15);
     insertValueSearchTree(&root, 18);
@@ -247,85 +325,21 @@ int main()
     insertValueSearchTree(&root, 13);
     insertValueSearchTree(&root, 9);
 
-    if((teste = predecessorSearchTree(root, 15)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("15 %d\n", teste->value);
-    }
-    if((teste = predecessorSearchTree(root, 6)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("6 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 3)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("3 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 2)) == NULL){
-        printf("2 0\n");
-    }
-    else{
-        printf("2 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 4)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("4 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 7)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("7 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 13)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("13 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 9)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("9 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 18)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("18 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 17)) == NULL){
-        printf("0\n");
-    }
-    else{
-        printf("17 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 20)) == NULL){
-        printf("20 0\n");
-    }
-    else{
-        printf("20 %d\n", teste->value);
-    }if((teste = predecessorSearchTree(root, 21)) == NULL){
-        printf("21 0\n");
-    }
-    else{
-        printf("21 %d\n", teste->value);
-    }
-    if((teste = predecessorSearchTree(root, 0)) == NULL){
-        printf("0 0\n");
-    }
-    else{
-        printf("0 %d\n", teste->value);
-    }
-    //drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
-    //gfx_paint();
-    //getchar();
-   
-    //gfx_clear();
-    //drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH/2);
-    //gfx_paint();
-    //getchar();
-    
-    
-    //gfx_quit();
+    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH / 2);
+    gfx_paint();
+    getchar();
+
+    treeFile = openFile("treeFile", "wb");
+    saveSearchTreeInFile(root, treeFile);
+    fclose(treeFile);
+    getchar();
+
+    treeFile = openFile("treeFile", "rb");
+    readSearchTreeFromFile(treeFile);
+    fclose(treeFile);
+    getchar();
+
+    gfx_quit();
     deleteSearchTree(&root);
     return 0;
 }
