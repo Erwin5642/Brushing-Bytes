@@ -9,8 +9,8 @@
 #define g_NODE_HEIGHT 30
 #define g_SCREEN_WIDTH 1200
 #define g_SCREEN_HEIGHT 800
-#define g_X_LIST_ORIGIN 600
-#define g_Y_LIST_ORIGIN 30
+#define g_X_TREE_ORIGIN 600
+#define g_Y_TREE_ORIGIN 30
 #define g_NODES_DISTANCE 50
 
 typedef struct Tree
@@ -90,7 +90,7 @@ void insertValueSearchTree(Tree **T, int value)
     }
 }
 
-void removeValueSearchTree(Tree **T, int value)
+int removeValueSearchTree(Tree **T, int value)
 {
     Tree *aux;
     if (T)
@@ -114,19 +114,19 @@ void removeValueSearchTree(Tree **T, int value)
                 {
                     *T = (*T)->left;
                     free(aux);
-                    return;
+                    return 1;
                 }
                 else if ((*T)->right)
                 {
                     *T = (*T)->right;
                     free(aux);
-                    return;
+                    return 1;
                 }
                 else
                 {
                     free(*T);
                     *T = NULL;
-                    return;
+                    return 1;
                 }
             }
             else if ((*T)->value > value)
@@ -139,6 +139,7 @@ void removeValueSearchTree(Tree **T, int value)
             }
         }
     }
+    return 0;
 }
 
 Tree *searchValueSearchTree(Tree *T, int value)
@@ -221,6 +222,20 @@ Tree *predecessorSearchTree(Tree *T, int value)
     return NULL;
 }
 
+// Le apenas o primeiro caracter válido do buffer de teclado e descarta o resto
+char readChar()
+{
+    char c;
+    // Enquanto o caracter inserido for inválido, continue lendo do teclado
+    while ((c = getchar()) < '0')
+        ;
+    // Após ler, descarta qualquer outro caracter no buffer de teclado
+    while (getchar() != '\n')
+        ;
+    // Retorna o caracter lido
+    return c;
+}
+
 // Operações em Arquivo
 struct s_arq_no
 {
@@ -234,43 +249,50 @@ FILE *openFile(const char *name, const char *mode)
     FILE *file;
     if ((file = fopen(name, mode)) == NULL)
     {
-        printf("Nao foi possivel abrir o arquivo %s\n", name);
+        printf("Não foi possível abrir o arquivo %s\n", name);
     }
     return file;
 }
-
-void saveSearchTreeInFile(Tree *T, FILE *dest)
+void saveNodeInFile(Tree *T, FILE *dest)
 {
-
-    if (T && dest)
+    struct s_arq_no temp;
+    temp.chave = T->value;
+    temp.esq = T->left != NULL;
+    temp.dir = T->right != NULL;
+    fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
+    if (T->left)
     {
-        struct s_arq_no temp = {T->value, 0, 0};
-        if (T->left)
-        {
-            temp.esq = 1;
-        }
-        if (T->right)
-        {
-            temp.dir = 1;
-        }
-        fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
-        if (T->left)
-        {
-            saveSearchTreeInFile(T->left, dest);
-        }
-        if (T->right)
-        {
-            saveSearchTreeInFile(T->right, dest);
-        }
+        saveNodeInFile(T->left, dest);
+    }
+    if (T->right)
+    {
+        saveNodeInFile(T->right, dest);
     }
 }
 
-void readSearchTreeFromFile(FILE *src)
+void saveSearchTreeInFile(Tree *T, const char *fileName)
 {
-    struct s_arq_no temp;
-    if (src != NULL)
+    FILE *treeFIle = openFile(fileName, "wb");
+    if (treeFIle)
     {
-        while (fread(&temp, sizeof(struct s_arq_no), 1, src))
+        if (T)
+        {
+            saveNodeInFile(T, treeFIle);
+        }
+        else{
+            fputc(0, treeFIle);
+        }
+        fclose(treeFIle);
+    }
+}
+
+void readSearchTreeFromFile(const char *fileName)
+{
+    FILE *treeFile = openFile(fileName, "rb");
+    struct s_arq_no temp;
+    if (treeFile != NULL)
+    {
+        while (fread(&temp, sizeof(struct s_arq_no), 1, treeFile))
         {
             printf("Valor: %d Filho Esquerdo: %d Filho Direito: %d\n", temp.chave, temp.esq, temp.dir);
         }
@@ -309,37 +331,127 @@ void drawTree(Tree *T, int x, int y, int dist)
 
 int main()
 {
-    Tree *root = NULL;
-    FILE *treeFile;
+    Tree *root = NULL, *aux;
+    char opcAcao, fileName[20];
+    int inputvalue;
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
+    do
+    {
+        system("clear");
+        printf("### Arvore Binaria de Busca ###\n[0] - Encerrar programa\
+        \n[1] - Buscar Maior e Menor Chave;\
+        \n[2] - Buscar Chave;\
+        \n[3] - Buscar Antecessor e Sucessor;\
+        \n[4] - Inserir Chave;\
+        \n[5] - Remover Chave;\
+        \n[6] - Ler Arquivo com Arvore;\
+        \n[7] - Salvar Arvore em Arquivo;\
+        \nDigite uma opção para escolher qual operação deve ser feita: ");
+        opcAcao = readChar();
+        
+        switch (opcAcao)
+        {
+        case '0':
+            gfx_quit();
+            deleteSearchTree(&root);
+            return 0;
+            break;
+        case '1':
+            if ((aux = maxSearchTree(root)))
+            {
+                printf("\nA maior chave na árvore é: %d", aux->value);
+            }
+            if ((aux = minSearchTree(root)))
+            {
+                printf("\nA menor chave na árvore é: %d\n", aux->value);
+            }
+            else
+            {
+                printf("\nA árvore não possui maior e nem menor chave pois está vazia!\n");
+            }
+            break;
+        case '2':
+            printf("\nInforme o valor da chave a ser buscada: ");
+            scanf("%d", &inputvalue);
+            getchar();
+            if ((searchValueSearchTree(root, inputvalue)))
+            {
+                printf("A chave está presente na árvore!\n");
+            }
+            else
+            {
+                printf("A chave não está presente na árvore!\n");
+            }
+            break;
+        case '3':
+            printf("\nInforme o valor da chave que deve ser encontrado o antecessor e sucessor: ");
+            scanf("%d", &inputvalue);
+            getchar();
+            if(searchValueSearchTree(root, inputvalue)){
+                if ((aux = predecessorSearchTree(root, inputvalue)))
+                {
+                    printf("O antecessor da chave é: %d\n", aux->value);
+                }
+                else
+                {
+                    printf("A chave não possui antecessor!\n");
+                }
+                if ((aux = sucessorSearchTree(root, inputvalue)))
+                {
+                    printf("O sucessor da chave é: %d\n", aux->value);
+                }
+                else{
+                    printf("A chave não possui sucessor!\n");
+                }
+            }
+            else
+            {
+                printf("A chave não está presente na árvore!\n");
+            }
+            break;
+        case '4':
+            printf("\nInforme o valor da chave que deve ser inserida: ");
+            scanf("%d", &inputvalue);
+            getchar();
+            insertValueSearchTree(&root, inputvalue);
+            printf("A chave %d foi inserida com sucesso!\n", inputvalue);
+            break;
+        case '5':
+            printf("\nInforme o valor da chave que deve ser removida: ");
+            scanf("%d", &inputvalue);
+            getchar();
+            if (removeValueSearchTree(&root, inputvalue))
+            {
+                printf("A chave %d foi removida com sucesso!\n", inputvalue);
+            }
+            else
+            {
+                printf("A chave não estava presente na árvore!\n");
+            }
+            break;
+        case '6':
+            printf("\nInforme o nome do arquivo em que a árvore está salva: ");
+            scanf("%s", fileName);
+            getchar();
+            readSearchTreeFromFile(fileName);
+            break;
+        case '7':
+            printf("\nInforme o nome do arquivo em que a árvore será salva: ");
+            scanf("%s", fileName);
+            getchar();
+            saveSearchTreeInFile(root, fileName);
+            printf("Arquivo salvo com sucesso!\n");
+            break;
+        default:
+            printf("\nOpção inválida! Tente novamente...\n");
+            break;
+        }
+        printf("Pressione Enter para continuar\n");
+        gfx_clear();
+        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH/2);
+        gfx_paint();
+        getchar();
+    } while (opcAcao != '0');
 
-    insertValueSearchTree(&root, 15);
-    insertValueSearchTree(&root, 18);
-    insertValueSearchTree(&root, 17);
-    insertValueSearchTree(&root, 20);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 3);
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 7);
-    insertValueSearchTree(&root, 13);
-    insertValueSearchTree(&root, 9);
-
-    drawTree(root, g_X_LIST_ORIGIN, g_Y_LIST_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-
-    treeFile = openFile("treeFile", "wb");
-    saveSearchTreeInFile(root, treeFile);
-    fclose(treeFile);
-    getchar();
-
-    treeFile = openFile("treeFile", "rb");
-    readSearchTreeFromFile(treeFile);
-    fclose(treeFile);
-    getchar();
-
-    gfx_quit();
-    deleteSearchTree(&root);
     return 0;
 }

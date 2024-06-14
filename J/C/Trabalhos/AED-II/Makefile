@@ -1,4 +1,4 @@
-T2:
+T3:
 	gcc -o T3 T3.c -I$(PWD)/gfx -L$(PWD)/gfx -lgfx -lSDL -lSDL_gfx -lSDL_ttf -Wall -Wextra -pedantic
 
 debug:
