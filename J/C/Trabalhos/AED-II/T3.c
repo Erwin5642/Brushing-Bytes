@@ -167,20 +167,11 @@ Tree *searchValueSearchTree(Tree *T, int value)
         {
             return T;
         }
-        if (T->left && T->left->value == value)
-        {
-            return T->left;
-        }
-        if (T->right && T->right->value == value)
-        {
-            return T->right;
-        }
-        // Se não busca o valor na sub-árvore da esquerda ou direita
         if (T->value > value)
         {
             T = T->left;
         }
-        if (T->value < value)
+        else
         {
             T = T->right;
         }
@@ -330,7 +321,7 @@ void createNodesFromFile(Tree **T, FILE *dest)
         {
             createNodesFromFile(&(*T)->left, dest);
         }
-        if (temp.esq)
+        if (temp.dir)
         {
             createNodesFromFile(&(*T)->right, dest);
         }
@@ -358,8 +349,10 @@ void drawNode(int x, int y, int value)
 {
     char v[10];
     int largura, altura;
-    gfx_get_color();
-    gfx_filled_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
+    gfx_set_color(255, 100, 255);
+    gfx_filled_rectangle(x + 1, y + 1, x + g_NODE_WIDTH - 1, y + g_NODE_HEIGHT - 1);
+    gfx_set_color(255, 255, 255);
+    gfx_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
     // Guarda o valor na string v
     sprintf(v, "%d", value);
     gfx_get_text_size(v, &largura, &altura);
@@ -373,12 +366,12 @@ void drawTree(Tree *T, int x, int y, int dist)
         dist /= 2;
         if (T->left)
         {
-            gfx_line(x + g_NODE_WIDTH / 2, y + g_NODE_HEIGHT / 2, x - dist + g_NODE_WIDTH / 2, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
+            gfx_line(x, y + g_NODE_HEIGHT/2, x - dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT/2);
             drawTree(T->left, x - dist, y + g_NODES_DISTANCE, dist);
         }
         if (T->right)
         {
-            gfx_line(x + g_NODE_WIDTH / 2, y + g_NODE_HEIGHT / 2, x + dist + g_NODE_WIDTH / 2, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
+            gfx_line(x, y + g_NODE_HEIGHT / 2, x + dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
         drawNode(x - g_NODE_WIDTH / 2, y, T->value);
