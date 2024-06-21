@@ -6,4 +6,4 @@ debug:
 	gdb ./T3
 
 clean:
-	rm T2
+	rm T3
