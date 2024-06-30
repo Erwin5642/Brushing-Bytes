@@ -5,42 +5,52 @@ void escalarLinha(double escalar, double linha[10], int n)
 {
     while (n--)
     {
-        linha[n - 1] *= escalar;
+        linha[n] *= escalar;
     }
 }
 
-void somaLinha(double *linha1, double *linha2, int n)
+void somaLinha(double linhaDest[10], double linhaSrc[10], int n)
 {
     while (n--)
     {
-        linha1[n - 1] += linha2[n - 1];
+        linhaDest[n] += linhaSrc[n];
     }
 }
 
-void trocaLinha(double *linhaDest, double *linhaSrc, int n)
+void trocaLinha(double linha1[10], double linha2[10], int n)
 {
-    double linhaAux[10];
+    double linhaAux;
     while (n--)
     {
-        linhaAux[n - 1] = linhaDest[n - 1];
-        linhaDest[n - 1] = linhaSrc[n - 1];
-        linhaSrc[n - 1] = linhaAux[n - 1];
+        linhaAux = linha1[n];
+        linha1[n] = linha2[n];
+        linha2[n] = linhaAux;
     }
 }
 
-double determinante(double matriz[3][3], unsigned short n)
+double determinante(double matriz[10][10], unsigned short n)
 {
     unsigned short i, j = 0;
-    double det = 1;
+    double det = 1, cm;
     for (j = 0; j < n; j++)
     {
+        if (!matriz[j][j])
+        {
+            for(i = j + 1; i < n && !matriz[i][j]; i++){
+            }
+            if(i < n && matriz[i][j]){
+                trocaLinha(matriz[i], matriz[j], n);
+                det *= -1;
+            }
+        }
         for (i = j + 1; i < n; i++)
         {
             if (matriz[i][j])
             {
-                escalarLinha(-matriz[i][j] / matriz[j][j], matriz[j] + j, n - j);
+                cm = matriz[i][j] / matriz[j][j];
+                escalarLinha(-cm, matriz[j] + j, n - j);
                 somaLinha(matriz[i] + j, matriz[j] + j, n - j);
-                escalarLinha(-matriz[j][j] / matriz[i][j], matriz[j] + j, n - j);
+                escalarLinha(-1 / cm, matriz[j] + j, n - j);
             }
         }
     }
@@ -53,19 +63,26 @@ double determinante(double matriz[3][3], unsigned short n)
 
 int main()
 {
-    double matriz[3][3], tempo, det;
-    int i, j;
-    for (i = 0; i < 3; i++)
-    {
-        for (j = 0; j < 3; j++)
-        {
-            matriz[i][j] = (i + 1) * (j + 1) * 3 % 4;
+    double matriz[10][10], tempo, det, resultadoEsperado;
+    unsigned i, j, n;
+    clock_t t;
+    FILE *matrizes;
+    matrizes = fopen("testes.txt", "r");
+    while(fscanf(matrizes, "%u", &n) != EOF){
+        for(i = 0; i < n; i++){
+            for(j = 0; j < n; j++){
+                fscanf(matrizes, "%lf", &matriz[i][j]);
+            }
         }
+        fscanf(matrizes, "%lf", &resultadoEsperado);
+        t = clock();
+        det = determinante(matriz, n);
+        t = clock() - t;
+        tempo = ((double)t) / CLOCKS_PER_SEC;
+        det == resultadoEsperado ? printf("---------VVVV--------\n") : printf("---------XXXX--------\n");
+        printf("O resultado encontrado foi %lf e o resultado esperado era %lf\n\n", det, resultadoEsperado);
+        printf("O algoritmo levou %lf segundos\n", tempo);
     }
-    clock_t t = clock();
-    det = determinante(matriz, 3);
-    t = clock() - t;
-    tempo = ((double)t)/CLOCKS_PER_SEC;
-    printf("%lf\n\n%lf\n", det, tempo);
+    fclose(matrizes);
     return 0;
 }
