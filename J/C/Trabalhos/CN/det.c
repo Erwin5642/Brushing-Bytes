@@ -28,10 +28,22 @@ void trocaLinha(double linha1[10], double linha2[10], int n)
     }
 }
 
+void mostrarMatriz(double matriz[10][10], unsigned short n){
+    unsigned short i, j;
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            printf("%.1lf ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 double determinante(double matriz[10][10], unsigned short n)
 {
-    unsigned short i, j = 0;
+    unsigned short i, j = 0, p = 1;
     double det = 1, cm;
+    printf("Passo 0:\n");
+    mostrarMatriz(matriz, n);
     for (j = 0; j < n; j++)
     {
         if (!matriz[j][j])
@@ -45,6 +57,8 @@ double determinante(double matriz[10][10], unsigned short n)
         }
         for (i = j + 1; i < n; i++)
         {
+            printf("Passo %u:\n", p);
+            p++;
             if (matriz[i][j])
             {
                 cm = matriz[i][j] / matriz[j][j];
@@ -52,6 +66,7 @@ double determinante(double matriz[10][10], unsigned short n)
                 somaLinha(matriz[i] + j, matriz[j] + j, n - j);
                 escalarLinha(-1 / cm, matriz[j] + j, n - j);
             }
+            mostrarMatriz(matriz, n);
         }
     }
     for (i = 0; i < n; i++)
@@ -81,7 +96,7 @@ int main()
         tempo = ((double)t) / CLOCKS_PER_SEC;
         det == resultadoEsperado ? printf("---------VVVV--------\n") : printf("---------XXXX--------\n");
         printf("O resultado encontrado foi %lf e o resultado esperado era %lf\n\n", det, resultadoEsperado);
-        printf("O algoritmo levou %lf segundos\n", tempo);
+        printf("O algoritmo levou %lf segundos\n----------------------\n\n", tempo);
     }
     fclose(matrizes);
     return 0;
