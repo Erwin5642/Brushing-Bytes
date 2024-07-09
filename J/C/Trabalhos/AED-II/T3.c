@@ -277,6 +277,7 @@ FILE *openFile(const char *name, const char *mode)
     }
     return file;
 }
+
 void saveNodesInFile(Tree *T, FILE *dest)
 {
     struct s_arq_no temp;
