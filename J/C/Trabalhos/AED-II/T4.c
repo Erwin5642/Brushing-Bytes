@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "gfx.h"
 #include <time.h>
+#include <unistd.h>
 
 #define g_NODE_WIDTH 30
 #define g_NODE_HEIGHT 30
@@ -14,10 +15,29 @@
 
 typedef struct AVLTree
 {
-    int value, balance;
+    int value, height;
     struct AVLTree *left;
     struct AVLTree *right;
 } AVLTree;
+
+int max(int a, int b)
+{
+    return a > b ? a : b;
+}
+
+int getHeight(AVLTree *node)
+{
+    if (!node)
+    {
+        return 0;
+    }
+    return max(getHeight(node->left), getHeight(node->right)) + 1;
+}
+
+int getBalance(AVLTree *node)
+{
+    return getHeight(node->right) - getHeight(node->left);
+}
 
 // Desaloca todos os nós de uma árvore binária de busca
 void deleteSearchTree(AVLTree **T)
@@ -45,40 +65,21 @@ AVLTree *newNodeSearchTree(int value)
     AVLTree *aux = malloc(sizeof(AVLTree));
     aux->value = value;
     aux->left = aux->right = NULL;
-    aux->balance = 0;
+    aux->height = 1;
     return aux;
 }
 
-// Insere um valor numa árvore binária de busca
-void insertValueSearchTree(AVLTree **T, int value)
+void leftRotation(AVLTree **T)
 {
-    if (T)
-    {
-        while (*T)
-        {
-            if ((*T)->value > value)
-            {
-                T = &(*T)->left;
-            }
-            else
-            {
-                T = &(*T)->right;
-            }
-        }
-        (*T) = newNodeSearchTree(value);
-    }
-}
-
-void leftRotation(AVLTree **T){
     AVLTree *aux;
     aux = *T;
     *T = (*T)->right;
     aux->right = (*T)->left;
     (*T)->left = aux;
-    
 }
 
-void rightRotation(AVLTree **T){
+void rightRotation(AVLTree **T)
+{
     AVLTree *aux;
     aux = *T;
     *T = (*T)->left;
@@ -86,18 +87,58 @@ void rightRotation(AVLTree **T){
     (*T)->right = aux;
 }
 
-void leftRightRotation(AVLTree **T){
+void leftRightRotation(AVLTree **T)
+{
     leftRotation(&(*T)->left);
     rightRotation(T);
 }
 
-void rightLeftRotation(AVLTree **T){
+void rightLeftRotation(AVLTree **T)
+{
     rightRotation(&(*T)->right);
     leftRotation(T);
 }
 
-void balanceAVLTree(){
-
+// Insere um valor numa árvore binária de busca
+void insertValueAVLTree(AVLTree **T, int value)
+{
+    int balance = 0;
+    if (T)
+    {
+        if (*T)
+        {
+            (*T)->height++;
+            if (value < (*T)->value)
+            {
+                insertValueAVLTree(&(*T)->left, value);
+            }
+            else
+            {
+                insertValueAVLTree(&(*T)->right, value);
+            }
+            balance = getBalance(*T);
+            if (balance > 1 && value < (*T)->right->value)
+            {
+                rightLeftRotation(T);
+            }
+            else if (balance < -1 && value < (*T)->left->value)
+            {
+                rightRotation(T);
+            }
+            else if (balance > 1 && value > (*T)->right->value)
+            {
+                leftRotation(T);
+            }
+            else if (balance < -1 && value > (*T)->left->value)
+            {
+                leftRightRotation(T);
+            }
+        }
+        else
+        {
+            *T = newNodeSearchTree(value);
+        }
+    }
 }
 
 // Retorna um ponteiro para o menor nó na árvore binária de busca
@@ -224,8 +265,7 @@ AVLTree *predecessorNodeSearchTree(AVLTree *T, int value)
     return NULL;
 }
 
-
-void drawNode(int x, int y, int value)
+void drawNode(int x, int y, int value, int balance)
 {
     char v[10];
     int largura, altura;
@@ -237,6 +277,10 @@ void drawNode(int x, int y, int value)
     sprintf(v, "%d", value);
     gfx_get_text_size(v, &largura, &altura);
     gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y + g_NODE_HEIGHT / 2 - altura / 2, v);
+
+    sprintf(v, "%d", balance);
+    gfx_get_text_size(v, &largura, &altura);
+    gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y - altura, v);
 }
 
 void drawTree(AVLTree *T, int x, int y, int dist)
@@ -246,7 +290,7 @@ void drawTree(AVLTree *T, int x, int y, int dist)
         dist /= 2;
         if (T->left)
         {
-            gfx_line(x, y + g_NODE_HEIGHT/2, x - dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT/2);
+            gfx_line(x, y + g_NODE_HEIGHT / 2, x - dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->left, x - dist, y + g_NODES_DISTANCE, dist);
         }
         if (T->right)
@@ -254,7 +298,7 @@ void drawTree(AVLTree *T, int x, int y, int dist)
             gfx_line(x, y + g_NODE_HEIGHT / 2, x + dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
-        drawNode(x - g_NODE_WIDTH / 2, y, T->value);
+        drawNode(x - g_NODE_WIDTH / 2, y, T->value, getBalance(T));
     }
 }
 
@@ -262,94 +306,19 @@ int main()
 {
     AVLTree *root = NULL;
 
-
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
-    
-    insertValueSearchTree(&root, 3);
-    insertValueSearchTree(&root, 5);
-    insertValueSearchTree(&root, 7);
 
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 8);
+    int i;
+    for (i = 0; i < 31; i++)
+    {
+        insertValueAVLTree(&root, i);
+        gfx_clear();
+        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
+        gfx_paint();
+        sleep(1);
+    }
 
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-
-    leftRotation(&root);
-    gfx_clear();
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-    gfx_clear();
     deleteSearchTree(&root);
-
-    insertValueSearchTree(&root, 7);
-    insertValueSearchTree(&root, 5);
-    insertValueSearchTree(&root, 3);
-
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 8);
-
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-
-    rightRotation(&root);
-    gfx_clear();
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-    gfx_clear();
-    deleteSearchTree(&root);
-
-
-    insertValueSearchTree(&root, 7);
-    insertValueSearchTree(&root, 3);
-    insertValueSearchTree(&root, 5);
-
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 8);
-
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-
-    leftRightRotation(&root);
-    gfx_clear();
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-    gfx_clear();
-    deleteSearchTree(&root);
-
-    insertValueSearchTree(&root, 3);
-    insertValueSearchTree(&root, 7);
-    insertValueSearchTree(&root, 5);
-
-    insertValueSearchTree(&root, 2);
-    insertValueSearchTree(&root, 4);
-    insertValueSearchTree(&root, 6);
-    insertValueSearchTree(&root, 8);
-
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-
-    rightLeftRotation(&root);
-    gfx_clear();
-    drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-    gfx_paint();
-    getchar();
-    gfx_clear();
-    deleteSearchTree(&root);
-
     gfx_quit();
     return 0;
 }
