@@ -8,10 +8,10 @@
 #define g_NODE_WIDTH 30
 #define g_NODE_HEIGHT 30
 #define g_SCREEN_WIDTH 1200
-#define g_SCREEN_HEIGHT 800
+#define g_SCREEN_HEIGHT 700
 #define g_X_TREE_ORIGIN 600
 #define g_Y_TREE_ORIGIN 30
-#define g_NODES_DISTANCE 50
+#define g_NODES_DISTANCE 75
 
 typedef struct Tree
 {
@@ -505,6 +505,5 @@ int main()
         gfx_paint();
         getchar();
     } while (opcAcao != '0');
-
     return 0;
 }

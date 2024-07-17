@@ -11,11 +11,12 @@
 #define g_SCREEN_HEIGHT 800
 #define g_X_TREE_ORIGIN 600
 #define g_Y_TREE_ORIGIN 30
-#define g_NODES_DISTANCE 50
+#define g_NODES_DISTANCE 75
 
 typedef struct AVLTree
 {
-    int value, height;
+    int value:30;
+    int balance:2;
     struct AVLTree *left;
     struct AVLTree *right;
 } AVLTree;
@@ -65,7 +66,7 @@ AVLTree *newNodeSearchTree(int value)
     AVLTree *aux = malloc(sizeof(AVLTree));
     aux->value = value;
     aux->left = aux->right = NULL;
-    aux->height = 1;
+    aux->balance = 0;
     return aux;
 }
 
@@ -76,6 +77,8 @@ void leftRotation(AVLTree **T)
     *T = (*T)->right;
     aux->right = (*T)->left;
     (*T)->left = aux;
+    aux->balance = getBalance(aux);
+    (*T)->balance = getBalance(*T);
 }
 
 void rightRotation(AVLTree **T)
@@ -85,6 +88,8 @@ void rightRotation(AVLTree **T)
     *T = (*T)->left;
     aux->left = (*T)->right;
     (*T)->right = aux;
+    aux->balance = getBalance(aux);
+    (*T)->balance = getBalance(*T);
 }
 
 void leftRightRotation(AVLTree **T)
@@ -107,7 +112,6 @@ void insertValueAVLTree(AVLTree **T, int value)
     {
         if (*T)
         {
-            (*T)->height++;
             if (value < (*T)->value)
             {
                 insertValueAVLTree(&(*T)->left, value);
@@ -302,21 +306,67 @@ void drawTree(AVLTree *T, int x, int y, int dist)
     }
 }
 
+// Operações em Arquivo
+struct s_arq_no
+{
+    int32_t chave : 30;
+    uint32_t esq : 1;
+    uint32_t dir : 1;
+};
+
+
+FILE *openFile(const char *name, const char *mode)
+{
+    FILE *file;
+    if ((file = fopen(name, mode)) == NULL)
+    {
+        printf("Não foi possível abrir o arquivo %s\n", name);
+    }
+    return file;
+}
+
+
+void saveNodesInFile(AVLTree *T, FILE *dest)
+{
+    struct s_arq_no temp;
+    temp.chave = T->value;
+    temp.esq = T->left != NULL;
+    temp.dir = T->right != NULL;
+    fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
+    if (T->left)
+    {
+        saveNodesInFile(T->left, dest);
+    }
+    if (T->right)
+    {
+        saveNodesInFile(T->right, dest);
+    }
+}
+
+void saveSearchTreeInFile(AVLTree *T, const char *fileName)
+{
+    FILE *treeFIle = openFile(fileName, "wb");
+    if (treeFIle)
+    {
+        if (T)
+        {
+            saveNodesInFile(T, treeFIle);
+        }
+        else
+        {
+            fputc(0, treeFIle);
+        }
+        fclose(treeFIle);
+    }
+}
+
 int main()
 {
     AVLTree *root = NULL;
 
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
-    int i;
-    for (i = 0; i < 31; i++)
-    {
-        insertValueAVLTree(&root, i);
-        gfx_clear();
-        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-        gfx_paint();
-        sleep(1);
-    }
+
 
     deleteSearchTree(&root);
     gfx_quit();
