@@ -1,4 +1,4 @@
-#include "gfx"
+#include "gfx.h"
 
 
 int main(){
