@@ -15,7 +15,7 @@
 
 typedef struct Tree
 {
-    int value;
+    int key;
     struct Tree *left;
     struct Tree *right;
 } Tree;
@@ -41,22 +41,22 @@ void deleteSearchTree(Tree **T)
     }
 }
 
-Tree *newNodeSearchTree(int value)
+Tree *newNodeSearchTree(int key)
 {
     Tree *aux = malloc(sizeof(Tree));
-    aux->value = value;
+    aux->key = key;
     aux->left = aux->right = NULL;
     return aux;
 }
 
 // Insere um valor numa árvore binária de busca
-void insertValueSearchTree(Tree **T, int value)
+void insertkeySearchTree(Tree **T, int key)
 {
     if (T)
     {
         while (*T)
         {
-            if ((*T)->value > value)
+            if ((*T)->key > key)
             {
                 T = &(*T)->left;
             }
@@ -65,19 +65,19 @@ void insertValueSearchTree(Tree **T, int value)
                 T = &(*T)->right;
             }
         }
-        (*T) = newNodeSearchTree(value);
+        (*T) = newNodeSearchTree(key);
     }
 }
 
 // Remove um valor de uma árvore binária de busca
-int removeValueSearchTree(Tree **T, int value)
+int removekeySearchTree(Tree **T, int key)
 {
     Tree *aux;
     if (T)
     {
         while (*T)
         {
-            if ((*T)->value == value)
+            if ((*T)->key == key)
             {
                 aux = *T;
                 if ((*T)->left && (*T)->right)
@@ -87,8 +87,8 @@ int removeValueSearchTree(Tree **T, int value)
                     {
                         T = &(*T)->left;
                     }
-                    aux->value = (*T)->value;
-                    value = aux->value;
+                    aux->key = (*T)->key;
+                    key = aux->key;
                 }
                 else if ((*T)->left)
                 {
@@ -109,11 +109,11 @@ int removeValueSearchTree(Tree **T, int value)
                     return 1;
                 }
             }
-            else if ((*T)->value > value)
+            else if ((*T)->key > key)
             {
                 T = &(*T)->left;
             }
-            else if ((*T)->value < value)
+            else if ((*T)->key < key)
             {
                 T = &(*T)->right;
             }
@@ -157,17 +157,17 @@ Tree *maxSearchTree(Tree *T)
 }
 
 // Retorna um ponteiro para o nó com valor buscado ou NULL caso ele não exista na árvore binária de busca
-Tree *searchValueSearchTree(Tree *T, int value)
+Tree *searchkeySearchTree(Tree *T, int key)
 {
     // Percorre a árvore enquanto ela não vazia ou houverem valores possíveis para se analisar
     while (T)
     {
         // Se o valor buscado estiver no nó ou nos nós a esquerda ou direita, retorna o endereço deles
-        if (T->value == value)
+        if (T->key == key)
         {
             return T;
         }
-        if (T->value > value)
+        if (T->key > key)
         {
             T = T->left;
         }
@@ -181,7 +181,7 @@ Tree *searchValueSearchTree(Tree *T, int value)
 }
 
 // Retorna um ponteiro para o sucessor de um dado valor na árvore binária de busca
-Tree *sucessorNodeSearchTree(Tree *T, int value)
+Tree *sucessorNodeSearchTree(Tree *T, int key)
 {
     Tree *ancestralNode = NULL;
     // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o sucessor
@@ -189,11 +189,11 @@ Tree *sucessorNodeSearchTree(Tree *T, int value)
     // Que será o ancestral mais baixo que possui um nó filho à esquerda que é ancestral do nó buscado
     while (T)
     {
-        if (T->value < value)
+        if (T->key < key)
         {
             T = T->right;
         }
-        else if (T->value > value)
+        else if (T->key > key)
         {
             ancestralNode = T;
             T = T->left;
@@ -214,7 +214,7 @@ Tree *sucessorNodeSearchTree(Tree *T, int value)
 }
 
 // Retorna um ponteiro para o antecessor de um dado valor na árvore binária de busca
-Tree *predecessorNodeSearchTree(Tree *T, int value)
+Tree *predecessorNodeSearchTree(Tree *T, int key)
 {
     Tree *ancestralNode = NULL;
     // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o antecessor
@@ -222,12 +222,12 @@ Tree *predecessorNodeSearchTree(Tree *T, int value)
     // Que será o ancestral mais baixo que possui um nó filho à direita que é ancestral do nó buscado
     while (T)
     {
-        if (T->value < value)
+        if (T->key < key)
         {
             ancestralNode = T;
             T = T->right;
         }
-        else if (T->value > value)
+        else if (T->key > key)
         {
             T = T->left;
         }
@@ -281,7 +281,7 @@ FILE *openFile(const char *name, const char *mode)
 void saveNodesInFile(Tree *T, FILE *dest)
 {
     struct s_arq_no temp;
-    temp.chave = T->value;
+    temp.chave = T->key;
     temp.esq = T->left != NULL;
     temp.dir = T->right != NULL;
     fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
@@ -346,7 +346,7 @@ void readSearchTreeFromFile(Tree **T, const char *fileName)
     }
 }
 
-void drawNode(int x, int y, int value)
+void drawNode(int x, int y, int key)
 {
     char v[10];
     int largura, altura;
@@ -355,7 +355,7 @@ void drawNode(int x, int y, int value)
     gfx_set_color(255, 255, 255);
     gfx_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
     // Guarda o valor na string v
-    sprintf(v, "%d", value);
+    sprintf(v, "%d", key);
     gfx_get_text_size(v, &largura, &altura);
     gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y + g_NODE_HEIGHT / 2 - altura / 2, v);
 }
@@ -375,7 +375,7 @@ void drawTree(Tree *T, int x, int y, int dist)
             gfx_line(x, y + g_NODE_HEIGHT / 2, x + dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
-        drawNode(x - g_NODE_WIDTH / 2, y, T->value);
+        drawNode(x - g_NODE_WIDTH / 2, y, T->key);
     }
 }
 
@@ -383,7 +383,7 @@ int main()
 {
     Tree *root = NULL, *aux;
     char opcAcao, fileName[20];
-    int inputvalue;
+    int inputkey;
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
     do
     {
@@ -409,11 +409,11 @@ int main()
         case '1':
             if ((aux = maxSearchTree(root)))
             {
-                printf("\nA maior chave na árvore é: %d", aux->value);
+                printf("\nA maior chave na árvore é: %d", aux->key);
             }
             if ((aux = minSearchTree(root)))
             {
-                printf("\nA menor chave na árvore é: %d\n", aux->value);
+                printf("\nA menor chave na árvore é: %d\n", aux->key);
             }
             else
             {
@@ -422,9 +422,9 @@ int main()
             break;
         case '2':
             printf("\nInforme o valor da chave a ser buscada: ");
-            scanf("%d", &inputvalue);
+            scanf("%d", &inputkey);
             getchar();
-            if ((searchValueSearchTree(root, inputvalue)))
+            if ((searchkeySearchTree(root, inputkey)))
             {
                 printf("A chave está presente na árvore!\n");
             }
@@ -435,21 +435,21 @@ int main()
             break;
         case '3':
             printf("\nInforme o valor da chave que deve ser encontrado o antecessor e sucessor: ");
-            scanf("%d", &inputvalue);
+            scanf("%d", &inputkey);
             getchar();
-            if (searchValueSearchTree(root, inputvalue))
+            if (searchkeySearchTree(root, inputkey))
             {
-                if ((aux = predecessorNodeSearchTree(root, inputvalue)))
+                if ((aux = predecessorNodeSearchTree(root, inputkey)))
                 {
-                    printf("O antecessor da chave é: %d\n", aux->value);
+                    printf("O antecessor da chave é: %d\n", aux->key);
                 }
                 else
                 {
                     printf("A chave não possui antecessor!\n");
                 }
-                if ((aux = sucessorNodeSearchTree(root, inputvalue)))
+                if ((aux = sucessorNodeSearchTree(root, inputkey)))
                 {
-                    printf("O sucessor da chave é: %d\n", aux->value);
+                    printf("O sucessor da chave é: %d\n", aux->key);
                 }
                 else
                 {
@@ -463,18 +463,18 @@ int main()
             break;
         case '4':
             printf("\nInforme o valor da chave que deve ser inserida: ");
-            scanf("%d", &inputvalue);
+            scanf("%d", &inputkey);
             getchar();
-            insertValueSearchTree(&root, inputvalue);
-            printf("A chave %d foi inserida com sucesso!\n", inputvalue);
+            insertkeySearchTree(&root, inputkey);
+            printf("A chave %d foi inserida com sucesso!\n", inputkey);
             break;
         case '5':
             printf("\nInforme o valor da chave que deve ser removida: ");
-            scanf("%d", &inputvalue);
+            scanf("%d", &inputkey);
             getchar();
-            if (removeValueSearchTree(&root, inputvalue))
+            if (removekeySearchTree(&root, inputkey))
             {
-                printf("A chave %d foi removida com sucesso!\n", inputvalue);
+                printf("A chave %d foi removida com sucesso!\n", inputkey);
             }
             else
             {

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include "gfx.h"
@@ -12,264 +11,133 @@
 #define g_X_TREE_ORIGIN 600
 #define g_Y_TREE_ORIGIN 30
 #define g_NODES_DISTANCE 75
-
 typedef struct AVLTree
 {
-    int value:30;
-    int balance:2;
-    struct AVLTree *left;
-    struct AVLTree *right;
+    int key : 30, balance : 2;
+    struct AVLTree *left, *right;
 } AVLTree;
 
-int max(int a, int b)
+void deleteAVLTree(AVLTree **Tree)
 {
+    if (Tree)
+    {
+        if (*Tree)
+        {
+            if ((*Tree)->left)
+            {
+                deleteAVLTree(&(*Tree)->left);
+            }
+            if ((*Tree)->right)
+            {
+                deleteAVLTree(&(*Tree)->right);
+            }
+            free(*Tree);
+            *Tree = NULL;
+        }
+    }
+}
+
+int max(int a, int b){
     return a > b ? a : b;
 }
 
-int getHeight(AVLTree *node)
-{
-    if (!node)
-    {
+int getHeight(AVLTree *node){
+    if(!node){
         return 0;
     }
     return max(getHeight(node->left), getHeight(node->right)) + 1;
 }
 
-int getBalance(AVLTree *node)
-{
+int getBalance(AVLTree *node){
     return getHeight(node->right) - getHeight(node->left);
 }
 
-// Desaloca todos os nós de uma árvore binária de busca
-void deleteSearchTree(AVLTree **T)
-{
-    if (T)
-    {
-        if (*T)
-        {
-            if ((*T)->left)
-            {
-                deleteSearchTree(&(*T)->left);
-            }
-            if ((*T)->right)
-            {
-                deleteSearchTree(&(*T)->right);
-            }
-            free((*T));
-            *T = NULL;
-        }
-    }
-}
-
-AVLTree *newNodeSearchTree(int value)
-{
-    AVLTree *aux = malloc(sizeof(AVLTree));
-    aux->value = value;
-    aux->left = aux->right = NULL;
-    aux->balance = 0;
-    return aux;
-}
-
-void leftRotation(AVLTree **T)
-{
-    AVLTree *aux;
-    aux = *T;
+void leftRotation(AVLTree **T){
+    AVLTree *aux = *T;
     *T = (*T)->right;
     aux->right = (*T)->left;
     (*T)->left = aux;
     aux->balance = getBalance(aux);
     (*T)->balance = getBalance(*T);
-}
+}   
 
-void rightRotation(AVLTree **T)
-{
-    AVLTree *aux;
-    aux = *T;
+void rightRotation(AVLTree **T){
+    AVLTree *aux = *T;
     *T = (*T)->left;
     aux->left = (*T)->right;
     (*T)->right = aux;
     aux->balance = getBalance(aux);
     (*T)->balance = getBalance(*T);
-}
+}   
 
-void leftRightRotation(AVLTree **T)
-{
+void leftRightRotation(AVLTree **T){
     leftRotation(&(*T)->left);
     rightRotation(T);
 }
 
-void rightLeftRotation(AVLTree **T)
-{
+void rightLeftRotation(AVLTree **T){
     rightRotation(&(*T)->right);
     leftRotation(T);
 }
 
-// Insere um valor numa árvore binária de busca
-void insertValueAVLTree(AVLTree **T, int value)
-{
-    int balance = 0;
-    if (T)
-    {
-        if (*T)
-        {
-            if (value < (*T)->value)
-            {
-                insertValueAVLTree(&(*T)->left, value);
-            }
-            else
-            {
-                insertValueAVLTree(&(*T)->right, value);
-            }
-            balance = getBalance(*T);
-            if (balance > 1 && value < (*T)->right->value)
-            {
-                rightLeftRotation(T);
-            }
-            else if (balance < -1 && value < (*T)->left->value)
-            {
-                rightRotation(T);
-            }
-            else if (balance > 1 && value > (*T)->right->value)
-            {
-                leftRotation(T);
-            }
-            else if (balance < -1 && value > (*T)->left->value)
-            {
-                leftRightRotation(T);
-            }
-        }
-        else
-        {
-            *T = newNodeSearchTree(value);
-        }
-    }
+AVLTree *newNodeAVLTree(int key){
+    AVLTree *new = malloc(sizeof(AVLTree));
+    new->key = key;
+    new->left = new->right = NULL;
+    new->balance = 0;
+    return new;
 }
 
-// Retorna um ponteiro para o menor nó na árvore binária de busca
-AVLTree *minSearchTree(AVLTree *T)
-{
-    if (T)
-    {
-        // Percorre a árvore até encontrar o nó mais à esquerda
-        while (T->left)
-        {
-            T = T->left;
+int rebalanceNode(AVLTree **T, int equilibrium){
+    int balance = (*T)->balance + equilibrium;
+    if(balance > 1){
+        if((*T)->right->balance == -1){
+            rightLeftRotation(T);
         }
-        // Retorna o nó com o menor valor
-        return T;
-    }
-    // Retorna NULL se a árvore era vazia
-    return NULL;
-}
-
-// Retorna um ponteiro para o maior nó na árvore binária de busca
-AVLTree *maxSearchTree(AVLTree *T)
-{
-    if (T)
-    {
-        // Percorre a árvore até encontrar o nó mais à direita
-        while (T->right)
-        {
-            T = T->right;
-        }
-        // Retorna o nó com o maior valor
-        return T;
-    }
-    // Retorna NULL se a árvore era vazia
-    return NULL;
-}
-
-// Retorna um ponteiro para o nó com valor buscado ou NULL caso ele não exista na árvore binária de busca
-AVLTree *searchValueSearchTree(AVLTree *T, int value)
-{
-    // Percorre a árvore enquanto ela não vazia ou houverem valores possíveis para se analisar
-    while (T)
-    {
-        // Se o valor buscado estiver no nó ou nos nós a esquerda ou direita, retorna o endereço deles
-        if (T->value == value)
-        {
-            return T;
-        }
-        if (T->value > value)
-        {
-            T = T->left;
-        }
-        else
-        {
-            T = T->right;
+        else{
+            leftRotation(T);
         }
     }
-    // Se a árvore era vazia ou o valor não encontrado retorna NULL
-    return NULL;
-}
-
-// Retorna um ponteiro para o sucessor de um dado valor na árvore binária de busca
-AVLTree *sucessorNodeSearchTree(AVLTree *T, int value)
-{
-    AVLTree *ancestralNode = NULL;
-    // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o sucessor
-    // Enquanto mantém um ponteiro para o último nó em que foi efetuado uma "virada para esquerda"
-    // Que será o ancestral mais baixo que possui um nó filho à esquerda que é ancestral do nó buscado
-    while (T)
-    {
-        if (T->value < value)
-        {
-            T = T->right;
+    else if(balance < -1){
+        if((*T)->left->balance == 1){
+            leftRightRotation(T);
         }
-        else if (T->value > value)
-        {
-            ancestralNode = T;
-            T = T->left;
-        }
-        else if (T->right)
-        {
-            // No caso do nó com o valor buscado tiver filho à direita, o sucessor
-            // será o menor valor na sub-árvore direita dele
-            return minSearchTree(T->right);
-        }
-        else
-        {
-            // Caso não exista a sub-árvore direita, o sucessor será o nó ancestral que foi mantido durante a busca
-            return ancestralNode;
+        else{
+            rightRotation(T);
         }
     }
-    return NULL;
+    else{
+        (*T)->balance = balance;
+        return 0;
+    }
+    return 1;
 }
 
-// Retorna um ponteiro para o antecessor de um dado valor na árvore binária de busca
-AVLTree *predecessorNodeSearchTree(AVLTree *T, int value)
-{
-    AVLTree *ancestralNode = NULL;
-    // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o antecessor
-    // Enquanto mantém um ponteiro para o último nó em que foi efetuado uma "virada para direita"
-    // Que será o ancestral mais baixo que possui um nó filho à direita que é ancestral do nó buscado
-    while (T)
-    {
-        if (T->value < value)
-        {
-            ancestralNode = T;
-            T = T->right;
+int insertAVLTree(AVLTree **T, int key){
+    int wasRebalanced;
+    if(T){
+        if(*T){
+            if((*T)->key > key){
+                wasRebalanced = insertAVLTree(&(*T)->left, key);
+                if(!wasRebalanced){
+                    wasRebalanced = rebalanceNode(T, -1);
+                }
+            }
+            else if((*T)->key < key){
+                wasRebalanced = insertAVLTree(&(*T)->left, key);
+                if(!wasRebalanced){
+                    wasRebalanced = rebalanceNode(T, 1);
+                }
+            }
         }
-        else if (T->value > value)
-        {
-            T = T->left;
-        }
-        else if (T->left)
-        {
-            // No caso do nó com o valor buscado tiver filho à direita, o antecessor
-            // será o maior valor na sub-árvore esquerda dele
-            return maxSearchTree(T->left);
-        }
-        else
-        {
-            // Caso não exista a sub-árvore esquerda, o antecessor será o nó ancestral que foi mantido durante a busca
-            return ancestralNode;
+        else{
+            *T = newNodeAVLTree(key);
         }
     }
-    return NULL;
+    return 0;
 }
 
-void drawNode(int x, int y, int value, int balance)
+void drawNode(int x, int y, int key, int balance)
 {
     char v[10];
     int largura, altura;
@@ -278,7 +146,7 @@ void drawNode(int x, int y, int value, int balance)
     gfx_set_color(255, 255, 255);
     gfx_rectangle(x, y, x + g_NODE_WIDTH, y + g_NODE_HEIGHT);
     // Guarda o valor na string v
-    sprintf(v, "%d", value);
+    sprintf(v, "%d", key);
     gfx_get_text_size(v, &largura, &altura);
     gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y + g_NODE_HEIGHT / 2 - altura / 2, v);
 
@@ -302,7 +170,7 @@ void drawTree(AVLTree *T, int x, int y, int dist)
             gfx_line(x, y + g_NODE_HEIGHT / 2, x + dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
-        drawNode(x - g_NODE_WIDTH / 2, y, T->value, getBalance(T));
+        drawNode(x - g_NODE_WIDTH / 2, y, T->key, getBalance(T));
     }
 }
 
@@ -329,7 +197,7 @@ FILE *openFile(const char *name, const char *mode)
 void saveNodesInFile(AVLTree *T, FILE *dest)
 {
     struct s_arq_no temp;
-    temp.chave = T->value;
+    temp.chave = T->key;
     temp.esq = T->left != NULL;
     temp.dir = T->right != NULL;
     fwrite(&temp, sizeof(struct s_arq_no), 1, dest);
@@ -363,12 +231,19 @@ void saveSearchTreeInFile(AVLTree *T, const char *fileName)
 int main()
 {
     AVLTree *root = NULL;
+    srand(time(NULL));
 
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
+    int i;
+    for(i = 0; i < 10; i++){
+        insertAVLTree(&root, rand() % 100 + 1);
+        gfx_clear();
+        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH/2);
+        gfx_paint();
+    }
 
-
-    deleteSearchTree(&root);
+    deleteAVLTree(&root);
     gfx_quit();
     return 0;
 }
