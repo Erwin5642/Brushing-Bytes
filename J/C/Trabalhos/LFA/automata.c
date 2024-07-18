@@ -13,7 +13,7 @@ void clear()
 {
 #ifdef __unix__
     system("clear");
-#elif defined(_WIN32) || defined(WIN32)
+#else
     system("cls");
 #endif
 }
