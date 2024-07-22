@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 
+//Objetivo: multiplica uma linha de uma matriz por um escalar
 void escalarLinha(double escalar, double linha[10], int n)
 {
     while (n--)
@@ -9,6 +10,7 @@ void escalarLinha(double escalar, double linha[10], int n)
     }
 }
 
+//Objetivo: soma duas linhas e salva o resultado na linhaDest
 void somaLinha(double linhaDest[10], double linhaSrc[10], int n)
 {
     while (n--)
@@ -17,6 +19,7 @@ void somaLinha(double linhaDest[10], double linhaSrc[10], int n)
     }
 }
 
+//Objetivo: troca os valores entre duas linhas
 void trocaLinha(double linha1[10], double linha2[10], int n)
 {
     double linhaAux;
@@ -28,6 +31,7 @@ void trocaLinha(double linha1[10], double linha2[10], int n)
     }
 }
 
+//Objetivo: mostra os valores em uma matriz de forma formatada
 void mostrarMatriz(double matriz[10][10], unsigned short n){
     unsigned short i, j;
     for(i = 0; i < n; i++){
@@ -38,6 +42,7 @@ void mostrarMatriz(double matriz[10][10], unsigned short n){
     }
 }
 
+//Objetivo: calcula o determinante de uma matriz
 double determinante(double matriz[10][10], unsigned short n)
 {
     unsigned short i, j = 0, p = 1;
@@ -46,10 +51,12 @@ double determinante(double matriz[10][10], unsigned short n)
     mostrarMatriz(matriz, n);
     for (j = 0; j < n; j++)
     {
+        //Se o pivo for zero procura um candidato melhor
         if (!matriz[j][j])
         {
             for(i = j + 1; i < n && !matriz[i][j]; i++){
             }
+            //Encontrando o novo pivo, troca as linhas e atualiza a direção do determinante
             if(i < n && matriz[i][j]){
                 trocaLinha(matriz[i], matriz[j], n);
                 det *= -1;
@@ -59,6 +66,7 @@ double determinante(double matriz[10][10], unsigned short n)
         {
             printf("Passo %u:\n", p);
             p++;
+            //Caso exista um pivo, simplifica a matriz
             if (matriz[i][j])
             {
                 cm = matriz[i][j] / matriz[j][j];
@@ -66,9 +74,11 @@ double determinante(double matriz[10][10], unsigned short n)
                 somaLinha(matriz[i] + j, matriz[j] + j, n - j);
                 escalarLinha(-1 / cm, matriz[j] + j, n - j);
             }
+            //Mostra o resultado do passo p
             mostrarMatriz(matriz, n);
         }
     }
+    //Calcula o determinante baseado na diagonal matriz triangular resultante
     for (i = 0; i < n; i++)
     {
         det *= matriz[i][i];
