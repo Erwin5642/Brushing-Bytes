@@ -4,7 +4,7 @@
 # cd("diretório") abre um diretório existente
 # Para entrar no package manager é necessário clicar na tecla "]" dentro do REPL
 # Escrever "activate ." no terminal indicará ao package manager que o seu projeto está no diretório atual 
-# Para adicionar um package para um projeto, utilize "add "PakcageName""
+# Para adicionar um package para um projeto, utilize "add "PackageName""
 # Após instalar um package pressione backspace para voltar ao REPL
 # Além disso, dois arquivos serão criados no diretório do projeto
 # Project.toml: Contém todos os packages instalados no projeto
