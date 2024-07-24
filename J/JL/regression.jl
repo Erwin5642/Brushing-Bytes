@@ -1,6 +1,6 @@
 using CSV, GLM, Plots, TypedTables
 
-data = CSV.File("housingdata.csv")
+data = CSV.File("/home/joao/Brushing-Bytes/J/JL/housingdata.csv")
 
 x = data.size
 
@@ -71,6 +71,8 @@ weight_temp = partialDerivativeWeight(x, y)
 bias -= α0 * bias_temp
 weight -= α1 * weight_temp
 
+plot!(x, h(x), color = :blue, alpha = 0.5, title = "Mercado imobiliario de Portland ($epochs)")
+
 y_prediction = h(x)
 
 J = cost(x, y)
@@ -78,13 +80,12 @@ J = cost(x, y)
 push!(J_history, J)
 
 epochs += 1
-
-plot!(x, y_prediction, color = :blue, alpha = 0.5, title = "Mercado imobiliario de Portland ($epochs)")
+epochs
 # Fim do treinamento
 
 gr(size = (600, 600))
 
-p_line = plot(0:epochs, J_history, xlabel = "Epocas", ylabel = "Custo", title = "Curva de Aprendizado", legend = false, color = :blue)
+p_line = plot(1:epochs, J_history, xlabel = "Epocas", ylabel = "Custo", title = "Curva de Aprendizado", legend = false, color = :blue)
 
 newX_ml = [1250]
 h(newX_ml)
