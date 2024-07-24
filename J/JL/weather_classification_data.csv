@@ -1,0 +1,100 @@
+Temperature,Humidity,Wind Speed,Precipitation (%),Cloud Cover,Atmospheric Pressure,UV Index,Season,Visibility (km),Location,Weather Type
+14.0,73,9.5,82.0,partly cloudy,1010.82,2,Winter,3.5,inland,Rainy
+39.0,96,8.5,71.0,partly cloudy,1011.43,7,Spring,10.0,inland,Cloudy
+30.0,64,7.0,16.0,clear,1018.72,5,Spring,5.5,mountain,Sunny
+38.0,83,1.5,82.0,clear,1026.25,7,Spring,1.0,coastal,Sunny
+27.0,74,17.0,66.0,overcast,990.67,1,Winter,2.5,mountain,Rainy
+32.0,55,3.5,26.0,overcast,1010.03,2,Summer,5.0,inland,Cloudy
+-2.0,97,8.0,86.0,overcast,990.87,1,Winter,4.0,inland,Snowy
+3.0,85,6.0,96.0,partly cloudy,984.46,1,Winter,3.5,inland,Snowy
+3.0,83,6.0,66.0,overcast,999.44,0,Winter,1.0,mountain,Snowy
+28.0,74,8.5,107.0,clear,1012.13,8,Winter,7.5,coastal,Sunny
+35.0,45,6.0,86.0,partly cloudy,879.88,2,Spring,1.0,mountain,Cloudy
+38.0,43,2.0,16.0,clear,1029.16,11,Autumn,7.5,inland,Sunny
+12.0,59,10.5,25.0,partly cloudy,1016.08,3,Autumn,5.5,mountain,Cloudy
+-10.0,87,15.0,67.0,overcast,986.19,0,Winter,1.5,inland,Snowy
+24.0,21,3.5,8.0,clear,1018.88,8,Winter,5.5,coastal,Sunny
+10.0,50,6.5,46.0,partly cloudy,1000.44,2,Summer,8.5,mountain,Cloudy
+30.0,27,7.0,13.0,partly cloudy,1016.38,5,Spring,7.5,inland,Sunny
+33.0,51,0.5,27.0,overcast,1009.18,3,Autumn,5.5,coastal,Cloudy
+43.0,46,0.5,15.0,clear,1025.8,9,Spring,6.0,mountain,Sunny
+13.0,102,12.0,72.0,clear,1012.25,4,Summer,8.0,inland,Sunny
+-10.0,67,8.5,75.0,overcast,991.53,1,Winter,3.0,mountain,Snowy
+-7.0,88,12.5,98.0,overcast,980.31,1,Winter,3.0,inland,Snowy
+33.0,36,7.5,18.0,clear,1014.29,8,Summer,9.5,mountain,Sunny
+26.0,73,13.5,29.0,overcast,1012.02,1,Summer,9.0,inland,Cloudy
+38.0,83,7.0,101.0,partly cloudy,1017.94,4,Spring,8.5,mountain,Cloudy
+4.0,79,1.0,85.0,partly cloudy,982.53,1,Winter,4.5,inland,Snowy
+17.0,72,7.5,62.0,overcast,1010.16,2,Summer,3.0,mountain,Rainy
+40.0,57,4.0,12.0,partly cloudy,1020.73,11,Winter,9.5,coastal,Sunny
+24.0,61,6.5,3.0,partly cloudy,1018.15,7,Autumn,5.5,mountain,Sunny
+30.0,70,16.0,54.0,partly cloudy,1007.75,0,Winter,3.0,mountain,Rainy
+28.0,85,7.0,97.0,overcast,991.07,1,Spring,2.0,coastal,Rainy
+2.0,61,16.5,63.0,overcast,995.74,0,Winter,1.0,inland,Snowy
+4.0,95,2.5,56.0,overcast,984.63,1,Winter,4.5,inland,Snowy
+15.0,97,23.0,91.0,overcast,1009.36,13,Winter,2.5,mountain,Rainy
+29.0,69,3.0,15.0,clear,1012.09,10,Winter,5.5,inland,Sunny
+35.0,21,10.0,6.0,clear,1026.81,5,Autumn,7.5,coastal,Sunny
+11.0,90,25.5,76.0,partly cloudy,996.17,0,Winter,1.0,mountain,Rainy
+2.0,105,19.0,109.0,overcast,991.68,7,Winter,3.5,mountain,Snowy
+-9.0,49,1.5,58.0,partly cloudy,1132.2,8,Spring,16.5,mountain,Snowy
+27.0,64,11.5,37.0,partly cloudy,1017.27,3,Autumn,8.0,coastal,Cloudy
+32.0,37,0.5,9.0,partly cloudy,1013.99,11,Winter,8.5,inland,Sunny
+36.0,22,1.0,0.0,clear,1028.63,10,Summer,5.5,mountain,Sunny
+28.0,54,15.0,39.0,partly cloudy,1018.86,3,Winter,8.5,mountain,Cloudy
+42.0,64,2.0,18.0,partly cloudy,1028.55,8,Autumn,8.0,mountain,Sunny
+21.0,43,10.0,11.0,clear,1019.41,11,Spring,6.0,mountain,Sunny
+22.0,50,0.0,18.0,clear,1016.5,5,Summer,8.0,coastal,Sunny
+33.0,66,9.0,18.0,partly cloudy,1014.34,3,Autumn,6.0,mountain,Cloudy
+26.0,25,2.5,14.0,partly cloudy,1010.34,8,Winter,5.0,mountain,Sunny
+26.0,91,9.5,82.0,overcast,1019.42,3,Summer,4.0,mountain,Rainy
+-2.0,98,18.5,86.0,overcast,981.26,0,Winter,3.5,mountain,Snowy
+17.0,90,11.0,98.0,overcast,1017.49,3,Winter,4.0,inland,Rainy
+25.0,55,8.5,37.0,partly cloudy,1014.49,4,Summer,7.5,inland,Cloudy
+-4.0,96,20.0,88.0,partly cloudy,990.72,1,Winter,4.5,mountain,Snowy
+-1.0,87,14.0,78.0,overcast,984.11,0,Winter,4.0,inland,Snowy
+-5.0,94,5.5,55.0,overcast,991.65,0,Winter,3.0,inland,Snowy
+22.0,95,13.0,90.0,overcast,997.97,3,Autumn,2.5,coastal,Rainy
+41.0,85,9.0,101.0,overcast,1017.89,3,Summer,7.5,mountain,Cloudy
+33.0,41,0.0,4.0,clear,1018.56,7,Winter,9.5,coastal,Sunny
+31.0,70,0.5,69.0,overcast,1074.07,3,Spring,12.5,inland,Sunny
+16.0,84,18.5,54.0,overcast,996.12,0,Spring,3.0,coastal,Rainy
+10.0,64,14.0,18.0,overcast,1011.96,1,Spring,8.5,coastal,Cloudy
+29.0,63,6.0,68.0,overcast,992.45,0,Winter,3.0,mountain,Rainy
+15.0,55,1.5,32.0,partly cloudy,1009.01,2,Autumn,5.5,inland,Cloudy
+3.0,75,46.5,87.0,overcast,996.85,5,Winter,4.5,inland,Snowy
+24.0,52,9.0,29.0,partly cloudy,1007.84,1,Autumn,8.0,mountain,Cloudy
+25.0,85,9.0,67.0,overcast,995.4,1,Winter,2.0,mountain,Rainy
+25.0,89,1.5,87.0,partly cloudy,1017.16,11,Summer,6.5,mountain,Sunny
+24.0,47,8.0,17.0,clear,1025.22,5,Summer,6.0,mountain,Sunny
+2.0,97,2.0,89.0,partly cloudy,993.14,0,Winter,3.0,inland,Snowy
+21.0,54,3.0,17.0,clear,1026.15,7,Summer,8.0,mountain,Sunny
+2.0,81,13.5,57.0,overcast,983.36,1,Winter,4.0,inland,Snowy
+21.0,75,3.5,41.0,partly cloudy,1017.74,2,Winter,8.0,mountain,Cloudy
+11.0,52,6.0,97.0,overcast,1063.39,7,Summer,12.5,inland,Snowy
+31.0,62,6.5,84.0,overcast,1013.61,0,Spring,4.5,inland,Rainy
+33.0,31,6.5,18.0,clear,1022.53,7,Summer,8.5,coastal,Sunny
+34.0,47,5.0,4.0,clear,1027.53,9,Spring,10.0,inland,Sunny
+21.0,66,13.5,29.0,partly cloudy,1018.98,3,Autumn,8.5,mountain,Cloudy
+28.0,68,18.0,90.0,overcast,992.83,3,Winter,5.0,mountain,Rainy
+33.0,62,10.0,83.0,partly cloudy,1009.48,1,Summer,3.5,inland,Rainy
+25.0,96,6.0,90.0,overcast,1006.67,0,Autumn,4.5,mountain,Rainy
+27.0,73,9.5,47.0,partly cloudy,1017.82,1,Summer,7.0,coastal,Cloudy
+49.0,75,11.5,82.0,partly cloudy,1029.09,10,Summer,7.0,coastal,Sunny
+-5.0,73,12.0,63.0,partly cloudy,983.83,1,Winter,4.5,inland,Snowy
+31.0,62,5.5,99.0,overcast,1019.92,0,Summer,4.5,mountain,Rainy
+2.0,91,6.5,92.0,overcast,999.46,0,Winter,2.5,inland,Snowy
+32.0,35,2.5,63.0,partly cloudy,1160.48,2,Winter,0.0,coastal,Sunny
+-7.0,78,10.0,96.0,overcast,999.99,7,Winter,1.0,inland,Snowy
+27.0,43,1.0,8.0,clear,1022.48,9,Summer,9.0,mountain,Sunny
+12.0,56,9.5,19.0,partly cloudy,1014.4,4,Winter,6.5,mountain,Cloudy
+-7.0,93,9.0,60.0,overcast,995.63,1,Winter,4.0,inland,Snowy
+15.0,81,28.5,71.0,partly cloudy,1008.0,4,Winter,6.0,inland,Cloudy
+30.0,64,6.0,67.0,partly cloudy,1009.12,3,Summer,4.0,coastal,Rainy
+19.0,93,14.5,57.0,overcast,1018.44,0,Winter,4.0,inland,Rainy
+14.0,44,9.0,11.0,partly cloudy,853.01,14,Winter,3.5,coastal,Rainy
+32.0,38,11.0,15.0,partly cloudy,824.71,9,Autumn,12.5,inland,Snowy
+17.0,88,18.0,83.0,partly cloudy,1026.94,0,Spring,5.5,mountain,Sunny
+23.0,88,11.5,65.0,overcast,1000.74,1,Winter,5.0,mountain,Rainy
+28.0,35,9.5,0.0,partly cloudy,1023.62,9,Winter,10.0,coastal,Sunny
+-4.0,87,5.0,54.0,overcast,981.02,1,Winter,4.5,mountain,Snowy
