@@ -22,6 +22,8 @@ newX.x
 scatter!(newX.x, newY)
 
 ## Machine learning approach
+x = [i for i = 1:12]
+y = [i for i = 4:3:37]
 
 epochs = 0
 
@@ -34,7 +36,8 @@ weight = 0.0 #slope
 
 h(x) = weight * x .+ bias #hypothesis
 
-plot!(x, h(x), color = :blue, linewidth = 3)
+
+h(1)
 
 # Função de custo de Andrew Ng
 n = length(x)
@@ -61,8 +64,14 @@ function partialDerivativeWeight(x, y)
 end
 
 # Hiperparametro - Razão de aprendizado
-α0 = 0.09
-α1 = 0.00000008
+α0 = 0.01
+α1 = 0.01
+
+bias = 0.0
+weight = 0.0
+for i = 1:1000
+
+y_prediction = h(x)
 
 # Treinamento Iterativo
 bias_temp = partialDerivativeBias(x, y)
@@ -71,9 +80,19 @@ weight_temp = partialDerivativeWeight(x, y)
 bias -= α0 * bias_temp
 weight -= α1 * weight_temp
 
-plot!(x, h(x), color = :blue, alpha = 0.5, title = "Mercado imobiliario de Portland ($epochs)")
+end
 
-y_prediction = h(x)
+bias 
+weight 
+
+weight = 3.0731459
+bias = 0.3839735
+
+plot!(x, h(x), color = :blue, linewidth = 3)
+
+
+
+plot!(x, h(x), color = :blue, alpha = 0.5, title = "Mercado imobiliario de Portland ($epochs)")
 
 J = cost(x, y)
 
