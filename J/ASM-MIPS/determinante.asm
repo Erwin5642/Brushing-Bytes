@@ -1,8 +1,7 @@
 .data 
-    matrix: .word 1 3 5 
-            .word 2 1 0
-            .word 4 2 3
-    .eqv size 3
+    matrix: .word 1 3  
+            .word 2 1 
+    .eqv size 2
     .eqv data_size 4
     .eqv space 32
     .eqv endl 10
@@ -14,6 +13,15 @@
 	addi $a1, $zero, size
 	jal mostrarMatriz
 
+	lui $at, 0x00001001
+	ori $a0, $at, 0
+	addi $a1, $zero, size
+
+	jal determinante
+	add $a0, $zero, $v0
+	addi $v0, $zero, 1
+	syscall
+
     # Encerra o programa
     addi $v0, $zero, 10
     syscall
@@ -23,9 +31,20 @@
     # retorno: v0 = det
     
     # Caso base
+    addi $t0, $zero, 2
+    beq $a1, $t0, matriz2x2
 
+    jr $ra
 
-
+    matriz2x2:
+        lw $t0, 0($a0) 
+        lw $t1, 12($a0)
+        mul $v0, $t0, $t1
+        lw $t0, 4($a0) 
+        lw $t1, 8($a0)
+        mul $t0, $t0, $t1
+        sub $v0, $v0, $t0
+    jr $ra
 
     mostrarMatriz:
     # argumentos: a0 = matrix, a1 = tam
