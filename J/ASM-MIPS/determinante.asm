@@ -33,7 +33,6 @@
     # Caso base
     addi $t0, $zero, 2
     beq $a1, $t0, matriz2x2
-
     jr $ra
 
     matriz2x2:
