@@ -90,8 +90,6 @@ bias = 0.3839735
 
 plot!(x, h(x), color = :blue, linewidth = 3)
 
-
-
 plot!(x, h(x), color = :blue, alpha = 0.5, title = "Mercado imobiliario de Portland ($epochs)")
 
 J = cost(x, y)
@@ -108,3 +106,4 @@ p_line = plot(1:epochs, J_history, xlabel = "Epocas", ylabel = "Custo", title = 
 
 newX_ml = [1250]
 h(newX_ml)
+
