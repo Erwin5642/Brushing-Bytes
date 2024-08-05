@@ -1,15 +1,8 @@
 using Plots, CSV
 
-<<<<<<< HEAD
-data = CSV.File("/home/joao/Brushing-Bytes/J/JL/housingdata.csv")
-
-x = data.size
-y = data.price
-=======
 x = [i for i in 0:0.1:10]
 f(x) = -100 * x + 3
 y = f.(x)
->>>>>>> refs/remotes/origin/main
 
 cost(bias, weight) = (1 / (2 * length(x))) * sum((x * weight .+ bias - y).^2)
 
@@ -44,7 +37,7 @@ for i in 1:100
     bias -= alpha1 * partialDerivativeBias(bias, weight)
     weight -= alpha2 * partialDerivativeWeight(bias, weight)
     println("(vies = $bias, peso = $weight")
-end every 1
+end
 
 bias
 weight
