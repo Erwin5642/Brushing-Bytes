@@ -1,8 +1,9 @@
-using Plots
+using Plots, CSV
 
-x = [i for i in 0:0.1:10]
-f(x) = -1 * x + 2
-y = f.(x)
+data = CSV.File("/home/joao/Brushing-Bytes/J/JL/housingdata.csv")
+
+x = data.size
+y = data.price
 
 cost(bias, weight) = (1 / (2 * length(x))) * sum((x * weight .+ bias - y).^2)
 
@@ -30,8 +31,7 @@ weight = 0.0
 alpha1 = 0.9
 alpha2 = 0.0000008
 
-@gif for i in 1:100
-    global bias, weight, alpha1, alpha2
+for i in 1:100
     scatter!([bias], [weight], cost.([bias], [weight]), legend = false)
     bias -= alpha1 * partialDerivativeBias(bias, weight)
     weight -= alpha2 * partialDerivativeWeight(bias, weight)
