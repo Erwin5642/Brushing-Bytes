@@ -32,13 +32,12 @@ weight = 0.0
 alpha1 = 1
 alpha2 = 0.09
 
-@gif for i in 1:100
-    global bias, weight, alpha1, alpha2
+for i in 1:100
     scatter!([bias], [weight], cost.([bias], [weight]), legend = false)
     bias -= alpha1 * partialDerivativeBias(bias, weight)
     weight -= alpha2 * partialDerivativeWeight(bias, weight)
     println("(vies = $bias, peso = $weight")
-end every 1
+end
 
 bias
 weight

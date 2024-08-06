@@ -1,16 +1,18 @@
 // Nome: João Vitor Antunes da Silva         RGM: 48935
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <stdio.h>
 #include "gfx.h"
 
-#define g_NODE_WIDTH 30
-#define g_NODE_HEIGHT 30
-#define g_SCREEN_WIDTH 1200
-#define g_SCREEN_HEIGHT 700
-#define g_X_TREE_ORIGIN 600
-#define g_Y_TREE_ORIGIN 30
-#define g_NODES_DISTANCE 75
+// Constantes para regular o desenho da árvore binária e da janela
+#define g_NODE_WIDTH 30 //Largura do nó
+#define g_NODE_HEIGHT 30 //Altura do nó
+#define g_SCREEN_WIDTH 1200 //Largura da janela
+#define g_SCREEN_HEIGHT 700 //Altura da janela
+#define g_X_TREE_ORIGIN 600 //Coordenada x a partir de onde a árvore será desenhada
+#define g_Y_TREE_ORIGIN 30 //Coordenada y a partir de onde a árvore será desenhada
+#define g_NODES_DISTANCE 75 //Distancia horizontal entre cada nó
 
+// Estrutura para oprações com a árvore binária de busca
 typedef struct BinaryTree
 {
     int key;
@@ -39,17 +41,23 @@ void deleteBinaryTree(BinaryTree **T)
     }
 }
 
-// Retorna um ponteiro para o nó com valor buscado ou NULL caso ele não exista na árvore binária de busca
+// Retorna um ponteiro para o nó com valor buscado ou NULL caso ele não exista na árvore binária de busca e salva um flag
+// 0: Arvore vazia
+// 1: Chave presente na arvore
+// 2: Chave menor que o minimo
+// 3: Chave maior que o maximo  
 BinaryTree *searchkeyBinaryTree(BinaryTree *root, int key, int *flag)
 {
     if (!root)
     {
+        //Arvore vazia
         *flag = 0;
     }
     while (root)
     {
         if (key == root->key)
         {
+            //Encontrou a chave
             *flag = 1;
             return root;
         }
@@ -57,6 +65,7 @@ BinaryTree *searchkeyBinaryTree(BinaryTree *root, int key, int *flag)
         {
             if (!root->left)
             {
+                //Chave menor que nó atual, mas sem filhos a esquerda
                 *flag = 2;
                 return root;
             }
@@ -66,6 +75,7 @@ BinaryTree *searchkeyBinaryTree(BinaryTree *root, int key, int *flag)
         {
             if (!root->right)
             {
+                //Chave maior que nó atual, mas sem filhos a direita
                 *flag = 3;
                 return root;
             }
@@ -75,6 +85,7 @@ BinaryTree *searchkeyBinaryTree(BinaryTree *root, int key, int *flag)
     return NULL;
 }
 
+//Aloca um nó
 BinaryTree *newNodeBinaryTree(int key)
 {
     BinaryTree *aux = malloc(sizeof(BinaryTree));
@@ -83,37 +94,46 @@ BinaryTree *newNodeBinaryTree(int key)
     return aux;
 }
 
-// Insere um valor numa árvore binária de busca
+// Insere um valor numa árvore binária de busca e retorna se a operação foi realizada com sucesso
 int insertKeyBinaryTree(BinaryTree **root, int key)
 {
     int flag;
     BinaryTree *new;
     if (root)
     {
+        //Faz uma busca  pela chave, inserindo de acordo com a flag
         new = searchkeyBinaryTree(*root, key, &flag);
+        //Insere apenas se a chave não foi encontrada
         if (flag != 1)
         {
+            //Se a arvore for vazia insere na raiz
             if (flag == 0)
             {
                 *root = newNodeBinaryTree(key);
             }
             else if (flag == 2)
             {
+                //Insere a esquerda do ultimo valor maior que a chave a ser inserida
                 new->left = newNodeBinaryTree(key);
             }
             else
             {
+                //Insere a direita do ultimo valor menor que a chave a ser inserida
                 new->right = newNodeBinaryTree(key);
             }
+            //Retorna positivamente que a chave foi inserida
             return 1;
         }
     }
+    //Retorna zero se não foi possivel inserir a chave
     return 0;
 }
 
+// Remove um nó qualquer da arvore e retorna o nó que substituiu ele
 BinaryTree *removeNodeBinaryTree(BinaryTree *node)
 {
     BinaryTree *aux, **sucessorPointer;
+    //Se houver filho a esquerda ou direita, apenas substitui o nó removido por um deles
     if (!node->left)
     {
         aux = node->right;
@@ -126,7 +146,7 @@ BinaryTree *removeNodeBinaryTree(BinaryTree *node)
         free(node);
         return aux;
     }
-    // Encontra o sucessor do nó a ser removido
+    // Se não, encontra o sucessor do nó a ser removido
     sucessorPointer = &node->right;
     while ((*sucessorPointer)->left)
     {
@@ -142,7 +162,7 @@ BinaryTree *removeNodeBinaryTree(BinaryTree *node)
     return aux;
 }
 
-// Remove uma chave de uma árvore binária de busca
+// Remove um nó da árvore a partir de uma chave
 // Retorna 1 num sucesso e 0 se houver algum erro
 int removeKeyBinaryTree(BinaryTree **root, int key)
 {
@@ -280,7 +300,7 @@ char readChar()
     return c;
 }
 
-// Operações em Arquivo
+// Estrutura para operações em Arquivo
 struct s_arq_no
 {
     int32_t chave : 30;
@@ -288,6 +308,7 @@ struct s_arq_no
     uint32_t dir : 1;
 };
 
+// Abre um arquivo 
 FILE *openFile(const char *name, const char *mode)
 {
     FILE *file;
@@ -298,6 +319,7 @@ FILE *openFile(const char *name, const char *mode)
     return file;
 }
 
+// Salva um nó da árvore em arquivo binário e salva os seus filhos recursivamente em pré-ordem
 void saveNodesInFile(BinaryTree *T, FILE *dest)
 {
     struct s_arq_no temp;
@@ -315,6 +337,7 @@ void saveNodesInFile(BinaryTree *T, FILE *dest)
     }
 }
 
+// Prepara par salvar uma árvore em uma arquivo binário com nome "fileName"
 void saveBinaryTreeInFile(BinaryTree *T, const char *fileName)
 {
     FILE *treeFIle = openFile(fileName, "wb");
@@ -326,12 +349,14 @@ void saveBinaryTreeInFile(BinaryTree *T, const char *fileName)
         }
         else
         {
+            //Apenas coloca um caracter zero se a árvore for vazia
             fputc(0, treeFIle);
         }
         fclose(treeFIle);
     }
 }
 
+// Aloca um nó a partir de uma árvore salva em arquivo e aloca os seus filhos recursivamente
 void createNodesFromFile(BinaryTree **T, FILE *dest)
 {
     struct s_arq_no temp;
@@ -349,6 +374,7 @@ void createNodesFromFile(BinaryTree **T, FILE *dest)
     }
 }
 
+// Prepara a leitura de um arquivo com uma árvore e salva ele em "T"
 void readBinaryTreeFromFile(BinaryTree **T, const char *fileName)
 {
     FILE *treeFile = openFile(fileName, "rb");
@@ -366,6 +392,7 @@ void readBinaryTreeFromFile(BinaryTree **T, const char *fileName)
     }
 }
 
+// Desenha um nó
 void drawNode(int x, int y, int key)
 {
     char v[10];
@@ -380,11 +407,13 @@ void drawNode(int x, int y, int key)
     gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y + g_NODE_HEIGHT / 2 - altura / 2, v);
 }
 
+// Desenha uma árvore com centro em "x","y" e com distancia "dist" entre si 
 void drawTree(BinaryTree *T, int x, int y, int dist)
 {
     if (T)
     {
         dist /= 2;
+        // Desenha recursivamente os filhos da esquerda e da direita
         if (T->left)
         {
             gfx_line(x, y + g_NODE_HEIGHT / 2, x - dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
@@ -404,6 +433,7 @@ int main()
     BinaryTree *root = NULL, *aux;
     char opcAcao, fileName[20];
     int inputkey, S;
+    // Inicia a janela
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
     while (1)
     {
