@@ -1,4 +1,4 @@
-using Plots, CSV
+using Plots, SciML, Pluto, FluxML
 
 x = [i for i in 0:0.1:10]
 f(x) = -100 * x + 3
