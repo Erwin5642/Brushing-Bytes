@@ -225,6 +225,7 @@ AVLTree *removeNodeAVLTree(AVLTree *node)
     aux = *sucessorPointer;
     *sucessorPointer = (*sucessorPointer)->right;
     aux->right = node->right;
+    aux->balance = node->balance;
     free(node);
 
     return aux;
@@ -258,7 +259,6 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     break;
                 case 0:
                     (*T)->balance = 1;
-                    flag = 0;
                     break;
                 case 1:
                     if ((*T)->right->balance == 1)
@@ -269,7 +269,6 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     {
                         rightLeftRotation(T);
                     }
-                    flag = 0;
                     break;
                 }
             }
@@ -287,7 +286,6 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     break;
                 case 0:
                     (*T)->balance = -1;
-                    flag = 0;
                     break;
                 case -1:
                     if ((*T)->left->balance == -1)
@@ -298,7 +296,6 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     {
                         leftRightRotation(T);
                     }
-                    flag = 0;
                     break;
                 }
             }
