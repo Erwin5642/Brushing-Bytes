@@ -81,6 +81,25 @@ void leftRightRotation(AVLTree **T)
     int ptvb = (*T)->left->right->balance;
     leftRotation(&(*T)->left);
     rightRotation(T);
+    if(ptvb == -1){
+        (*T)->right->balance = 1;
+    }
+    else{
+        (*T)->right->balance = 0;
+    }
+    if(ptvb == 1){
+        (*T)->left->balance = -1;
+    }
+    else{
+        (*T)->left->balance = 0;
+    }
+}
+
+void rightLeftRotation(AVLTree **T)
+{
+    int ptvb = (*T)->right->left->balance;
+    rightRotation(&(*T)->right);
+    leftRotation(T);
     if(ptvb == 1){
         (*T)->left->balance = -1;
     }
@@ -91,26 +110,7 @@ void leftRightRotation(AVLTree **T)
         (*T)->right->balance = 1;
     }
     else{
-        (*T)->left->balance = 0;
-    }
-}
-
-void rightLeftRotation(AVLTree **T)
-{
-    int ptvb = (*T)->left->right->balance;
-    rightRotation(&(*T)->right);
-    leftRotation(T);
-    if(ptvb == -1){
-        (*T)->left->balance = 1;
-    }
-    else{
-        (*T)->left->balance = 0;
-    }
-    if(ptvb == 1){
-        (*T)->right->balance = -1;
-    }
-    else{
-        (*T)->left->balance = 0;
+        (*T)->right->balance = 0;
     }
 }
 
@@ -280,9 +280,9 @@ int main()
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
     int i;
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < 60; i++)
     {
-        insertAVLTree(&root, rand() % 100 + 1);
+        insertAVLTree(&root, (rand() % 2) == 0 ? i + rand() % (1 + i) : -i + rand() % (i + 1));
         gfx_clear();
         drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
         gfx_paint();
