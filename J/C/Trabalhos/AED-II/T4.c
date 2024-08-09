@@ -81,16 +81,20 @@ void leftRightRotation(AVLTree **T)
     int ptvb = (*T)->left->right->balance;
     leftRotation(&(*T)->left);
     rightRotation(T);
-    if(ptvb == -1){
+    if (ptvb == -1)
+    {
         (*T)->right->balance = 1;
     }
-    else{
+    else
+    {
         (*T)->right->balance = 0;
     }
-    if(ptvb == 1){
+    if (ptvb == 1)
+    {
         (*T)->left->balance = -1;
     }
-    else{
+    else
+    {
         (*T)->left->balance = 0;
     }
 }
@@ -100,16 +104,20 @@ void rightLeftRotation(AVLTree **T)
     int ptvb = (*T)->right->left->balance;
     rightRotation(&(*T)->right);
     leftRotation(T);
-    if(ptvb == 1){
+    if (ptvb == 1)
+    {
         (*T)->left->balance = -1;
     }
-    else{
+    else
+    {
         (*T)->left->balance = 0;
     }
-    if(ptvb == -1){
+    if (ptvb == -1)
+    {
         (*T)->right->balance = 1;
     }
-    else{
+    else
+    {
         (*T)->right->balance = 0;
     }
 }
@@ -123,7 +131,7 @@ AVLTree *newNodeAVLTree(int key)
     return new;
 }
 
-void insertAVLTree(AVLTree **T, int key)
+void insertKeyAVLTree(AVLTree **T, int key)
 {
     static int flag;
     flag = 0;
@@ -135,8 +143,9 @@ void insertAVLTree(AVLTree **T, int key)
     }
     if ((*T)->key < key)
     {
-        insertAVLTree(&(*T)->right, key);
-        if(flag){
+        insertKeyAVLTree(&(*T)->right, key);
+        if (flag)
+        {
             switch ((*T)->balance)
             {
             case -1:
@@ -146,10 +155,12 @@ void insertAVLTree(AVLTree **T, int key)
                 (*T)->balance = 1;
                 break;
             case 1:
-                if((*T)->right->balance == 1){
+                if ((*T)->right->balance == 1)
+                {
                     leftRotation(T);
                 }
-                else{
+                else
+                {
                     rightLeftRotation(T);
                 }
                 flag = 0;
@@ -157,10 +168,11 @@ void insertAVLTree(AVLTree **T, int key)
             }
         }
     }
-    else if((*T)->key > key)
+    else if ((*T)->key > key)
     {
-        insertAVLTree(&(*T)->left, key);
-        if(flag){
+        insertKeyAVLTree(&(*T)->left, key);
+        if (flag)
+        {
             switch ((*T)->balance)
             {
             case 1:
@@ -170,14 +182,125 @@ void insertAVLTree(AVLTree **T, int key)
                 (*T)->balance = -1;
                 break;
             case -1:
-                if((*T)->left->balance == -1){
+                if ((*T)->left->balance == -1)
+                {
                     rightRotation(T);
                 }
-                else{
+                else
+                {
                     leftRightRotation(T);
                 }
                 flag = 0;
                 break;
+            }
+        }
+    }
+}
+
+// Remove um nó qualquer da arvore e retorna o nó que substituiu ele
+AVLTree *removeNodeAVLTree(AVLTree *node)
+{
+    AVLTree *aux, **sucessorPointer;
+    // Se houver filho a esquerda ou direita, apenas substitui o nó removido por um deles
+    if (!node->left)
+    {
+        aux = node->right;
+        free(node);
+        return aux;
+    }
+    if (!node->right)
+    {
+        aux = node->left;
+        free(node);
+        return aux;
+    }
+    // Se não, encontra o sucessor do nó a ser removido
+    sucessorPointer = &node->right;
+    while ((*sucessorPointer)->left)
+    {
+        sucessorPointer = &(*sucessorPointer)->left;
+    }
+    // Faz as trocas necessárias com os ponteiros e desaloca o nó
+    (*sucessorPointer)->left = node->left;
+    aux = *sucessorPointer;
+    *sucessorPointer = (*sucessorPointer)->right;
+    aux->right = node->right;
+    free(node);
+
+    return aux;
+}
+
+// Remove um nó da árvore a partir de uma chave
+// Retorna 1 num sucesso e 0 se houver algum erro
+void removeKeyAVLTree(AVLTree **T, int key)
+{
+    static int flag;
+    flag = 0;
+    if (*T)
+    {
+        // Procura pelo nó com a chave desejada
+        if (key == (*T)->key)
+        {
+            *T = removeNodeAVLTree(*T);
+            flag = 1;
+            return;
+        }
+        if (key < (*T)->key)
+        {
+            // Se for menor busca na sub arvore esquerda
+            removeKeyAVLTree(&(*T)->left, key);
+            if (flag)
+            {
+                switch ((*T)->balance)
+                {
+                case -1:
+                    (*T)->balance = 0;
+                    break;
+                case 0:
+                    (*T)->balance = 1;
+                    flag = 0;
+                    break;
+                case 1:
+                    if ((*T)->right->balance == 1)
+                    {
+                        leftRotation(T);
+                    }
+                    else
+                    {
+                        rightLeftRotation(T);
+                    }
+                    flag = 0;
+                    break;
+                }
+            }
+        }
+        else if (key > (*T)->key)
+        {
+            // Se for maior busca na sub arvore direita
+            removeKeyAVLTree(&(*T)->right, key);
+            if (flag)
+            {
+                switch ((*T)->balance)
+                {
+                case 1:
+                    (*T)->balance = 0;
+                    break;
+                case 0:
+                    (*T)->balance = -1;
+                    flag = 0;
+                    break;
+                case -1:
+                    if ((*T)->left->balance == -1)
+                    {
+                        rightRotation(T);
+                    }
+                    else
+                    {
+                        leftRightRotation(T);
+                    }
+                    flag = 0;
+                    break;
+                }
             }
         }
     }
@@ -274,21 +397,30 @@ void saveSearchTreeInFile(AVLTree *T, const char *fileName)
 
 int main()
 {
-    AVLTree *root = NULL;
+    AVLTree *T = NULL;
     srand(time(NULL));
 
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
-    int i;
-    for (i = 0; i < 60; i++)
+    int i, e;
+    for (i = 0; i < 20; i++)
     {
-        insertAVLTree(&root, (rand() % 2) == 0 ? i + rand() % (1 + i) : -i + rand() % (i + 1));
+        insertKeyAVLTree(&T, (rand() % 2) == 0 ? i + rand() % (1 + i) : -i + rand() % (i + 1));
         gfx_clear();
-        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
+        drawTree(T, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
+        gfx_paint();
+    }
+
+    for(i = 0; i < 10; i++){
+        scanf("%d", &e);
+        removeKeyAVLTree(&T, e);
+        gfx_clear();
+        drawTree(T, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
         gfx_paint();
         getchar();
     }
-    deleteAVLTree(&root);
+
+    deleteAVLTree(&T);
     gfx_quit();
     return 0;
 }
