@@ -37,50 +37,85 @@ void deleteAVLTree(AVLTree **Tree)
     }
 }
 
-int max(int a, int b){
+int max(int a, int b)
+{
     return a > b ? a : b;
 }
 
-int getHeight(AVLTree *node){
-    if(!node){
+int getHeight(AVLTree *node)
+{
+    if (!node)
+    {
         return 0;
     }
     return max(getHeight(node->left), getHeight(node->right)) + 1;
 }
 
-int getBalance(AVLTree *node){
+int getBalance(AVLTree *node)
+{
     return getHeight(node->right) - getHeight(node->left);
 }
 
-void leftRotation(AVLTree **T){
+void leftRotation(AVLTree **T)
+{
     AVLTree *aux = *T;
     *T = (*T)->right;
     aux->right = (*T)->left;
     (*T)->left = aux;
-    aux->balance = getBalance(aux);
-    (*T)->balance = getBalance(*T);
-}   
+    aux->balance = 0;
+    (*T)->balance = 0;
+}
 
-void rightRotation(AVLTree **T){
+void rightRotation(AVLTree **T)
+{
     AVLTree *aux = *T;
     *T = (*T)->left;
     aux->left = (*T)->right;
     (*T)->right = aux;
-    aux->balance = getBalance(aux);
-    (*T)->balance = getBalance(*T);
-}   
+    aux->balance = 0;
+    (*T)->balance = 0;
+}
 
-void leftRightRotation(AVLTree **T){
+void leftRightRotation(AVLTree **T)
+{
+    int ptvb = (*T)->left->right->balance;
     leftRotation(&(*T)->left);
     rightRotation(T);
+    if(ptvb == 1){
+        (*T)->left->balance = -1;
+    }
+    else{
+        (*T)->left->balance = 0;
+    }
+    if(ptvb == -1){
+        (*T)->right->balance = 1;
+    }
+    else{
+        (*T)->left->balance = 0;
+    }
 }
 
-void rightLeftRotation(AVLTree **T){
+void rightLeftRotation(AVLTree **T)
+{
+    int ptvb = (*T)->left->right->balance;
     rightRotation(&(*T)->right);
     leftRotation(T);
+    if(ptvb == -1){
+        (*T)->left->balance = 1;
+    }
+    else{
+        (*T)->left->balance = 0;
+    }
+    if(ptvb == 1){
+        (*T)->right->balance = -1;
+    }
+    else{
+        (*T)->left->balance = 0;
+    }
 }
 
-AVLTree *newNodeAVLTree(int key){
+AVLTree *newNodeAVLTree(int key)
+{
     AVLTree *new = malloc(sizeof(AVLTree));
     new->key = key;
     new->left = new->right = NULL;
@@ -88,53 +123,64 @@ AVLTree *newNodeAVLTree(int key){
     return new;
 }
 
-int rebalanceNode(AVLTree **T, int equilibrium){
-    int balance = (*T)->balance + equilibrium;
-    if(balance > 1){
-        if((*T)->right->balance == -1){
-            rightLeftRotation(T);
-        }
-        else{
-            leftRotation(T);
-        }
+void insertAVLTree(AVLTree **T, int key)
+{
+    static int flag;
+    flag = 0;
+    if (!(*T))
+    {
+        flag = 1;
+        (*T) = newNodeAVLTree(key);
+        return;
     }
-    else if(balance < -1){
-        if((*T)->left->balance == 1){
-            leftRightRotation(T);
-        }
-        else{
-            rightRotation(T);
-        }
-    }
-    else{
-        (*T)->balance = balance;
-        return 0;
-    }
-    return 1;
-}
-
-int insertAVLTree(AVLTree **T, int key){
-    int wasRebalanced;
-    if(T){
-        if(*T){
-            if((*T)->key > key){
-                wasRebalanced = insertAVLTree(&(*T)->left, key);
-                if(!wasRebalanced){
-                    wasRebalanced = rebalanceNode(T, -1);
+    if ((*T)->key < key)
+    {
+        insertAVLTree(&(*T)->right, key);
+        if(flag){
+            switch ((*T)->balance)
+            {
+            case -1:
+                (*T)->balance = flag = 0;
+                break;
+            case 0:
+                (*T)->balance = 1;
+                break;
+            case 1:
+                if((*T)->right->balance == 1){
+                    leftRotation(T);
                 }
-            }
-            else if((*T)->key < key){
-                wasRebalanced = insertAVLTree(&(*T)->left, key);
-                if(!wasRebalanced){
-                    wasRebalanced = rebalanceNode(T, 1);
+                else{
+                    rightLeftRotation(T);
                 }
+                flag = 0;
+                break;
             }
         }
-        else{
-            *T = newNodeAVLTree(key);
+    }
+    else if((*T)->key > key)
+    {
+        insertAVLTree(&(*T)->left, key);
+        if(flag){
+            switch ((*T)->balance)
+            {
+            case 1:
+                (*T)->balance = flag = 0;
+                break;
+            case 0:
+                (*T)->balance = -1;
+                break;
+            case -1:
+                if((*T)->left->balance == -1){
+                    rightRotation(T);
+                }
+                else{
+                    leftRightRotation(T);
+                }
+                flag = 0;
+                break;
+            }
         }
     }
-    return 0;
 }
 
 void drawNode(int x, int y, int key, int balance)
@@ -170,7 +216,7 @@ void drawTree(AVLTree *T, int x, int y, int dist)
             gfx_line(x, y + g_NODE_HEIGHT / 2, x + dist, y + g_NODES_DISTANCE + g_NODE_HEIGHT / 2);
             drawTree(T->right, x + dist, y + g_NODES_DISTANCE, dist);
         }
-        drawNode(x - g_NODE_WIDTH / 2, y, T->key, getBalance(T));
+        drawNode(x - g_NODE_WIDTH / 2, y, T->key, T->balance);
     }
 }
 
@@ -182,7 +228,6 @@ struct s_arq_no
     uint32_t dir : 1;
 };
 
-
 FILE *openFile(const char *name, const char *mode)
 {
     FILE *file;
@@ -192,7 +237,6 @@ FILE *openFile(const char *name, const char *mode)
     }
     return file;
 }
-
 
 void saveNodesInFile(AVLTree *T, FILE *dest)
 {
@@ -236,13 +280,14 @@ int main()
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
 
     int i;
-    for(i = 0; i < 10; i++){
+    for (i = 0; i < 20; i++)
+    {
         insertAVLTree(&root, rand() % 100 + 1);
         gfx_clear();
-        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH/2);
+        drawTree(root, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
         gfx_paint();
+        getchar();
     }
-
     deleteAVLTree(&root);
     gfx_quit();
     return 0;
