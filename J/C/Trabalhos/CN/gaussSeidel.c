@@ -70,7 +70,7 @@ int podeConverger(double linha[10], unsigned short n){
                 somaLinha += absValue(linha[j]); 
             }
         }
-        if(somaLinha > absValue(linha[i])){
+        if(somaLinha < absValue(linha[i])){
             return i;
         }
     }
@@ -78,8 +78,7 @@ int podeConverger(double linha[10], unsigned short n){
 }
 
 int convergeSistema(SistemaLinear *Axb){
-    int j, i, n = Axb->nVariaveis, m = Axb->nConstantes, flag;
-    double a = 0, auxS;
+    int i, n = Axb->nVariaveis, flag;
     for(i = 0; i < n; i++){
         if((flag = podeConverger(Axb->matrizExtendida[i], n)) != -1){
             if(flag != i){
@@ -113,6 +112,7 @@ int gaussSeidel(SistemaLinear *Axb, double erro){
     }
     erroAtual = calculaDKR(Axb->vetorSolucao, calculaDK(Axb->vetorSolucao, solucaoAnterior, m), m);
     }while(erro < erroAtual);
+    return 1;
 }
 
 int main()
@@ -124,8 +124,20 @@ int main()
     unsigned short i, j;
     while (fscanf(sistemasArq, "%hu %hu", &Axb.nVariaveis, &Axb.nConstantes) != EOF)
     {
+        for(i = 0; i < Axb.nConstantes; i++){
+            for(j = 0; j < Axb.nVariaveis + 1; j++){
+                fscanf(sistemasArq, "%lf", &Axb.matrizExtendida[i][j]);
+            }
+        }
+        for(i = 0; i < Axb.nConstantes; i++){
+            fscanf(sistemasArq, "%lf", &resultadoEsperado[i]);
+        }
+        for(i = 0; i < Axb.nConstantes; i++){
+            fscanf(sistemasArq, "%lf", &Axb.vetorSolucao[i]);
+        }
+        fscanf(sistemasArq, "%lf", &erro);
         t = clock();
-        if (metodoGaussSeidel(&Axb, erro))
+        if (gaussSeidel(&Axb, erro))
         {
 
             t = clock() - t;
