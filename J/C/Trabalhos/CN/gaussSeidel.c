@@ -3,9 +3,8 @@
 
 typedef struct
 {
-    double matrizCoeficientes[10][10];
+    double matrizExtendida[10][11];
     unsigned short nVariaveis;
-    double vetorConstantes[10];
     unsigned short nConstantes;
     double vetorSolucao[10];
 } SistemaLinear;
@@ -25,10 +24,9 @@ void copiaVetor(double vetorDest[10], double vetorSrc[10], unsigned short n)
 
 double maxAbsVetor(double vetor[10], unsigned short n)
 {
-    double absMaior = 0, absVetor;
-    while (n--)
+    double absMaior = absValue(vetor[0]), absVetor;
+    while (n-- >= 1)
     {
-        absMaior = absValue(absMaior);
         absVetor = absValue(vetor[n]);
         absMaior = (absMaior < absVetor) ? absVetor : absMaior;
     }
@@ -62,124 +60,25 @@ void trocaLinha(double linha1[10], double linha2[10], unsigned short n)
     }
 }
 
-void calculaMatrizCG(SistemaLinear Axb, SistemaLinear *Cxg)
-{
-    unsigned i, j;
-    for (i = 0; i < Axb.nVariaveis; i++)
-    {
-        for (j = 0; j < Axb.nConstantes; j++)
-        {
-            Cxg->matrizCoeficientes[i][j] = (i == j) ? 0 : -Axb.matrizCoeficientes[i][j] * (1 / Axb.matrizCoeficientes[i][i]);
-        }
-        Cxg->vetorConstantes[i] = Axb.vetorConstantes[i] * (1 / Axb.matrizCoeficientes[i][i]);
-    }
-}
-
-void transformacaoLinear(SistemaLinear *Axb, SistemaLinear Cxg)
-{
-    unsigned short i, j;
-    for (i = 0; i < Cxg.nVariaveis; i++)
-    {
-        Axb->vetorSolucao[i] = 0;
-        for (j = 0; j < Cxg.nVariaveis; j++)
-        {
-            Axb->vetorSolucao[i] += Cxg.matrizCoeficientes[i][j] * Cxg.vetorSolucao[j];
-        }
-    }
-}
-
-void somaVetor(double vetorDest[10], double vetorSrc[10], unsigned short n)
-{
-    while (n--)
-    {
-        vetorDest[n] += vetorSrc[n];
-    }
-}
-
-void mostrarVetor(double vetor[10], unsigned short n)
-{
-    unsigned short i;
-    for (i = 0; i < n; i++)
-    {
-        printf("%lf ", vetor[i]);
-    }
-    printf("\n");
-}
-
-int podeConvergir(double linha[10], unsigned short n)
-{
-    unsigned short i, j;
-    double soma;
-    for (i = 0; i < n; i++)
-    {
-        soma = 0;
-        for (j = 0; j < n; j++)
-        {
-            if (j != i)
-            {
-                soma += absValue(linha[j]);
+int convergeSistema(SistemaLinear Axb){
+    int j, i, m = Axb.nVariaveis, n = Axb.nConstantes, somaLinha;
+    for(i = 0; i < n; i++){
+        somaLinha = 0;
+        for(j = 0; j < n; j++){
+            if(j != i){
+                somaLinha += Axb.matrizExtendida[i][j]; 
             }
         }
-        if (soma < absValue(linha[i]))
-        {
-            return i;
-        }
     }
-    return -1;
 }
 
-int convergeSistema(SistemaLinear *Axb)
-{
-    double a = 0, auxS;
-    int i, flag;
-    for (i = 0; i < Axb->nVariaveis; i++)
-    {
-        if ((flag = podeConvergir(Axb->matrizCoeficientes[i], Axb->nVariaveis)) != -1)
-        {
-            if (flag != i)
-            {
-                trocaLinha(Axb->matrizCoeficientes[i], Axb->matrizCoeficientes[flag], Axb->nVariaveis);
-                auxS = Axb->vetorConstantes[i];
-                Axb->vetorConstantes[i] = Axb->vetorConstantes[flag];
-                Axb->vetorConstantes[flag] = auxS;
-                i = -1;
-            }
-        }
-        else
-        {
-            return 0;
-        }
+int gaussSeidel(SistemaLinear *Axb, double erro){
+    if(!convergeSistema(*Axb)){
+        return 0;
     }
-    return 1;
-}
+    while(){
 
-int metodoGaussSeidel(SistemaLinear *Axb, double erro)
-{
-    SistemaLinear Cxg;
-    double dk, dkr;
-    int p = 1;
-    Cxg.nVariaveis = Cxg.nConstantes = Axb->nVariaveis;
-
-    printf("Passo 0:\n");
-    mostrarVetor(Axb->vetorSolucao, Cxg.nVariaveis);
-    if (convergeSistema(Axb))
-    {
-        calculaMatrizCG(*Axb, &Cxg);
-        do
-        {
-            copiaVetor(Cxg.vetorSolucao, Axb->vetorSolucao, Cxg.nVariaveis);
-            transformacaoLinear(Axb, Cxg);
-            somaVetor(Axb->vetorSolucao, Cxg.vetorConstantes, Cxg.nVariaveis);
-            printf("Passo %d:\n", p);
-            mostrarVetor(Axb->vetorSolucao, Cxg.nVariaveis);
-            p++;
-
-            dk = calculaDK(Axb->vetorSolucao, Cxg.vetorSolucao, Cxg.nVariaveis);
-            dkr = calculaDKR(Axb->vetorSolucao, dk, Cxg.nVariaveis);
-        } while (dkr > erro);
-        return 1;
     }
-    return 0;
 }
 
 int main()
