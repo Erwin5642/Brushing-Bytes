@@ -60,25 +60,59 @@ void trocaLinha(double linha1[10], double linha2[10], unsigned short n)
     }
 }
 
-int convergeSistema(SistemaLinear Axb){
-    int j, i, m = Axb.nVariaveis, n = Axb.nConstantes, somaLinha;
+int podeConverger(double linha[10], unsigned short n){
+    unsigned short i, j;
+    double somaLinha;
     for(i = 0; i < n; i++){
         somaLinha = 0;
         for(j = 0; j < n; j++){
             if(j != i){
-                somaLinha += Axb.matrizExtendida[i][j]; 
+                somaLinha += absValue(linha[j]); 
             }
         }
+        if(somaLinha > absValue(linha[i])){
+            return i;
+        }
     }
+    return -1;
+}
+
+int convergeSistema(SistemaLinear *Axb){
+    int j, i, n = Axb->nVariaveis, m = Axb->nConstantes, flag;
+    double a = 0, auxS;
+    for(i = 0; i < n; i++){
+        if((flag = podeConverger(Axb->matrizExtendida[i], n)) != -1){
+            if(flag != i){
+                trocaLinha(Axb->matrizExtendida[i], Axb->matrizExtendida[flag], n + 1);
+                i = -1;
+            }
+        }
+        else{
+            return 0;
+        }
+    }
+    return 1;
 }
 
 int gaussSeidel(SistemaLinear *Axb, double erro){
-    if(!convergeSistema(*Axb)){
+    unsigned short i, j, n = Axb->nVariaveis, m = Axb->nConstantes; 
+    double soma, erroAtual, solucaoAnterior[10];
+    if(!convergeSistema(Axb)){
         return 0;
     }
-    while(){
-
+    do{
+    for(i = 0; i < n; i++){
+        soma = 0;
+        copiaVetor(solucaoAnterior, Axb->vetorSolucao, m);
+        for(j = 0; j < m; j++){
+            if(j != i){
+                soma += Axb->matrizExtendida[i][j] * Axb->vetorSolucao[j];
+            }
+        }
+        Axb->vetorSolucao[i] = (Axb->matrizExtendida[i][j] - soma) / Axb->matrizExtendida[i][i];
     }
+    erroAtual = calculaDKR(Axb->vetorSolucao, calculaDK(Axb->vetorSolucao, solucaoAnterior, m), m);
+    }while(erro < erroAtual);
 }
 
 int main()
@@ -88,32 +122,9 @@ int main()
     clock_t t;
     double tempo, erro, resultadoEsperado[10];
     unsigned short i, j;
-    while (fscanf(sistemasArq, "%hu", &Axb.nVariaveis) != EOF)
+    while (fscanf(sistemasArq, "%hu %hu", &Axb.nVariaveis, &Axb.nConstantes) != EOF)
     {
-        Axb.nConstantes = Axb.nVariaveis;
-        for (i = 0; i < Axb.nVariaveis; i++)
-        {
-            for (j = 0; j < Axb.nVariaveis; j++)
-            {
-                fscanf(sistemasArq, "%lf", &Axb.matrizCoeficientes[i][j]);
-            }
-        }
-        for (i = 0; i < Axb.nConstantes; i++)
-        {
-            fscanf(sistemasArq, "%lf", &Axb.vetorConstantes[i]);
-        }
-        for (i = 0; i < Axb.nVariaveis; i++)
-        {
-            fscanf(sistemasArq, "%lf", &Axb.vetorSolucao[i]);
-        }
-        for (i = 0; i < Axb.nVariaveis; i++)
-        {
-            fscanf(sistemasArq, "%lf", &resultadoEsperado[i]);
-        }
-        fscanf(sistemasArq, "%lf", &erro);
-
         t = clock();
-
         if (metodoGaussSeidel(&Axb, erro))
         {
 
