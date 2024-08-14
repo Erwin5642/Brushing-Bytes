@@ -74,7 +74,7 @@ int podeConvergir(double linha[10], unsigned short n)
                 somaLinha += absValue(linha[j]);
             }
         }
-        if (somaLinha < absValue(linha[i]))
+        if (somaLinha <= absValue(linha[i]))
         {
             return i;
         }

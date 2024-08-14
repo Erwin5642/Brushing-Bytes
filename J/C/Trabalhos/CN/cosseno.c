@@ -60,10 +60,10 @@ int main()
         system("clear");
         printf("##### Cosseno #####\nInsira a razão que multilicada por Pi representa o angulo em radianos ou 0/0 para encerrar o programa: ");
         scanf("%d/%d", &a, &b);
-        if (a && b)
+        if (b != 0)
         {
             x = a * pi / b;
-            printf("Insira o numero de termos utilizado pela função cosseno\n");
+            printf("Insira o numero de termos utilizado pela função cosseno: ");
             scanf("%d", &n);
             // Temp recebe o instante atual
             temp = clock();
@@ -78,6 +78,6 @@ int main()
             printf("Pressione enter para continuar...\n");
             getchar();
         }
-    } while (a && b);
+    } while (b != 0);
     return 0;
 }

@@ -109,34 +109,35 @@ double determinante(double matriz[10][10], unsigned short n)
 
 int main()
 {
-    double matriz[10][10], tempo, det, resultadoEsperado;
+    double matriz[10][10], tempo, det;
     unsigned i, j, n;
     clock_t t;
-    FILE *matrizes;
-    // Abre o arquivo com as matrizes
-    matrizes = fopen("matrizes.txt", "r");
-    while (fscanf(matrizes, "%u", &n) != EOF)
+    do
     { // Le o tamanho da matriz quadrada
         // Le os valores da matriz
-        for (i = 0; i < n; i++)
+        printf("Insira a ordem da matriz quadrada:\n");
+        scanf("%u", &n);
+        if (n)
         {
-            for (j = 0; j < n; j++)
+
+            printf("Insira os valores da matriz:\n");
+            for (i = 0; i < n; i++)
             {
-                fscanf(matrizes, "%lf", &matriz[i][j]);
+                for (j = 0; j < n; j++)
+                {
+                    scanf("%lf", &matriz[i][j]);
+                }
             }
+            t = clock();
+            det = determinante(matriz, n);
+            // Calcula o tempo levado pela função
+            t = clock() - t;
+            tempo = ((double)t) / CLOCKS_PER_SEC;
+            // Exibe os resultados do calculo do determinante da matriz
+            printf("O resultado encontrado foi %lf\n\n", det);
+            printf("O algoritmo levou %lf segundos\n----------------------\n\n", tempo);
         }
-        // Le o resultado esperado
-        fscanf(matrizes, "%lf", &resultadoEsperado);
-        t = clock();
-        det = determinante(matriz, n);
-        // Calcula o tempo levado pela função
-        t = clock() - t;
-        tempo = ((double)t) / CLOCKS_PER_SEC;
-        // Exibe os resultados do calculo do determinante da matriz
-        det == resultadoEsperado ? printf("---------VVVV--------\n") : printf("---------XXXX--------\n");
-        printf("O resultado encontrado foi %lf e o resultado esperado era %lf\n\n", det, resultadoEsperado);
-        printf("O algoritmo levou %lf segundos\n----------------------\n\n", tempo);
-    }
-    fclose(matrizes);
+    } while (n != 0);
+
     return 0;
 }
