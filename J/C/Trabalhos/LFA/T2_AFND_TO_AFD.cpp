@@ -7,23 +7,22 @@ using namespace std;
 typedef struct
 {
     string label = "";
-    bool itsFinal, itsStart, itsValid;
+    bool itsFinal, itsStart;
+    vector<struct Transition> delta;
 } State;
 
-typedef struct
+typedef struct Transition
 {
-public:
-    State from, to;
+    vector<State *> to;
     char character;
 } Transition;
 
 class Automata
 {
     vector<State> estados;
-    vector<State> estadosIniciais;
-    vector<State> estadosFinais;
+    vector<State *> estadosIniciais;
+    vector<State *> estadosFinais;
     vector<char> alfabeto;
-    vector<Transition> delta;
 
 public:
     void lerEstados()
@@ -70,104 +69,134 @@ public:
     }
     void lerFuncaoTransicao()
     {
-        int i, j, k, m = estados.size(), n = alfabeto.size();
-        string buffer;
+        int i, j, k, m = estados.size(), n = alfabeto.size(), start, end = -1;
+        string buffer, find;
         Transition temp;
-        for(i = 0; i < m; i++){
-            for(j = 0; j < n; j++){
-                temp.from = estados[i];
-                cout << "(" << (temp.from.label) << "," << (temp.character = alfabeto[j]) << ") = ";
+        for (i = 0; i < m; i++)
+        {
+            for (j = 0; j < n; j++)
+            {
+                temp.to.clear();
+                cout << "(" << (estados[i].label) << "," << (temp.character = alfabeto[j]) << ") = ";
                 getline(cin, buffer);
-                for(k = 0; k < m; k++){
-                    if(estados[k].label == buffer){
-                        temp.to = estados[k];
-                    }
+                if (buffer[0] != '-')
+                {
+
+                    do
+                    {
+                        start = end + 1;
+                        end = buffer.find(",", start);
+                        find = buffer.substr(start, end - start);
+
+                        for (k = 0; k < m; k++)
+                        {
+                            if (estados[k].label == find)
+                            {
+                                temp.to.push_back(&estados[k]);
+                            }
+                        }
+
+                    } while (end != -1);
                 }
-                delta.push_back(temp);
+                else
+                {
+                    temp.to.push_back(NULL);
+                }
+                estados[i].delta.push_back(temp);
             }
         }
     }
 
     void lerEstadosIniciais()
     {
-        int start, end = -1, j, cont = 0, n, i;
-        string buffer;
-        State temp;
+        int start, end = -1, j, n;
+        string buffer, find;
         getline(cin, buffer);
         n = buffer.size();
-        for (i = 0; i < n; i++)
-        {
-            if (buffer[i] == ',')
-            {
-                cont++;
-            }
-        }
-        i = 0;
 
         do
         {
             start = end + 1;
             end = buffer.find(",", start);
-            temp.label = buffer.substr(start, end - start);
-            temp.itsFinal = false;
-            temp.itsStart = true;
-            estadosIniciais.push_back(temp);
+            find = buffer.substr(start, end - start);
             n = estados.size();
 
             for (j = 0; j < n; j++)
             {
-                if (estados[j].label == estadosIniciais[i].label)
+                if (estados[j].label == find)
                 {
+                    estadosIniciais.push_back(&estados[j]);
                     estados[j].itsStart = true;
                 }
             }
-            i++;
-        } while (i < cont + 1);
+
+        } while (end != -1);
     }
     void lerEstadosFinais()
     {
-        int start, end = -1, j, cont = 0, n, i;
-        string buffer;
-        State temp;
+        int start, end = -1, j, n;
+        string buffer, find;
         getline(cin, buffer);
         n = buffer.size();
-        for (i = 0; i < n; i++)
-        {
-            if (buffer[i] == ',')
-            {
-                cont++;
-            }
-        }
-        i = 0;
 
         do
         {
             start = end + 1;
             end = buffer.find(",", start);
-            temp.label = buffer.substr(start, end - start);
-            temp.itsFinal = true;
-            temp.itsStart = false;
-            estadosFinais.push_back(temp);
+            find = buffer.substr(start, end - start);
             n = estados.size();
+
             for (j = 0; j < n; j++)
             {
-                if (estados[j].label == estadosFinais[i].label)
+                if (estados[j].label == find)
                 {
+                    estadosFinais.push_back(&estados[j]);
                     estados[j].itsFinal = true;
                 }
             }
-            i++;
-        } while (i < cont + 1);
+        } while (end != -1);
+    }
+
+    Automata converteParaAFD(){
+        int i, j, k, m = estados.size(), n = alfabeto.size(), l = estadosIniciais.size(), y;
+        Automata AFD;
+        Transition tempT;
+        State tempS;
+        tempS.label = "";
+        //Estado Inicial
+        tempS.itsStart = true;
+        tempS.itsFinal = false;
+        for(i = 0; i < l; i++){
+            tempS.label = tempS.label + estadosIniciais[i]->label;
+            for(j = 0; j < n; j++){
+                tempT.to.clear();
+                tempT.character = alfabeto[j];
+                y = estadosIniciais[i]->delta[j].to.size();
+                for(k = 0; k < y; k++){
+                    tempT.to.push_back(estadosIniciais[i]->delta[j].to[k]);
+                }
+                tempS.delta.push_back(tempT);
+            }
+            if(i + 1 < l){
+                tempS.label = tempS.label + ",";
+            }
+        }
+        AFD.estados.push_back(tempS);
+
+
+        return AFD; 
     }
 };
 
 int main()
 {
-    Automata afd;
-    afd.lerEstados();
-    afd.lerEstadosFinais();
-    afd.lerEstadosIniciais();
-    afd.lerAlfabeto();
-    afd.lerFuncaoTransicao();
+    Automata afn;
+    afn.lerEstados();
+    afn.lerEstadosIniciais();
+    afn.lerEstadosFinais();
+    afn.lerAlfabeto();
+    afn.lerFuncaoTransicao();
+    Automata afd = afn.converteParaAFD();
+
     return 0;
 }
