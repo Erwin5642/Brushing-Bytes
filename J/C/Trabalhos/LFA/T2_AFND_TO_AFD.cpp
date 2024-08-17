@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <vector>
+#include <set>
 using namespace std;
 
 typedef struct
@@ -157,6 +158,42 @@ public:
         } while (end != -1);
     }
 
+    bool transicaoIgual(Transition a, Transition b){
+        int i, j, m = a.to.size(), n = b.to.size();
+        if(a.character != b.character){
+            return false;
+        }
+        if(m != n){
+            return false;
+        }
+        for(i = 0; i < m; i++){
+            for(j = 0; j < n; j++){
+                if(a.to[i] == b.to[j]){
+                    j = n + 1;
+                }
+            }
+            if(j == n){
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    bool estadoIgual(State a, State b){
+        int i, j, m = alfabeto.size();
+        for(i = 0; i < m; i++){
+            if(!transicaoIgual(a.delta[i], b.delta[i])){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool verificaSeEstadoJaFoiInserido(){
+
+    }
+
     Automata converteParaAFD(){
         int i, j, k, m = estados.size(), n = alfabeto.size(), l = estadosIniciais.size(), y;
         Automata AFD;
@@ -182,7 +219,6 @@ public:
             }
         }
         AFD.estados.push_back(tempS);
-
 
         return AFD; 
     }
