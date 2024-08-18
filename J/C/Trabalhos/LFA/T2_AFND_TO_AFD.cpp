@@ -158,69 +158,205 @@ public:
         } while (end != -1);
     }
 
-    bool transicaoIgual(Transition a, Transition b){
+    bool transicaoIgual(Transition a, Transition b)
+    {
         int i, j, m = a.to.size(), n = b.to.size();
-        if(a.character != b.character){
+        if (a.character != b.character)
+        {
             return false;
         }
-        if(m != n){
+        if (m != n)
+        {
             return false;
         }
-        for(i = 0; i < m; i++){
-            for(j = 0; j < n; j++){
-                if(a.to[i] == b.to[j]){
+        for (i = 0; i < m; i++)
+        {
+            for (j = 0; j < n; j++)
+            {
+                if (a.to[i] == b.to[j])
+                {
                     j = n + 1;
                 }
             }
-            if(j == n){
-                return false;
-            }
-        }
-        return true;
-
-    }
-
-    bool estadoIgual(State a, State b){
-        int i, j, m = alfabeto.size();
-        for(i = 0; i < m; i++){
-            if(!transicaoIgual(a.delta[i], b.delta[i])){
+            if (j == n)
+            {
                 return false;
             }
         }
         return true;
     }
 
-    bool verificaSeEstadoJaFoiInserido(){
-
+    bool estadoIgual(State a, State b)
+    {
+        int i, m = alfabeto.size();
+        for (i = 0; i < m; i++)
+        {
+            if (!transicaoIgual(a.delta[i], b.delta[i]))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
-    Automata converteParaAFD(){
-        int i, j, k, m = estados.size(), n = alfabeto.size(), l = estadosIniciais.size(), y;
+    bool verificaSeTransicaoFoiInserida(vector<Transition> tt, Transition t)
+    {
+        int i, n = tt.size();
+        for (i = 0; i < n; i++)
+        {
+            if (transicaoIgual(tt[i], t))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool existeElemConjunto(vector<State *> ptss, State *pts)
+    {
+        int i, n;
+        if (ptss.empty())
+        {
+            return false;
+        }
+
+        n = ptss.size();
+        for (i = 0; i < n; i++)
+        {
+            if (ptss[i] == pts)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    State transicaoParaEstado(Transition x)
+    {
+        int i, j, k, n, m, y;
+        n = x.to.size();
+        m = alfabeto.size();
+        State ret;
+        Transition temp;
+        ret.itsStart = false;
+        ret.itsFinal = false;
+        ret.label = "{";
+
+        for (i = 0; i < n; i++)
+        {
+            ret.label = ret.label + x.to[i]->label;
+            if (x.to[i]->itsFinal)
+            {
+                ret.itsFinal = true;
+            }
+            if (i + 1 < n)
+            {
+                ret.label = ret.label + ",";
+            }
+        }
+        for (j = 0; j < m; j++)
+        {
+            temp.character = alfabeto[j];
+            for (i = 0; i < n; i++)
+            {
+                y = x.to[i]->delta[j].to.size();
+                for (k = 0; k < y; k++)
+                {
+                    if (!existeElemConjunto(temp.to, x.to[i]->delta[j].to[k]))
+                    {
+                        temp.to.push_back(x.to[i]->delta[j].to[k]);
+                    }
+                }
+            }
+            ret.delta.push_back(temp);
+            temp.to.clear();
+        }
+        ret.label = ret.label + "}";
+        return ret;
+    }
+
+    bool verificaSeEstadoFoiInserido(vector<State> ss, State s)
+    {
+        int i, n = ss.size();
+        for (i = 0; i < n; i++)
+        {
+            if (estadoIgual(ss[i], s))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Automata converteParaAFD()
+    {
+        int i, j, k, z, n = alfabeto.size(), l = estadosIniciais.size(), y;
         Automata AFD;
         Transition tempT;
         State tempS;
-        tempS.label = "";
-        //Estado Inicial
+        tempS.label = "{";
+        // Estado Inicial
         tempS.itsStart = true;
         tempS.itsFinal = false;
-        for(i = 0; i < l; i++){
+
+        for (i = 0; i < l; i++)
+        {
             tempS.label = tempS.label + estadosIniciais[i]->label;
-            for(j = 0; j < n; j++){
-                tempT.to.clear();
-                tempT.character = alfabeto[j];
-                y = estadosIniciais[i]->delta[j].to.size();
-                for(k = 0; k < y; k++){
-                    tempT.to.push_back(estadosIniciais[i]->delta[j].to[k]);
-                }
-                tempS.delta.push_back(tempT);
-            }
-            if(i + 1 < l){
+            if (i + 1 < l)
+            {
                 tempS.label = tempS.label + ",";
             }
         }
+        tempS.label = tempS.label + "}";
+        for (i = 0; i < n; i++)
+        {
+            tempT.character = alfabeto[i];
+            for (j = 0; j < l; j++)
+            {
+                y = estadosIniciais[j]->delta[i].to.size();
+                for (k = 0; k < y; k++)
+                {
+                    if (!existeElemConjunto(tempT.to, estadosIniciais[j]->delta[i].to[k]))
+                    {
+                        tempT.to.push_back(estadosIniciais[j]->delta[i].to[k]);
+                    }
+                }
+            }
+            tempS.delta.push_back(tempT);
+            tempT.to.clear();
+        }
         AFD.estados.push_back(tempS);
+        AFD.estadosIniciais.push_back(&estados[0]);
+    
+        j = 0;
+        z = 0;
+        while(j < (k = AFD.estados.size())){
+            for(i = 0; i < n; i++){
+                tempS = transicaoParaEstado(AFD.estados[j].delta[i]);
+                if(tempS.label != "{}" && !verificaSeEstadoFoiInserido(AFD.estados, tempS)){
+                    AFD.estados.push_back(tempS);
+                    z++;
+                    if(tempS.itsFinal){
+                        AFD.estadosFinais.push_back(&estados[z]);
+                    }
+                }
+            }
+            j++;
+        }
+        AFD.alfabeto = alfabeto;
+        return AFD;
+    }
 
-        return AFD; 
+    void mostrarTabelaTransicao(){
+        int i, j, m = estados.size(), n = alfabeto.size();
+        State tempS;
+        cout << "Tabela de transicao:" << endl;
+        for(i = 0; i < m; i++){
+            for(j = 0; j < n; j++){
+                tempS = transicaoParaEstado(estados[i].delta[j]);
+                cout << "(" << estados[i].label << "," << alfabeto[j] << ") = " << tempS.label << endl;  
+            }
+        }
     }
 };
 
@@ -233,6 +369,6 @@ int main()
     afn.lerAlfabeto();
     afn.lerFuncaoTransicao();
     Automata afd = afn.converteParaAFD();
-
+    afd.mostrarTabelaTransicao();
     return 0;
 }
