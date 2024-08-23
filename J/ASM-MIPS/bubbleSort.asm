@@ -22,7 +22,7 @@
 	add $t1, $zero, $zero
 	
 	for1:
-		
+		move $a1, $a2
 	
 		for2:
 		

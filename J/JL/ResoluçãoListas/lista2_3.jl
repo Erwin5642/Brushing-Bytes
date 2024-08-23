@@ -1,20 +1,19 @@
-mutable struct Aluno
-    RGM::Int64
-    Nome::String
-    Email::String
-    Curso::String
-    Telefone::String
+abstract type Figura end
+
+struct Triangulo <: Figura
+    altura::Float64
+    base::Float64
 end
 
-info = split(readline())
-aluno = Aluno(parse(Int64, info[1]), info[2], info[3], info[4], info[5])
-
-function infoAluno(a::Aluno)
-    println("Nome: ", a.Nome)
-    println("RGM: ", a.RGM)
-    println("Curso: ", a.Curso)
-    println("Email: ", a.Email)
-    println("Telefone: ", a.Telefone)
+struct Retangulo <: Figura
+    altura::Float64
+    largura::Float64
 end
 
-infoAluno(aluno)
+struct Circulo <: Figura
+    raio::Float64
+end
+
+area(a::Triangulo) = 0.5 * a.base * a.altura
+area(a::Circulo) = pi * a.raio^2
+area(a::Retangulo) = a.altura * a.largura

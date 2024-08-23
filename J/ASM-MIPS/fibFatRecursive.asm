@@ -8,7 +8,7 @@
 		# showMessage("Insira uma valor...")
 		la $a0, message1
 		jal showMessage
-		
+		add $k0, $zero, $a0
 		jal readWord
 		# s0 = readWord()
 		add $s0, $zero, $v0

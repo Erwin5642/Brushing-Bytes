@@ -327,6 +327,9 @@ public:
         for (i = 0; i < l; i++)
         {
             tempS.label = tempS.label + estadosIniciais[i]->label;
+            if(estadosIniciais[i]->itsFinal){
+                tempS.itsFinal = true;
+            }
             if (i + 1 < l)
             {
                 tempS.label = tempS.label + ",";
@@ -433,22 +436,29 @@ public:
             for(j = 0; j < n; j++){
                 //Transforma a transição em estado para acessar o seu nome
                 tempS = transicaoParaEstado(estados[i].delta[j]);
-                if(tempS.itsStart){
-                    cout << "-> ";
+                if(estados[i].itsStart){
+                    cout << "->";
                 }
-                if(tempS.itsFinal){
-                    cout << "* ";
+                if(estados[i].itsFinal){
+                    cout << "*";
                 }
                 cout << "(" << estados[i].label << "," << alfabeto[j] << ") = " << tempS.label << endl;  
             }
         }
+    }
+
+    void clear(){
+        alfabeto.clear();
+        estadosIniciais.clear();
+        estadosFinais.clear();
+        estados.clear();
     }
 };
 
 int main()
 {
 
-    Automata afn, afd, nothing;
+    Automata afn, afd;
     int flag;
 
     do{
@@ -479,7 +489,8 @@ int main()
         if(!flag){
             return 0;
         }
-        afn = nothing;
+        afn.clear();
+        afd.clear();
         cin.ignore();
         system("clear");
         }while(true);   
