@@ -37,25 +37,6 @@ void deleteAVLTree(AVLTree **Tree)
     }
 }
 
-int max(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-int getHeight(AVLTree *node)
-{
-    if (!node)
-    {
-        return 0;
-    }
-    return max(getHeight(node->left), getHeight(node->right)) + 1;
-}
-
-int getBalance(AVLTree *node)
-{
-    return getHeight(node->right) - getHeight(node->left);
-}
-
 void leftRotation(AVLTree **T)
 {
     AVLTree *aux = *T;
@@ -122,6 +103,20 @@ void rightLeftRotation(AVLTree **T)
     }
 }
 
+// Retorna um ponteiro para o menor nó na árvore binária de busca
+AVLTree *minBinaryTree(AVLTree *T)
+{
+    if (T)
+    {
+        // Percorre a árvore até encontrar o nó mais à esquerda
+        while (T->left)
+        {
+            T = T->left;
+        }
+    }
+    return T;
+}
+
 AVLTree *newNodeAVLTree(int key)
 {
     AVLTree *new = malloc(sizeof(AVLTree));
@@ -184,11 +179,11 @@ void insertKeyAVLTree(AVLTree **T, int key)
             case -1:
                 if ((*T)->left->balance == -1)
                 {
-                    rightRotation(T);
+                    rightRotation(T, 0);
                 }
                 else
                 {
-                    leftRightRotation(T);
+                    leftRightRotation(T, 0);
                 }
                 flag = 0;
                 break;
@@ -236,14 +231,32 @@ AVLTree *removeNodeAVLTree(AVLTree *node)
 void removeKeyAVLTree(AVLTree **T, int key)
 {
     static int flag;
+    AVLTree *aux;
     flag = 0;
     if (*T)
     {
         // Procura pelo nó com a chave desejada
         if (key == (*T)->key)
         {
-            *T = removeNodeAVLTree(*T);
             flag = 1;
+            if (!(*T)->left)
+            {
+                aux = (*T)->right;
+                free(*T);
+                *T = aux;
+            }
+            else if (!(*T)->right)
+            {
+                aux = (*T)->left;
+                free(*T);
+                *T = aux;
+            }
+            else
+            {
+                aux = minBinaryTree((*T)->right);
+                (*T)->key = aux->key;
+                removeKeyAVLTree(&(*T)->right, aux->key);
+            }
             return;
         }
         if (key < (*T)->key)
@@ -259,15 +272,16 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     break;
                 case 0:
                     (*T)->balance = 1;
+                    flag = 0;
                     break;
                 case 1:
                     if ((*T)->right->balance == 1)
                     {
-                        leftRotation(T);
+                        leftRotation(T, 1);
                     }
                     else
                     {
-                        rightLeftRotation(T);
+                        rightLeftRotation(T, 1);
                     }
                     break;
                 }
@@ -286,6 +300,7 @@ void removeKeyAVLTree(AVLTree **T, int key)
                     break;
                 case 0:
                     (*T)->balance = -1;
+                    flag = 0;
                     break;
                 case -1:
                     if ((*T)->left->balance == -1)
@@ -408,13 +423,17 @@ int main()
         gfx_paint();
     }
 
-    for(i = 0; i < 10; i++){
+    for (i = 0; i < 10; i++)
+    {
         scanf("%d", &e);
-        removeKeyAVLTree(&T, e);
-        gfx_clear();
-        drawTree(T, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
-        gfx_paint();
-        getchar();
+        if (e)
+        {
+            removeKeyAVLTree(&T, e);
+            gfx_clear();
+            drawTree(T, g_X_TREE_ORIGIN, g_Y_TREE_ORIGIN, g_SCREEN_WIDTH / 2);
+            gfx_paint();
+            getchar();
+        }
     }
 
     deleteAVLTree(&T);
