@@ -57,30 +57,38 @@ void rightRotation(AVLTree **T)
     (*T)->balance = 0;
 }
 
-void leftRightRotation(AVLTree **T)
+void leftRightRotation(AVLTree **T, int f)
 {
-    int ptvb = (*T)->left->right->balance;
+    int ptvb = (*T)->left->right->balance, ptub = (*T)->left->balance;
     leftRotation(&(*T)->left);
     rightRotation(T);
     if (ptvb == -1)
     {
         (*T)->right->balance = 1;
     }
-    else
-    {
-        (*T)->right->balance = 0;
-    }
     if (ptvb == 1)
     {
         (*T)->left->balance = -1;
     }
-    else
-    {
-        (*T)->left->balance = 0;
+    if(f){
+         if(ptub == 0){
+             (*T)->left->balance = -1;
+             if(ptvb == 1){
+                    switch ((*T)->balance)
+            {
+              //rotacao na sub esquerda
+             }
+             else{
+                 (*T)->balance = -1;
+             }
+         }
+
+
     }
+   
 }
 
-void rightLeftRotation(AVLTree **T)
+void rightLeftRotation(AVLTree **T, int f)
 {
     int ptvb = (*T)->right->left->balance;
     rightRotation(&(*T)->right);
