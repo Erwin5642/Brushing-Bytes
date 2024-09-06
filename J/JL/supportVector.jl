@@ -21,7 +21,7 @@ modelo = Model(optimizer_with_attributes(Ipopt.Optmizer, "print_level" => 0))
 
 @objective(model, Min, dot(w, w)/2)
 
-@constraint(model, [i = 1:n], y  (dot(w, x[i, :]) + b) >= 1)
+@constraint(model, [i = 1:n], y[i] * (dot(w, x[i, :]) + b) >= 1)
 
 optmize!(model)
 
