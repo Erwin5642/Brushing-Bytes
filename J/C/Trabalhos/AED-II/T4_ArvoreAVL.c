@@ -5,7 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 
-//Parâmetros para o desenho da árvore
+// Parâmetros para o desenho da árvore
 #define g_NODE_WIDTH 30
 #define g_NODE_HEIGHT 30
 #define g_SCREEN_WIDTH 1200
@@ -14,7 +14,7 @@
 #define g_Y_TREE_ORIGIN 30
 #define g_NODES_DISTANCE 75
 
-//Estrutura com nó para árvore AVL
+// Estrutura com nó para árvore AVL
 typedef struct s_no
 {
     int32_t chave : 28;
@@ -24,7 +24,7 @@ typedef struct s_no
     struct s_no *dir;
 } AVLNodeTree;
 
-//Estrutura com nó para árvore AVL em arquivo
+// Estrutura com nó para árvore AVL em arquivo
 typedef struct s_arq_no
 {
     int32_t chave : 28;
@@ -33,11 +33,7 @@ typedef struct s_arq_no
     uint32_t dir : 1;
 } AVLNodeFile;
 
-//Prototipo para as funções de rebalanço
-int rebalanceFromLeft(AVLNodeTree **);
-int rebalanceFromRight(AVLNodeTree **);
-
-//Desaloca todos os nós de uma árvore AVL T
+// Desaloca todos os nós de uma árvore AVL T
 void deleteAVLTree(AVLNodeTree **T)
 {
     if (T)
@@ -58,36 +54,34 @@ void deleteAVLTree(AVLNodeTree **T)
     }
 }
 
-//Aplica uma rotação esquerda em um nó AVL T
+// Aplica uma rotação esquerda em um nó AVL T
 void leftRotation(AVLNodeTree **T)
 {
     AVLNodeTree *aux = *T;
     *T = (*T)->dir;
     aux->dir = (*T)->esq;
     (*T)->esq = aux;
-    //Considera temporariamente que ambos os nós ptu e pt ficaram com balanço 0
+    // Considera temporariamente que ambos os nós ptu e pt ficaram com balanço 0
     aux->bal = 0;
     (*T)->bal = 0;
 }
 
-//Aplica uma rotação esquerda em um nó AVL T
+// Aplica uma rotação esquerda em um nó AVL T
 void rightRotation(AVLNodeTree **T)
 {
     AVLNodeTree *aux = *T;
     *T = (*T)->esq;
     aux->esq = (*T)->dir;
     (*T)->dir = aux;
-    //Considera temporariamente que ambos os nós ptu e pt ficaram com balanço 0
+    // Considera temporariamente que ambos os nós ptu e pt ficaram com balanço 0
     aux->bal = 0;
     (*T)->bal = 0;
 }
 
-//Aplica uma rotação dupla direita em um nó AVL T
-//Caso f seja 0, considera que o rebalanço foi feito após uma inserção
-//Caso f seja 1, considera que o rebalanço foi feito após uma remoção
-void leftRightRotation(AVLNodeTree **T, int f)
+// Aplica uma rotação dupla direita em um nó AVL T
+void leftRightRotation(AVLNodeTree **T)
 {
-    int ptvb = (*T)->esq->dir->bal, ptub = (*T)->esq->bal;
+    int ptvb = (*T)->esq->dir->bal;
     leftRotation(&(*T)->esq);
     rightRotation(T);
     if (ptvb == -1)
@@ -98,32 +92,12 @@ void leftRightRotation(AVLNodeTree **T, int f)
     {
         (*T)->esq->bal = -1;
     }
-    // Caso o rebalanço foi após uma remoção, faz outros rebalanços também
-    if (f)
-    {
-        if (ptub == 0)
-        {
-            (*T)->bal = -1;
-            if (ptvb == 1)
-            {
-                //No caso em que pt->bal == -2, ptu->bal == 0 e ptv->bal == 1
-                //É necessário rebalancear a esquerda do ptu também, por isso inicia o algoritmo de rebalanço nesse nó também  
-                rebalanceFromRight(&(*T)->esq);
-            }
-            else
-            {
-                (*T)->esq->bal = -1;
-            }
-        }
-    }
 }
 
-//Aplica uma rotação dupla esquerda em um nó AVL T
-//Caso f seja 0, considera que o rebalanço foi feito após uma inserção
-//Caso contrário, considera que o rebalanço foi feito após uma remoção
-void rightLeftRotation(AVLNodeTree **T, int f)
+// Aplica uma rotação dupla esquerda em um nó AVL T
+void rightLeftRotation(AVLNodeTree **T)
 {
-    int ptvb = (*T)->dir->esq->bal, ptub = (*T)->dir->bal;
+    int ptvb = (*T)->dir->esq->bal;
     rightRotation(&(*T)->dir);
     leftRotation(T);
     if (ptvb == 1)
@@ -134,33 +108,69 @@ void rightLeftRotation(AVLNodeTree **T, int f)
     {
         (*T)->dir->bal = 1;
     }
-    // Caso o rebalanço foi após uma remoção, faz outros rebalanços também
-    if (f)
-    {
-        if (ptub == 0)
-        {
-            (*T)->bal = 1;
-            if (ptvb == -1)
-            {
-                //No caso em que pt->bal == -2, ptu->bal == 0 e ptv->bal == 1
-                //É necessário rebalancear a direita do ptu também, por isso inicia o algoritmo de rebalanço nesse nó também
-                rebalanceFromLeft(&(*T)->dir);
-            }
-            else
-            {
-                (*T)->dir->bal = 1;
-            }
-        }
-    }
 }
 
-//Usado na remoção para recalcular o balanço de um nó de forma adequada
-//Após voltar de um nó filho à direita
-//Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
-//Retorna 0 se o rebalanço deve parar
-int rebalanceFromRight(AVLNodeTree **T)
+int rebalanceRight(AVLNodeTree **T)
 {
     int flag = 1;
+    switch ((*T)->bal)
+    {
+    case -1:
+        (*T)->bal = flag = 0;
+        break;
+    case 0:
+        (*T)->bal = 1;
+        break;
+    case 1:
+        if ((*T)->dir->bal == 1)
+        {
+            leftRotation(T);
+        }
+        else
+        {
+            rightLeftRotation(T);
+        }
+        flag = 0;
+        break;
+    }
+    return flag;
+}
+
+int rebalanceLeft(AVLNodeTree **T)
+{
+    int flag = 1;
+
+    switch ((*T)->bal)
+    {
+    case 1:
+        (*T)->bal = flag = 0;
+        break;
+    case 0:
+        (*T)->bal = -1;
+        break;
+    case -1:
+        if ((*T)->esq->bal == -1)
+        {
+            rightRotation(T);
+        }
+        else
+        {
+            leftRightRotation(T);
+        }
+        flag = 0;
+        break;
+    }
+
+    return flag;
+}
+
+// Usado na remoção para recalcular o balanço de um nó de forma adequada
+// Após voltar de um nó filho à direita
+// Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
+// Retorna 0 se o rebalanço deve parar
+int rebalanceFromRight(AVLNodeTree **T)
+{
+    int flag = 1, temp;
     switch ((*T)->bal)
     {
     case 1:
@@ -171,17 +181,18 @@ int rebalanceFromRight(AVLNodeTree **T)
         flag = 0;
         break;
     case -1:
-        if (!(*T)->esq->bal)
-        {
-            flag = 0;
-        }
-        if ((*T)->esq->bal == -1)
+        if ((temp = (*T)->esq->bal) != 1)
         {
             rightRotation(T);
+            if (temp == 0)
+            {
+                (*T)->dir->bal = -1;
+                (*T)->bal = 1;
+            }
         }
         else
         {
-            leftRightRotation(T, 1);
+            leftRightRotation(T);
         }
         break;
     }
@@ -189,13 +200,13 @@ int rebalanceFromRight(AVLNodeTree **T)
     return flag;
 }
 
-//Usado na remoção para recalcular o balanço de um nó de forma adequada
-//Após voltar de um nó filho à esquerda
-//Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
-//Retorna 0 se o rebalanço deve parar
+// Usado na remoção para recalcular o balanço de um nó de forma adequada
+// Após voltar de um nó filho à esquerda
+// Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
+// Retorna 0 se o rebalanço deve parar
 int rebalanceFromLeft(AVLNodeTree **T)
 {
-    int flag = 1;
+    int flag = 1, temp;
 
     switch ((*T)->bal)
     {
@@ -207,17 +218,19 @@ int rebalanceFromLeft(AVLNodeTree **T)
         flag = 0;
         break;
     case 1:
-        if (!(*T)->dir->bal)
-        {
-            flag = 0;
-        }
-        if ((*T)->dir->bal == 1)
+        if ((temp = (*T)->dir->bal) != -1)
         {
             leftRotation(T);
+            if (temp == 0)
+            {
+                (*T)->esq->bal = 1;
+                (*T)->bal = -1;
+                flag = 0;
+            }
         }
         else
         {
-            rightLeftRotation(T, 1);
+            rightLeftRotation(T);
         }
         break;
     }
@@ -332,7 +345,7 @@ char readChar()
     return c;
 }
 
-//Retorna um ponteiro para um nove nó para AVL recém alocado
+// Retorna um ponteiro para um nove nó para AVL recém alocado
 AVLNodeTree *newNodeAVLTree(int key)
 {
     AVLNodeTree *new = malloc(sizeof(AVLNodeTree));
@@ -342,8 +355,8 @@ AVLNodeTree *newNodeAVLTree(int key)
     return new;
 }
 
-//Insere um nó com a chave desejada na árvore AVL
-//Retorna 1 se a chave foi inserida com sucesso, ou 0 se a chave já existia na AVL
+// Insere um nó com a chave desejada na árvore AVL
+// Retorna 1 se a chave foi inserida com sucesso, ou 0 se a chave já existia na AVL
 int insertKeyAVLTree(AVLNodeTree **T, int key)
 {
     static int flag;
@@ -355,7 +368,8 @@ int insertKeyAVLTree(AVLNodeTree **T, int key)
         (*T) = newNodeAVLTree(key);
         return 1;
     }
-    if((*T)->chave == key){
+    if ((*T)->chave == key)
+    {
         return 0;
     }
     if ((*T)->chave < key)
@@ -363,26 +377,7 @@ int insertKeyAVLTree(AVLNodeTree **T, int key)
         success = insertKeyAVLTree(&(*T)->dir, key);
         if (flag)
         {
-            switch ((*T)->bal)
-            {
-            case -1:
-                (*T)->bal = flag = 0;
-                break;
-            case 0:
-                (*T)->bal = 1;
-                break;
-            case 1:
-                if ((*T)->dir->bal == 1)
-                {
-                    leftRotation(T);
-                }
-                else
-                {
-                    rightLeftRotation(T, 0);
-                }
-                flag = 0;
-                break;
-            }
+            flag = rebalanceRight(T);
         }
     }
     else if ((*T)->chave > key)
@@ -390,26 +385,7 @@ int insertKeyAVLTree(AVLNodeTree **T, int key)
         success = insertKeyAVLTree(&(*T)->esq, key);
         if (flag)
         {
-            switch ((*T)->bal)
-            {
-            case 1:
-                (*T)->bal = flag = 0;
-                break;
-            case 0:
-                (*T)->bal = -1;
-                break;
-            case -1:
-                if ((*T)->esq->bal == -1)
-                {
-                    rightRotation(T);
-                }
-                else
-                {
-                    leftRightRotation(T, 0);
-                }
-                flag = 0;
-                break;
-            }
+            flag = rebalanceLeft(T);
         }
     }
     return success;
@@ -446,7 +422,8 @@ int removeKeyAVLTree(AVLNodeTree **T, int key)
                 aux = minAVLTree((*T)->dir);
                 (*T)->chave = aux->chave;
                 success = removeKeyAVLTree(&(*T)->dir, aux->chave);
-                if(flag){
+                if (flag)
+                {
                     flag = rebalanceFromRight(T);
                 }
             }
@@ -475,24 +452,23 @@ int removeKeyAVLTree(AVLNodeTree **T, int key)
     return 0;
 }
 
-
 // Retorna um ponteiro para o nó com valor buscado ou NULL caso ele não exista na árvore AVL e salva um flag
 // 0: Arvore vazia
 // 1: Chave presente na arvore
 // 2: Chave menor que o minimo
-// 3: Chave maior que o maximo  
+// 3: Chave maior que o maximo
 AVLNodeTree *searchKeyAVLTree(AVLNodeTree *root, int key, int *flag)
 {
     if (!root)
     {
-        //Arvore vazia
+        // Arvore vazia
         *flag = 0;
     }
     while (root)
     {
         if (key == root->chave)
         {
-            //Encontrou a chave
+            // Encontrou a chave
             *flag = 1;
             return root;
         }
@@ -500,7 +476,7 @@ AVLNodeTree *searchKeyAVLTree(AVLNodeTree *root, int key, int *flag)
         {
             if (!root->esq)
             {
-                //Chave menor que nó atual, mas sem filhos a esquerda
+                // Chave menor que nó atual, mas sem filhos a esquerda
                 *flag = 2;
                 return root;
             }
@@ -510,7 +486,7 @@ AVLNodeTree *searchKeyAVLTree(AVLNodeTree *root, int key, int *flag)
         {
             if (!root->dir)
             {
-                //Chave maior que nó atual, mas sem filhos a direita
+                // Chave maior que nó atual, mas sem filhos a direita
                 *flag = 3;
                 return root;
             }
@@ -520,7 +496,7 @@ AVLNodeTree *searchKeyAVLTree(AVLNodeTree *root, int key, int *flag)
     return NULL;
 }
 
-//Desenha um nó na tela mostrando sua chave e balanço
+// Desenha um nó na tela mostrando sua chave e balanço
 void drawNode(int x, int y, int key, int bal)
 {
     char v[10];
@@ -539,7 +515,7 @@ void drawNode(int x, int y, int key, int bal)
     gfx_text(x + g_NODE_WIDTH / 2 - largura / 2, y - altura, v);
 }
 
-//Desenha uma árvore AVL recursivamente
+// Desenha uma árvore AVL recursivamente
 void drawTree(AVLNodeTree *T, int x, int y, int dist)
 {
     if (T)
@@ -560,7 +536,7 @@ void drawTree(AVLNodeTree *T, int x, int y, int dist)
 }
 
 // Operações em Arquivo
-//Abre um arquivo
+// Abre um arquivo
 FILE *openFile(const char *name, const char *mode)
 {
     FILE *file;
@@ -608,7 +584,6 @@ void saveAVLTreeInFile(AVLNodeTree *T, const char *fileName)
     }
 }
 
-
 // Aloca um nó a partir de uma árvore salva em arquivo e aloca os seus filhos recursivamente
 void createNodesFromFile(AVLNodeTree **T, FILE *dest)
 {
@@ -634,6 +609,7 @@ void readAVLTreeFromFile(AVLNodeTree **T, const char *fileName)
     FILE *treeFile = openFile(fileName, "rb");
     if (treeFile)
     {
+        deleteAVLTree(T);
         if (feof(treeFile))
         {
             (*T) = NULL;
@@ -760,7 +736,6 @@ int main()
             printf("\nInforme o nome do arquivo em que a árvore está salva: ");
             scanf("%s", fileName);
             getchar();
-            deleteAVLTree(&root);
             readAVLTreeFromFile(&root, fileName);
             break;
         case '7':
