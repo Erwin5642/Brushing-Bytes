@@ -153,3 +153,22 @@ p_l_curve = plot(1:epochs, loss_history,
 
 
 # salvando o modelo 
+
+julia> using Flux
+
+julia> struct MyModel
+           net
+       end
+
+julia> Flux.@layer MyModel
+
+julia> MyModel() = MyModel(Chain(Dense(10 => 5, relu), Dense(5 => 2)));
+
+julia> model = MyModel()
+MyModel(Chain(Dense(10 => 5, relu), Dense(5 => 2)))  # 67 parameters
+
+julia> model_state = Flux.state(model);
+
+julia> using JLD2
+
+julia> jldsave("mymodel.jld2"; model_state)
