@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "gfx.h"
-#include <time.h>
-#include <unistd.h>
 
 // Parâmetros para o desenho da árvore
 #define g_NODE_WIDTH 30
@@ -110,6 +108,10 @@ void rightLeftRotation(AVLNodeTree **T)
     }
 }
 
+// Usado na inserção para recalcular o balanço de um nó de forma adequada
+//Rebalanceia a subárvore direita
+// Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
+// Retorna 0 se o rebalanço deve parar
 int rebalanceRight(AVLNodeTree **T)
 {
     int flag = 1;
@@ -136,6 +138,10 @@ int rebalanceRight(AVLNodeTree **T)
     return flag;
 }
 
+// Usado na inserção para recalcular o balanço de um nó de forma adequada
+//Rebalanceia a subárvore esquerda
+// Retorna 1 se o algoritmo deve seguir recalculando o balanço dos nós ancestrais
+// Retorna 0 se o rebalanço deve parar
 int rebalanceLeft(AVLNodeTree **T)
 {
     int flag = 1;
@@ -188,6 +194,7 @@ int rebalanceFromRight(AVLNodeTree **T)
             {
                 (*T)->dir->bal = -1;
                 (*T)->bal = 1;
+                flag = 0;
             }
         }
         else
@@ -249,86 +256,6 @@ AVLNodeTree *minAVLTree(AVLNodeTree *T)
         }
     }
     return T;
-}
-
-// Retorna um ponteiro para o maior nó na árvore AVL
-AVLNodeTree *maxAVLTree(AVLNodeTree *T)
-{
-    if (T)
-    {
-        // Percorre a árvore até encontrar o nó mais à direita
-        while (T->dir)
-        {
-            T = T->dir;
-        }
-    }
-    return T;
-}
-
-// Retorna um ponteiro para o sucessor de um dado valor na árvore AVL
-AVLNodeTree *sucessorNodeAVLTree(AVLNodeTree *T, int key)
-{
-    AVLNodeTree *ancestralNode = NULL;
-    // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o sucessor
-    // Enquanto mantém um ponteiro para o último nó em que foi efetuado uma "virada para esquerda"
-    // Que será o ancestral mais baixo que possui um nó filho à esquerda que é ancestral do nó buscado
-    while (T)
-    {
-        if (T->chave < key)
-        {
-            T = T->dir;
-        }
-        else if (T->chave > key)
-        {
-            ancestralNode = T;
-            T = T->esq;
-        }
-        else if (T->dir && T->chave == key)
-        {
-            // No caso do nó com o valor buscado tiver filho à direita, o sucessor
-            // será o menor valor na sub-árvore direita dele
-            return minAVLTree(T->dir);
-        }
-        else if (T->chave == key)
-        {
-            // Caso não exista a sub-árvore direita, o sucessor será o nó ancestral que foi mantido durante a busca
-            return ancestralNode;
-        }
-    }
-    return NULL;
-}
-
-// Retorna um ponteiro para o antecessor de um dado valor na árvore AVL
-AVLNodeTree *predecessorNodeAVLTree(AVLNodeTree *T, int key)
-{
-    AVLNodeTree *ancestralNode = NULL;
-    // Se a árvore não for vazia efetua uma busca pelo valor que se deseja descobrir o antecessor
-    // Enquanto mantém um ponteiro para o último nó em que foi efetuado uma "virada para direita"
-    // Que será o ancestral mais baixo que possui um nó filho à direita que é ancestral do nó buscado
-    while (T)
-    {
-        if (T->chave < key)
-        {
-            ancestralNode = T;
-            T = T->dir;
-        }
-        else if (T->chave > key)
-        {
-            T = T->esq;
-        }
-        else if (T->esq && T->chave == key)
-        {
-            // No caso do nó com o valor buscado tiver filho à direita, o antecessor
-            // será o maior valor na sub-árvore esquerda dele
-            return maxAVLTree(T->esq);
-        }
-        else if (T->chave == key)
-        {
-            // Caso não exista a sub-árvore esquerda, o antecessor será o nó ancestral que foi mantido durante a busca
-            return ancestralNode;
-        }
-    }
-    return NULL;
 }
 
 // Le apenas o primeiro caracter válido do buffer de teclado e descarta o resto
@@ -624,7 +551,7 @@ void readAVLTreeFromFile(AVLNodeTree **T, const char *fileName)
 
 int main()
 {
-    AVLNodeTree *root = NULL, *aux;
+    AVLNodeTree *root = NULL;
     char opcAcao, fileName[20];
     int inputkey, S;
     gfx_init(g_SCREEN_WIDTH, g_SCREEN_HEIGHT, "Arvore de Busca");
@@ -633,13 +560,11 @@ int main()
     {
         system("clear");
         printf("###\t\t\tArvore AVL\t\t\t###\n[0] - Encerrar programa\
-        \n[1] - Buscar Maior e Menor Chave;\
-        \n[2] - Buscar Chave;\
-        \n[3] - Buscar Antecessor e Sucessor;\
-        \n[4] - Inserir Chave;\
-        \n[5] - Remover Chave;\
-        \n[6] - Ler Arquivo com Arvore;\
-        \n[7] - Salvar Arvore em Arquivo;\
+        \n[1] - Buscar Chave;\
+        \n[2] - Inserir Chave;\
+        \n[3] - Remover Chave;\
+        \n[4] - Ler Arquivo com Arvore;\
+        \n[5] - Salvar Arvore em Arquivo;\
         \nDigite uma opção para escolher qual operação deve ser feita: ");
         opcAcao = readChar();
 
@@ -651,20 +576,6 @@ int main()
             return 0;
             break;
         case '1':
-            if ((aux = maxAVLTree(root)))
-            {
-                printf("\nA maior chave na árvore é: %d", aux->chave);
-            }
-            if ((aux = minAVLTree(root)))
-            {
-                printf("\nA menor chave na árvore é: %d\n", aux->chave);
-            }
-            else
-            {
-                printf("\nA árvore não possui maior e nem menor chave pois está vazia!\n");
-            }
-            break;
-        case '2':
             printf("\nInforme o valor da chave a ser buscada: ");
             scanf("%d", &inputkey);
             getchar();
@@ -685,28 +596,7 @@ int main()
                 break;
             }
             break;
-        case '3':
-            printf("\nInforme o valor da chave que deve ser encontrado o antecessor e sucessor: ");
-            scanf("%d", &inputkey);
-            getchar();
-            if ((aux = predecessorNodeAVLTree(root, inputkey)))
-            {
-                printf("O antecessor da chave é: %d\n", aux->chave);
-            }
-            else
-            {
-                printf("A chave não possui antecessor!\n");
-            }
-            if ((aux = sucessorNodeAVLTree(root, inputkey)))
-            {
-                printf("O sucessor da chave é: %d\n", aux->chave);
-            }
-            else
-            {
-                printf("A chave não possui sucessor!\n");
-            }
-            break;
-        case '4':
+        case '2':
             printf("\nInforme o valor da chave que deve ser inserida: ");
             scanf("%d", &inputkey);
             getchar();
@@ -719,7 +609,7 @@ int main()
                 printf("Nao é possivel inserir valores repetidos na arvore AVL!\n");
             }
             break;
-        case '5':
+        case '3':
             printf("\nInforme o valor da chave que deve ser removida: ");
             scanf("%d", &inputkey);
             getchar();
@@ -732,13 +622,13 @@ int main()
                 printf("A chave não estava presente na árvore!\n");
             }
             break;
-        case '6':
+        case '4':
             printf("\nInforme o nome do arquivo em que a árvore está salva: ");
             scanf("%s", fileName);
             getchar();
             readAVLTreeFromFile(&root, fileName);
             break;
-        case '7':
+        case '5':
             printf("\nInforme o nome do arquivo em que a árvore será salva: ");
             scanf("%s", fileName);
             getchar();
