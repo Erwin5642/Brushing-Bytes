@@ -177,60 +177,6 @@ class DFA:
         return re
 
 def main():
-    nfa = NFA.fromUser()
-
-    # Finding epsilon closure beforehand so to not recalculate each time
-    epsilon_closure = dict()
-    for x in nfa.states:
-        epsilon_closure[x] = list(nfa.getEpsilonClosure(x))
-    
-    # First state of DFA will be epsilon closure of start state of NFA
-    # This list will act as stack to maintain till when to evaluate the states
-    dfa_stack = list()
-    dfa_stack.append(epsilon_closure[nfa.start])
-    
-    # List to store the states of DFA
-    dfa_states = list()
-    dfa_states.append(epsilon_closure[nfa.start])
-    
-    # Loop will run till this stack is not empty
-    while (len(dfa_stack) > 0):
-        # Getting top of the stack for current evaluation
-        cur_state = dfa_stack.pop(0)
-    
-        # Traversing through all the alphabets for evaluating transitions in DFA
-        for al in range((nfa.no_alphabet) - 1):
-            # Set to see if the epsilon closure of the set is empty or not
-            from_closure = set()
-            for x in cur_state:
-                # Performing Union update and adding all the new states in set
-                from_closure.update(
-                    set(nfa.transition_table[str(x)+str(al)]))
-    
-            # Check if epsilon closure of the new set is not empty
-            if (len(from_closure) > 0):
-                # Set for the To state set in DFA
-                to_state = set()
-                for x in list(from_closure):
-                    to_state.update(set(epsilon_closure[nfa.states[x]]))
-    
-                # Check if the to state already exists in DFA and if not then add it
-                if list(to_state) not in dfa_states:
-                    dfa_stack.append(list(to_state))
-                    dfa_states.append(list(to_state))
-    
-            # Else case for empty epsilon closure
-            # This is a dead state(ϕ) in DFA
-            else:
-            
-                # Check if any dead state was present before this
-                # if not then make a new dead state ϕ
-                if (-1) not in dfa_states:
-    
-                    # Adding -1 to list to mark that dead state is present
-                    dfa_states.append(-1)
- 
- 
     states = input('Enter the states in your DFA : ')
     states = states.split()
     alphabets = input('Enter the alphabets : ')
@@ -239,7 +185,7 @@ def main():
     final_states = input('Enter the final states : ')
     final_states = final_states.split()
     print('Define the transition function : ')
-    transition_matrix = [list(map(str, input().split())) for _ in range(len(states))]
+    transition_matrix = [list(input().split()) for _ in range(len(states))]
     transition_funct = dict(zip(states, transition_matrix))
     # print('transition funct : ', transition_funct)
     r = ''

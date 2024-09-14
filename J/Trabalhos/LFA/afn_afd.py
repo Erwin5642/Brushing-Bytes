@@ -145,32 +145,38 @@ epsilon_closure = dict()
 for x in nfa.states:
 	epsilon_closure[x] = list(nfa.getEpsilonClosure(x))
 
-
-# First state of DFA will be epsilon closure of start state of NFA
-# This list will act as stack to maintain till when to evaluate the states
 dfa_stack = list()
 dfa_stack.append(epsilon_closure[nfa.start])
-# List to store the states of DFA
 dfa_states = list()
 dfa_finals = list()
 dfa_states.append(epsilon_closure[nfa.start])
 dfa_alphabets = nfa.alphabets
 dfa_start = str(epsilon_closure[nfa.start])
+dfa_transition_matrix = list()
+
+# Check if start state is the final state in DFA
+if (nfa.isFinalDFA(dfa_stack[0])):
+    dfa_finals.append(str(dfa_stack[0]))
+
+# First state of DFA will be epsilon closure of start state of NFA
+# This list will act as stack to maintain till when to evaluate the states
+# List to store the states of DFA
 
 # Loop will run till this stack is not empty
 while (len(dfa_stack) > 0):
     # Getting top of the stack for current evaluation
     cur_state = dfa_stack.pop(0)
- 
+	
     # Traversing through all the alphabets for evaluating transitions in DFA
     for al in range((nfa.no_alphabet) - 1):
         # Set to see if the epsilon closure of the set is empty or not
-        from_closure = set()
+    	transition = ""
+	    from_closure = set()
         for x in cur_state:
-            # Performing Union update and adding all the new states in set
+            # Performing Union up date and adding all the new states in set
             from_closure.update(
                 set(nfa.transition_table[str(x)+str(al)]))
- 
+
         # Check if epsilon closure of the new set is not empty
         if (len(from_closure) > 0):
             # Set for the To state set in DFA
@@ -182,34 +188,31 @@ while (len(dfa_stack) > 0):
             if list(to_state) not in dfa_states:
                 dfa_stack.append(list(to_state))
                 dfa_states.append(list(to_state))
- 
+	
                 # Check if this set contains final state of NFA
                 # to get if this set will be final state in DFA
                 if (nfa.isFinalDFA(list(to_state))):
-                    dfa_finals.append(cur_state)
+                    dfa_finals.append(str(cur_state))
                     
  
             # Adding edge between from state and to state
-             
-        # Else case for empty epsilon closure
-        # This is a dead state(ϕ) in DFA
+			transition = transition + str(to_state) + " "		
         else:
            
             # Check if any dead state was present before this
             # if not then make a new dead state ϕ
-            if (-1) not in dfa_states:
-                dfa.attr('node', shape='circle')
-                dfa.node('ϕ')
- 
+            if '-' not in dfa_states:
+                
                 # For new dead state, add all transitions to itself,
                 # so that machine cannot leave the dead state
                 for alpha in range(nfa.no_alphabet - 1):
-                    dfa.edge('ϕ', 'ϕ', nfa.alphabets[alpha])
+                    dfa_transition_matrix
  
                 # Adding -1 to list to mark that dead state is present
-                dfa_states.append(-1)
+                dfa_states.append('-')
  
             # Adding transition to dead state
-            dfa.edge(nfa.getStateName(cur_state,),
-                     'ϕ', label = nfa.alphabets[al])
- 
+            transition = transition + "- "
+		dfa_transition_matrix.append(list(map(str, transition.split())))
+
+dfa_transition_funct = dict(zip(dfa_states, dfa_transition_matrix))
