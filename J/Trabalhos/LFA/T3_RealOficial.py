@@ -126,53 +126,34 @@ class DFA:
         self.ds = dict_states
         self.transition_dict = copy.deepcopy(dict_states)
 
-    def get_intermediate_states(self):
-        return [state for state in self.states if state not in ([self.init_state] + self.final_states)]
+    def convertToGTG(self):
+        gtg = DFA(self.states, self.alphabets, self.init_state, self.final_states, self.transition_funct)
+		
+        for k in gtg.states:
+            if k != gtg.init_state and k not in gtg.final_states:
+                for p in gtg.states:
+                    for q in gtg.states:
+                        if p != k and q != k:gtg.ds[p][q] = gtg.getExpressionForElimination(k, p, q)
+                gtg.states.remove(k)
+        return gtg
 
-    def get_predecessors(self, state):
-        return [key for key, value in self.ds.items() if state in value.keys() and value[state] != 'e' and key != state]
+    def getExpressionForElimination(self, k, p, q):
+        pq = self.ds[p][q]
+        pk = self.ds[p][k]
+        kk = self.ds[k][k]
+        kq = self.ds[k][q]
+        return '(' + '(' + pq + ')' + '+' + '(' + pk + ')' + '(' + kk + ')' + '*' + '(' + kq + ')' + ')' 
+    
 
-    def get_successors(self, state):
-        return [key for key, value in self.ds[state].items() if value != 'e' and key != state]
-
-    def get_if_loop(self, state):
-        if self.ds[state][state] != 'e':
-            return self.ds[state][state]
-        else:
-            return ''
-
-    def toregex(self):
-        intermediate_states = self.get_intermediate_states()
-        dict_states = self.ds
-
-        for inter in intermediate_states:
-            predecessors = self.get_predecessors(inter)
-            successors = self.get_successors(inter)
-            # print('inter : ', inter)
-            # print('predecessor : ', predecessors)
-            # print('successor : ', successors)
-
-            # dd = {r: {c: 'e' for c in self.states if c != inter} for r in self.states if r != inter}
-            ##dd = {r: {c: 'e' for c in temp_states if c != inter} for r in temp_states if r != inter}
-            for i in predecessors:
-                for j in successors:
-                    inter_loop = self.get_if_loop(inter)
-                    # print('i : ', i, ' j : ', j)
-                    dict_states[i][j] = '+'.join(('(' + dict_states[i][j] + ')', ''.join(('(' + dict_states[i][
-                        inter] + ')', '(' + inter_loop + ')' + '*', '(' + dict_states[inter][j] + ')'))))
-
-            dict_states = {r: {c: v for c, v in val.items() if c != inter} for r, val in dict_states.items() if
-                           r != inter}  # remove inter node
-            self.ds = copy.deepcopy(dict_states)
-
-        init_loop = dict_states[self.init_state][self.init_state]
-        init_to_final = dict_states[self.init_state][self.final_states[0]] + '(' + dict_states[self.final_states[0]][
-            self.final_states[0]] + ')' + '*'
-        final_to_init = dict_states[self.final_states[0]][self.init_state]
-        re = '(' + '(' + init_loop + ')' + '+' + '(' + init_to_final + ')' + '(' + final_to_init + ')' + ')' + '*' + '(' + init_to_final + ')'
-        #re = '(' + re + ')*'
-        #print('Regular Expression : ', re)
-        return re
+    def deriveFinalExpression(self):
+        i = self.init_state
+        f = self.final_states[0]
+        i_i = self.ds[i][i]
+        i_f = self.ds[i][f]
+        f_i = self.ds[f][f]        
+        f_f = self.ds[f][i]                
+        return '(' + '(' + i_i + ')' + '+' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + '(' + i_i + ')' + '*' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + ')' 
+    
 
 def main():
 
@@ -265,15 +246,12 @@ def main():
 		dfa_states[i] = str(dfa_states[i])
 	dfa_transition_funct = dict(zip(dfa_states, dfa_transition_matrix))
 
-	r = ''
-	for f in dfa_finals:
-        #dfa = DFA(states, alphabets, init_state, final_states, transition_funct)
-        #regex = dfa.toregex()
-		dfa = DFA(dfa_states, dfa_alphabets, dfa_start, [f], dfa_transition_funct)
-		r+= '+' + dfa.toregex()
-    #dfa.draw_graph(regex, 'second')
-	print(r[1:])
-    # print(dfa.transition_dict)
+	dfa = DFA(dfa_states, dfa_alphabets, dfa_start, dfa_finals, dfa_transition_funct)
+	
+	gtg = dfa.convertToGTG()
+	print(gtg.deriveFinalExpression())
+
+	# print(dfa.transition_dict)
     # print(dfa.ds)
 	print(dfa_states)
 	print(dfa_alphabets)
