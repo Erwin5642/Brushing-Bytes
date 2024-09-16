@@ -117,7 +117,7 @@ class DFA:
         self.set_transition_dict()
 
     def set_transition_dict(self):
-        dict_states = {r: {c: 'e' for c in self.states} for r in self.states}
+        dict_states = {r: {c: '-' for c in self.states} for r in self.states}
         for i in self.states:
             for j in self.states:
                 indices = [ii for ii, v in enumerate(self.transition_funct[i]) if v == j]  # get indices of states
@@ -142,17 +142,52 @@ class DFA:
         pk = self.ds[p][k]
         kk = self.ds[k][k]
         kq = self.ds[k][q]
-        return '(' + '(' + pq + ')' + '+' + '(' + pk + ')' + '(' + kk + ')' + '*' + '(' + kq + ')' + ')' 
-    
-
+        re = ''
+		if pq != '-':
+			re = '(' + pq + ')'
+		if pk != '-':
+			if pq != '-':
+				re = re + '+'
+			re = re + '(' + pk + ')'
+		if kk != '-':
+			if pq != '-' and pk == '-':
+				re = re + '+'
+			re = re +  '(' + kk + ')' + '*'
+		if kq != '-':
+			if pq != '-' and pk == '-' and kk == '-':
+				re = re + '+'
+			re = re + '(' + kq + ')'
+		return '(' +  re  + ')' 
+	
     def deriveFinalExpression(self):
-        i = self.init_state
+		i = self.init_state
         f = self.final_states[0]
         i_i = self.ds[i][i]
         i_f = self.ds[i][f]
         f_i = self.ds[f][f]        
-        f_f = self.ds[f][i]                
-        return '(' + '(' + i_i + ')' + '*' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + '(' + f_i + ')' + '*' + '(' + i_i + ')' + '*' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + ')' 
+        f_f = self.ds[f][i]     
+		if i_i != '-':
+			re = '(' + i_i + ')'
+		if i_f != '-':
+			if i_i != '-':
+				re = re + '+'
+			re = re + '(' + i_f + ')'
+		if f_f != '-':
+			if i_i != '-' and i_f == '-':
+				re = re + '+'
+			re = re +  '(' + f_f + ')' + '*'
+		if i_i != '-':
+            if f_f == '-' and i_f == '-':
+                re = re + '+'
+			re = re + '(' + i_i + ')' + '*'
+		if i_f != '-':
+            re = re + '(' + i_f + ')
+        
+        if f_f != '-':
+			if pq != '-' and pk == '-' and kk == '-':
+				re = re + '+'
+			re = re + '(' + kq + ')'           
+        return '(' + '(' + i_i + ')' + '+' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + '(' + i_i + ')' + '*' + '(' + i_f + ')' + '(' + f_f + ')' + '*' + ')' 
     
 
 def main():
