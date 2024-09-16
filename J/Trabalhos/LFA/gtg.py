@@ -13,7 +13,7 @@ class DFA:
         self.set_transition_dict()
 
     def set_transition_dict(self):
-        dict_states = {r: {c: 'e' for c in self.states} for r in self.states}
+        dict_states = {r: {c: '-' for c in self.states} for r in self.states}
         for i in self.states:
             for j in self.states:
                 indices = [ii for ii, v in enumerate(self.transition_funct[i]) if v == j]  # get indices of states
