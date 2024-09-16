@@ -158,8 +158,7 @@ class DFA:
                         gtg.ds[j].pop(i)
                 gtg.states.remove(i)
                 gtg.ds.pop(i)
-                
-        
+                    
         return gtg
 
     def getExpressionForElimination(self, i, j, k):
