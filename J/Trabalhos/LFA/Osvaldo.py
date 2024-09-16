@@ -128,16 +128,6 @@ class DFA:
 
     def convertToGTG(self):
         gtg = DFA(self.states, self.alphabets, self.init_state, self.final_states, self.transition_funct)
-    
-        gtg.states.insert(0, 'StartGTG')
-        gtg.ds['StartGTG'] = {}
-        gtg.ds['StartGTG'][gtg.init_state] = 'e'
-        gtg.ds[gtg.init_state]['StartGTG'] = '-'
-        for s in gtg.states:
-            if s != gtg.init_state:
-                gtg.ds['StartGTG'][s] = '-'
-                gtg.ds[s]['StartGTG'] = '-'
-        gtg.init_state = 'StartGTG'
         
         if len(gtg.final_states) > 1:
             gtg.states.append('FinalGTG')
@@ -150,13 +140,25 @@ class DFA:
             gtg.final_states.clear()
             gtg.final_states.append('FinalGTG')
         
-        for i in gtg.states:
+        if "['-']" in gtg.states:
+            gtg.states.remove("['-']")
+            for k in gtg.states:
+                gtg.ds[k].pop("['-']")
+            gtg.ds.pop("['-']")
+
+        
+        while len(gtg.states) > 2:
+            i = gtg.states[1]
             if i != gtg.init_state and i not in gtg.final_states:
                 for j in gtg.states:
-                    for k in gtg.states:
-                        if j != i and k != i:
-                            gtg.ds[j][k] = gtg.getExpressionForElimination(i, j, k)
-                gtg.states.remove(k)
+                    if j != i:
+                        for k in gtg.states:
+                            if j != i and k != i:
+                                gtg.ds[j][k] = gtg.getExpressionForElimination(i, j, k)
+                        gtg.ds[j].pop(i)
+                gtg.states.remove(i)
+                gtg.ds.pop(i)
+                
         
         return gtg
 
@@ -164,21 +166,41 @@ class DFA:
         wji = self.ds[j][i]
         wik = self.ds[i][k]
         wii = self.ds[i][i]
+        wjk = self.ds[j][k]
+        re = wjk
         if wji != '-' and wik != '-':
             if wii == '-':
-                return wji + wik
+                re = wji + wik
             else:
-                return wji + '(' + wii + ')*' + wik 
-        
+                re = wji + '(' + wii + ')*' + wik 
+            if wjk != '-':
+                re = re + '+' + wjk
+        return re
+    
     def deriveFinalExpression(self):
         c = self.init_state
         f = self.final_states[0]
         cc = self.ds[c][c]
         cf = self.ds[c][f]
-        fc = self.ds[f][f]        
-        ff = self.ds[f][c]                
-        
-        return cc + '*' + cf + '(' + ff + '+' + fc + '(' + cc + ')*' + cf + ')*'
+        fc = self.ds[f][c]        
+        ff = self.ds[f][f]                
+        re = ''
+        if cc != '-':
+            re = '(' + cc + ')*'
+        re = re + '(' + cf + ')'
+        if ff != '-' or fc != '-':
+            re = re + '('
+            if ff != '-':
+                re = re + '(' + ff + ')'
+            if fc != '-':
+                if ff != '-':
+                    re = re + '+'
+                re = re + '(' + fc + ')'
+                if cc != '-':
+                    re = re + '(' + cc + ')*'
+                re = re + '(' + cf + ')' 
+            re = re + ')*'
+        return re
     
 
 def main():
