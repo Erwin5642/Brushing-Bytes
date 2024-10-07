@@ -185,8 +185,8 @@ void quickSortRand(int32_t *vector, int n)
 void quickSortMedian(int32_t *vector, int n)
 {
     
-    int pivot, i, j;
-    int32_t pivotValue, iniValue, endValue, medValue;
+    int i, j;
+    int32_t pivotValue;
     if(n <= 2){
         if(n == 2){
             if(vector[0] > vector[1]){
@@ -194,23 +194,24 @@ void quickSortMedian(int32_t *vector, int n)
             }
         }
         return;
-    }           
-    iniValue = vector[0];
-    endValue = vector[n - 1];
-    medValue = vector[n/2];
-    if(((iniValue > medValue) && (iniValue < endValue)) || ((iniValue < medValue) && (iniValue > endValue))){
-        pivotValue = iniValue;
-        pivot = 0;
     }
-    else if(((medValue > iniValue) && (medValue < endValue)) || ((medValue < iniValue) && (medValue > endValue))){
-        pivotValue = medValue;
-        pivot = n/2;
+    if(vector[n/2] > vector[0]){
+        if(vector[0] > vector[n - 1]){
+            swap(&vector[0], &vector[n-1]);
+        }
+        else{
+            swap(&vector[n/2], &vector[n-1]);
+        }
     }
     else{
-        pivotValue = endValue;
-        pivot = n - 1;
+        if(vector[0] > vector[n - 1]){
+            swap(&vector[n/2], &vector[n-1]);
+        }
+        else{
+            swap(&vector[0], &vector[n-1]);
+        }
     }
-    swap(&vector[pivot], &vector[n - 1]);
+    pivotValue = vector[n - 1];
     i = 0;
     j = n - 2;
     while(j >= i){
