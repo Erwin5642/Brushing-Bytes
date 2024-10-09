@@ -232,6 +232,40 @@ void quickSortMedian(int32_t *vector, int n)
     quickSortMedian(vector + i, n - i);
 }
 
+void descend(int32_t *vector, int i, int n){
+    int j = 2 * i + 1;
+    if(j < n){
+        if(j < n - 1){
+            if(vector[j + 1] > vector[j]){
+                j++;
+            }
+        }
+        if(vector[i] < vector[j]){
+            swap(&vector[i], &vector[j]);
+            descend(vector, j, n);
+        }
+    }
+}
+
+void arrange(int32_t *vector, int n){
+    int i;
+    for(i = (n - 1)/2; i >= 0; i--){
+        descend(vector, i, n);
+    }
+}
+
+void heapSort(int32_t *vector, int n){
+    arrange(vector, n);
+
+    while (n - 1 > 0)
+    {
+        swap(&vector[0], &vector[n - 1]);
+        n--;
+        descend(vector, 0, n);
+    }
+    
+}
+
 // Operações em Arquivo
 // Abre um arquivo
 FILE *openFile(const char *name, const char *mode)
@@ -278,9 +312,11 @@ int saveVectorInFile(int32_t *vector, int n, const char *fileName)
 int main(int argc, char *argv[])
 {
     int opc, size;
-    char inputFileName[20], outputFileName[20];
+    char inputFileName[50], outputFileName[50];
     int32_t *vetor;
     clock_t t;
+    FILE *saida;
+    srand(time(NULL));
     if(argc != 4){
         printf("Numero de argumentos invalido!\n");
         return 0;
@@ -321,11 +357,13 @@ int main(int argc, char *argv[])
         quickSortMedian(vetor, size);
         break;
     case 8:
-        
+        heapSort(vetor, size);   
         break;
     }
     t = clock() - t;
-    printf("Tempo total: %lf segundos\n", ((double)t) / CLOCKS_PER_SEC);
+    saida = openFile("tempos.txt", "a");
+    fprintf(saida, "%lf\n", ((double)t) / CLOCKS_PER_SEC);
+    fclose(saida);
     saveVectorInFile(vetor, size, outputFileName);
     free(vetor);
     return 0;

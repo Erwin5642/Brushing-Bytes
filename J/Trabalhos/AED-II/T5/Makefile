@@ -3,9 +3,12 @@ V_SIZE_COMPLEX = "500000" "5000000" "50000000"
 ORD_TYPES = "a" "c" "d"
 
 T5:
-	gcc -o T5_Ordena T5_Ordena.c -Wall -Wextra -pedantic -fsplit-stack
+	gcc -g -o T5_Ordena T5_Ordena.c -Wall -Wextra -pedantic -fsplit-stack
 
 cleanGeraAll: cleanGeraIn cleanGeraOrd cleanGeraOut
+
+cleanTempos:
+	rm tempos.txt
 
 cleanGeraOut:
 	@echo "Removendo arquivos de saida"
@@ -62,8 +65,10 @@ geraTestes: gera-in-out
 		echo ""; \
 	done
 
+testaAll: testaBubbleSortBasico testaBubbleSortMelhorado testaInsertionSort testaMergeSort testaQuickSortEnd testaQuickSortMed testaQuickSortRand
+
 testaBubbleSortBasico: T5_Ordena
-	@echo "Testing basic bubble sort"
+	@echo "Testing basic bubble sort" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -78,7 +83,7 @@ testaBubbleSortBasico: T5_Ordena
 	done
 
 testaBubbleSortMelhorado: T5_Ordena
-	@echo "Testing improved bubble sort"
+	@echo "Testing improved bubble sort" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -93,7 +98,7 @@ testaBubbleSortMelhorado: T5_Ordena
 	done
 
 testaInsertionSort: T5_Ordena
-	@echo "Testing insertion sort"
+	@echo "Testing insertion sort" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -108,7 +113,7 @@ testaInsertionSort: T5_Ordena
 	done
 
 testaMergeSort:
-	@echo "Testing merge sort"
+	@echo "Testing merge sort" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -136,7 +141,7 @@ testaMergeSort:
 
 
 testaQuickSortRand:
-	@echo "Testing quick sort random pivot"
+	@echo "Testing quick sort random pivot" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -163,7 +168,7 @@ testaQuickSortRand:
 	done
 
 testaQuickSortEnd:
-	@echo "Testing quick sort with last element pivot"
+	@echo "Testing quick sort with last element pivot" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
@@ -176,11 +181,26 @@ testaQuickSortEnd:
 			fi; \
 		done; \
 	done
+
+testaQuickSortMed:
+	@echo "Testing quick sort with median of 3 pivot" >> tempos.txt
+	@for size in $(V_SIZE_ALL); do \
+		echo "$$size"; \
+		for type in $(ORD_TYPES); do \
+			echo "Testing type: $$type"; \
+			./T5_Ordena 7 $$size.$$type $$size.$$type.ord; \
+			if diff $$size.$$type.out $$size.$$type.ord > /dev/null; then \
+				echo "$$size $$type OK"; \
+			else \
+				echo "$$size $$type WRONG"; \
+			fi; \
+		done; \
+	done
 	@for size in $(V_SIZE_COMPLEX); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
 			echo "Testing type: $$type"; \
-			./T5_Ordena 5 $$size.$$type $$size.$$type.ord; \
+			./T5_Ordena 7 $$size.$$type $$size.$$type.ord; \
 			if diff $$size.$$type.out $$size.$$type.ord > /dev/null; then \
 				echo "$$size $$type OK"; \
 			else \
@@ -190,8 +210,8 @@ testaQuickSortEnd:
 	done
 
 
-testaQuickSortMed:
-	@echo "Testing quick sort with median of 3 pivot"
+testaHeapSort:
+	@echo "Testing heap sort" >> tempos.txt
 	@for size in $(V_SIZE_ALL); do \
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
