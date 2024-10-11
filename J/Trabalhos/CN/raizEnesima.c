@@ -17,12 +17,12 @@ double pot(double x, unsigned n)
 
 double metodoNewtonRaphson(double p, unsigned m)
 {
-    double erro = 1, xk_1, xk = p / 2;
+    double erro = 1.0, xk_1, xk = p > 1.0 ? p/2.0 : 1.0;
     int i = 1;
     printf("Iteração 0: %.16lf\n", xk);
     while (erro != 0.0)
     {
-        xk_1 = (1.0 / m) * ((m - 1) * xk + (p / (pot(xk, m - 1))));
+        xk_1 = (1.0 / m) * ((m - 1.0) * xk + (p / (pot(xk, m - 1.0))));
         erro = mod(xk_1 - xk);
         xk = xk_1;
         if (erro != 0.0)
