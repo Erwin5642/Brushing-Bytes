@@ -312,9 +312,9 @@ int saveVectorInFile(int32_t *vector, int n, const char *fileName)
 int main(int argc, char *argv[])
 {
     int opc, size;
-    char inputFileName[50], outputFileName[50];
+    char inputFileName[70], outputFileName[70];
     int32_t *vetor;
-    clock_t t;
+    // clock_t t;
     FILE *saida;
     srand(time(NULL));
     if(argc != 4){
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
         printf("Houve um erro com o arquivo de entrada!\n");
         return 0;
     }
-    t = clock();
+    // t = clock();
     switch (opc)
     {
     case 1:
@@ -360,9 +360,15 @@ int main(int argc, char *argv[])
         heapSort(vetor, size);   
         break;
     }
-    t = clock() - t;
-    saida = openFile("tempos.txt", "a");
-    fprintf(saida, "%lf\n", ((double)t) / CLOCKS_PER_SEC);
+    // t = clock() - t;
+    // saida = openFile("tempos.txt", "a");
+    // fprintf(saida, "%lf", ((double)t) / CLOCKS_PER_SEC);
+    // if((inputFileName[strlen(inputFileName) - 1] == 'a') || (inputFileName[strlen(inputFileName) - 1] == 'c')){
+    //     fputc(',', saida);        
+    // }
+    // else{
+    //     fputc('\n', saida);
+    // }
     fclose(saida);
     saveVectorInFile(vetor, size, outputFileName);
     free(vetor);
