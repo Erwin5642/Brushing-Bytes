@@ -1,5 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+typedef struct {
+    unsigned grau;
+    double *coeficientes;
+} polinomio;
+
+typedef struct {
+    int a;
+    int b;
+} intervalo;
+
 
 double mod(double x)
 {
@@ -16,100 +28,77 @@ double pot(double x, unsigned n)
     return s;
 }
 
-double f(double coeficientes[], unsigned n, double x)
+double f(polinomio P, double x)
 {
     unsigned i;
     double s = 0;
-    for (i = 0; i <= n; i++)
+    for (i = 0; i <= P.grau; i++)
     {
-        s += coeficientes[i] * pot(x, i);
+        s += P.coeficientes[i] * pot(x, i);
     }
     return s;
 }
 
-void swap(double *a, double *b)
-{
-    double aux;
-    aux = *a;
-    *a = *b;
-    *b = aux;
-}
-
-int reduzIntervalo(double coeficientes[], unsigned n, double *a, double *b)
-{
-    double xn, x, fa, fb, erro = 1, epsilon = 1e-6;
-    int invert;
-    if ((fa = f(coeficientes, n, *a)) * (fb = f(coeficientes, n, *b)) > 0)
-    {
-        return 0;
-    }
-    if ((invert = (fa > fb)))
-    {
-        swap(a, b);
-    }
-    x = (*a + *b) / 2;
-    if (f(coeficientes, n, x) > 0)
-    {
-        *b = x;
-    }
-    else
-    {
-        *a = x;
-    }
-    while (erro > epsilon)
-    {
-        xn = (*a + *b) / 2;
-        erro = mod(xn - x);
-        x = xn;
-        if (f(coeficientes, n, xn) > 0)
-        {
-            *b = xn;
-        }
-        else
-        {
-            *a = xn;
+intervalo *encontraRaizes(polinomio P, intervalo inicial, unsigned* numeroRaizes) {
+    int i, j = 0, flag;
+    intervalo *intervalos = (intervalo*)malloc(sizeof(intervalo) * P.grau);
+    for(i = inicial.a; i < inicial.b; i++) {
+        if(f(P, i) * f(P, i + 1) < 0) {
+            flag = 1;
+            intervalos[j].a = i;
+            intervalos[j].b = i + 1;
+            j++;
         }
     }
-
-    if (invert)
-    {
-        swap(a, b);
+    *numeroRaizes = j;
+    if(flag) {
+        return intervalos;
     }
-
-    return 1;
+    free(intervalos);
+    return NULL;
 }
 
 int main()
 {
-    unsigned n, i, opc;
-    double *coeficientes, a, b;
+    unsigned i, opc, nRaizes;
+    intervalo *intervalos, inicial;
+    polinomio P;
+    clock_t t;
     do
     {
         printf("Insira o grau do polinômio:\n[grau]: ");
-        scanf("%u", &n);
-        coeficientes = malloc(sizeof(double) * (n + 1));
+        scanf("%u", &P.grau);
+        P.coeficientes = (double*)malloc(sizeof(double) * (P.grau + 1));
         printf("Insira cada um dos coeficientes do polinomio:\n");
-        for (i = 0; i <= n; i++)
+        for (i = 0; i <= P.grau; i++)
         {
             printf("[C%u]: ", i);
-            scanf("%lf", &coeficientes[i]);
+            scanf("%lf", &P.coeficientes[i]);
         }
         printf("Insira o intervalo inicial:\n[a]: ");
-        scanf("%lf", &a);
+        scanf("%d", &inicial.a);
         printf("[b]: ");
-        scanf("%lf", &b);
-        if (reduzIntervalo(coeficientes, n, &a, &b))
-        {
-            printf("%.7lf %.7lf", a, b);
+        scanf("%d", &inicial.b);
+        t = clock();
+        intervalos = encontraRaizes(P, inicial, &nRaizes);
+        t = clock() - t;
+        if (intervalos) {
+            printf("%d raizes encontradas:\n", nRaizes);
+            for(i = 0; i < nRaizes; i++) {
+                printf("[%d,%d] => f(%d) = %lf      f(%d) = %lf\n", intervalos[i].a, intervalos[i].b,intervalos[i].a,f(P, intervalos[i].a),intervalos[i].b,f(P, intervalos[i].b));
+            }
+            free(intervalos);
         }
         else
         {
-            printf("Intervalo inicial invalido\n");
+            printf("Nenhuma raiz no intervalo\n");
         }
-        free(coeficientes);
+        printf("O algoritmo levou %lf segundos\n----------------------\n", ((double)t) / CLOCKS_PER_SEC);
+        free(P.coeficientes);
         printf("\nDeseja realizar outro calculo?\n[0] - Nao\n[1] - Sim\n-:");
         scanf("%u", &opc);
-    } while (opc);
+    }
+    while (opc);
 
     return 0;
 }

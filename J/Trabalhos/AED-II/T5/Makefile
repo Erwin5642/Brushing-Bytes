@@ -65,7 +65,7 @@ geraTestes: gera-in-out
 		echo ""; \
 	done
 
-testaAll: testaBubbleSortBasico testaBubbleSortMelhorado testaInsertionSort testaMergeSort testaQuickSortEnd testaQuickSortMed testaQuickSortRand
+testaAll: testaBubbleSortBasico testaBubbleSortMelhorado testaInsertionSort testaMergeSort testaQuickSortEnd testaQuickSortMed testaQuickSortRand testaHeapSort
 
 testaBubbleSortBasico: T5_Ordena
 	@echo "Testing basic bubble sort" >> tempos.txt
@@ -216,7 +216,7 @@ testaHeapSort:
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
 			echo "Testing type: $$type"; \
-			./T5_Ordena 7 $$size.$$type $$size.$$type.ord; \
+			./T5_Ordena 8 $$size.$$type $$size.$$type.ord; \
 			if diff $$size.$$type.out $$size.$$type.ord > /dev/null; then \
 				echo "$$size $$type OK"; \
 			else \
@@ -228,7 +228,7 @@ testaHeapSort:
 		echo "$$size"; \
 		for type in $(ORD_TYPES); do \
 			echo "Testing type: $$type"; \
-			./T5_Ordena 7 $$size.$$type $$size.$$type.ord; \
+			./T5_Ordena 8 $$size.$$type $$size.$$type.ord; \
 			if diff $$size.$$type.out $$size.$$type.ord > /dev/null; then \
 				echo "$$size $$type OK"; \
 			else \

@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
         break;
     }
     // t = clock() - t;
-    // saida = openFile("tempos.txt", "a");
+    //saida = openFile("tempos.txt", "a");
     // fprintf(saida, "%lf", ((double)t) / CLOCKS_PER_SEC);
     // if((inputFileName[strlen(inputFileName) - 1] == 'a') || (inputFileName[strlen(inputFileName) - 1] == 'c')){
     //     fputc(',', saida);        
@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
     // else{
     //     fputc('\n', saida);
     // }
-    fclose(saida);
+    // fclose(saida);
     saveVectorInFile(vetor, size, outputFileName);
     free(vetor);
     return 0;
