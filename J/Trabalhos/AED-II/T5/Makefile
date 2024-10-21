@@ -5,6 +5,9 @@ ORD_TYPES = "a" "c" "d"
 T5:
 	gcc -g -o T5_Ordena T5_Ordena.c -Wall -Wextra -pedantic -fsplit-stack
 
+gera-in-out:
+	gcc -o gera-in-out gera-in-out.c  
+
 cleanGeraAll: cleanGeraIn cleanGeraOrd cleanGeraOut
 
 cleanTempos:
