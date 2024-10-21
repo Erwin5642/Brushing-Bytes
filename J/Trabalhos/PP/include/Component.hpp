@@ -2,12 +2,6 @@
 #define COMPONENT_HPP
 
 class Component{
-    bool inputA;
-    bool inputB;
-    bool isConnected;
-    sf::Vector2f pinA;
-    sf::Vector2f pinB;
-    sf::Vector2f pinOut;
     public:
     virtual void setInputA(const bool value) = 0;
     virtual void setInputB(const bool value) = 0;

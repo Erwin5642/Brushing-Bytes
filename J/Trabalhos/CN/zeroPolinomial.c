@@ -93,8 +93,7 @@ int main()
         {
             printf("Nenhuma raiz no intervalo\n");
         }
-        printf("O algoritmo levou %lf segundos\n----------------------\n", ((double)t) / CLOCKS_PER_SEC);
-        free(P.coeficientes);
+        free(coeficientes);
         printf("\nDeseja realizar outro calculo?\n[0] - Nao\n[1] - Sim\n-:");
         scanf("%u", &opc);
     }
