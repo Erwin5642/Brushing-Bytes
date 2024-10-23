@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <bits/stdint-intn.h>
+
+typedef int int32_t;
 
 //Função auxiliar para reaizar trocas entre duas variáveis
 void swap(int32_t *a, int32_t *b)
@@ -363,7 +364,7 @@ int main(int argc, char *argv[])
     char inputFileName[70], outputFileName[70];
     int32_t *vetor;
     clock_t t;
-    FILE *saida;
+    //FILE *saida;
     srand(time(NULL));
     if(argc != 4){
         printf("Numero de argumentos invalido!\n");
