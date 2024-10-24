@@ -17,12 +17,12 @@ void descend(HuffmanTrie *nodes, int i, int n){
     int j = 2 * i + 1;
     if(j < n){
         if(j < n - 1){
-            if(vector[j + 1] > vector[j]){
+            if(nodes[j + 1].r > nodes[j].r){
                 j++;
             }
         }
-        if(vector[i] < vector[j]){
-            swap(&vector[i], &vector[j]);
+        if(nodes[i].r < nodes[j].r){
+            swap(&nodes[i].r, &nodes[j].r);
             descend(vector, j, n);
         }
     }
