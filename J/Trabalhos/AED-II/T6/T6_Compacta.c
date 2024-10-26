@@ -7,29 +7,23 @@ typedef struct ListNode
     char character;
 }List;
 
+typedef struct HuffmanNode{
+    struct HuffmanNode *children[2];
+    unsigned frequency;
+    char character;
+}HuffmanTrie;
+
 typedef struct{
     unsigned *nodes;
     List *characters;
     size_t n, m;
 }Table;
 
-typedef struct TrieNode{
-    struct TrieNode *children[2];
-    unsigned frequency;
-    char character;
-}HuffmanTrie;
-
 typedef struct  
 {
-    struct HuffmanTrie **array;
+    HuffmanTrie **array;
     size_t n, m;
 }Heap;
-
-void swapNode(HuffmanTrie **a, HuffmanTrie **b){
-    HuffmanTrie **aux = a;
-    *a = *b;
-    *b = *aux;
-}
 
 List *newListNode(char character){
     List *aux = malloc(sizeof(List));
@@ -71,96 +65,104 @@ Table createFrequencyTable(char *text, size_t size){
     newTable.n = 0;
     newTable.characters = NULL;
     for(i = 0; i < size; i++){
-        if(newTable.nodes[text[i] == 0]){
+        if(newTable.nodes[text[i]] == 0){
             newTable.n++;
             insertList(&newTable.characters, text[i]);
         }
-        newTable.nodes[text[i]]++;
+        newTable.nodes[(unsigned)text[i]]++;
     }
     return newTable;
 }
 
-void descendHeap(Heap h, size_t i){
-    size_t j = 2 * i + 1, n = h.n;
-    HuffmanTrie **vector = h.array;
-    if(j < n){
-        if(j < n - 1){
-            if(vector[j + 1]->frequency < vector[j]->frequency){
-                j++;
-            }
-        }
-        if(vector[i]->frequency < vector[j]->frequency){
-            swapNode(&vector[i], &vector[j]);
-            descendHeap(h, i);
-        }
-    }
-}
+// void swapNode(HuffmanTrie **a, HuffmanTrie **b){
+//     HuffmanTrie **aux = a;
+//     *a = *b;
+//     *b = *aux;
+// }
 
-// void arrangeHeap(Heap h){
-//     size_t i;
-//     for(i = (h.n - 1)/2; i >= 0; i--){
-//         descendHeap(h, i);
+// HuffmanTrie *newTrieNode(char newChar, unsigned newFreq){
+//     HuffmanTrie *aux = malloc(sizeof(HuffmanTrie));
+//     aux->character = newChar;
+//     aux->frequency = newFreq;
+//     return aux;
+// }
+
+// void descendHeap(Heap heap, size_t i){
+//     size_t j = 2 * i + 1, n = heap.n;
+//     if(j < n){
+//         if(j < n - 1){
+//             if(heap.array[j + 1]->frequency < heap.array[j]->frequency){
+//                 j++;
+//             }
+//         }
+//         if(heap.array[i]->frequency < heap.array[j]->frequency){
+//             swapNode(&heap.array[i], &heap.array[j]);
+//             descendHeap(heap, i);
+//         }
 //     }
 // }
 
-void ascend(Heap heap, unsigned index){
-    unsigned j = (index - 1)/2;
-    if(j >= 0){
-        if(heap.array[j]->frequency > heap.array[index]->frequency){
-            swapNode(heap.array[j], heap.array[index])
-        }
-    }
-}
+// void ascendHeap(Heap heap, unsigned index){
+//     int j = (index - 1)/2;
+//     if(j >= 0){
+//         if(heap.array[j]->frequency > heap.array[index]->frequency){
+//             swapNode(&heap.array[j], &heap.array[index]);
+//             ascendHeap(heap, j);
+//         }
+//     }
+// }
 
-void insertHeap(Heap* heap, HuffmanTrie *newNode){
-    if(heap->n < heap->m){
-        heap->array[heap->n] = newNode;
-        ascend(*heap, heap->n);
-        heap->n++;
-    }
-}
+// void insertHeap(Heap* heap, HuffmanTrie *newNode){
+//     if(heap->n < heap->m){
+//         heap->array[heap->n] = newNode;
+//         ascendHeap(*heap, heap->n);
+//         heap->n++;
+//     }
+// }
 
-HuffmanTrie *removeHeap(Heap *h){
-    HuffmanTrie *aux = h->array[0];
-    
-}
+// HuffmanTrie *removeHeap(Heap *ptheap){
+//     HuffmanTrie *aux;
+//     if(ptheap->n){
+//         aux = ptheap->array[0];
+//         ptheap->array[0] = ptheap->array[ptheap->n - 1];
+//         ptheap->n--;
+//         descendHeap(*ptheap, 0);
+//         return aux;
+//     }
+//     return NULL;
+// }
 
-HuffmanTrie *newTrieNode(char newChar, unsigned newFreq){
-    HuffmanTrie *aux = malloc(sizeof(HuffmanTrie));
-    aux->character = newChar;
-    aux->frequency = newFreq;
-    return aux;
-}
+// Heap createMinHeap(Table t){
+//     Heap newHeap;
+//     size_t i;
+//     List *auxList = t.characters;
+//     newHeap.array = malloc(t.n * sizeof(HuffmanTrie *));
+//     newHeap.m = t.n;
+//     newHeap.n = 0;
+//     for(i = 0; i < t.n; i++){
+//         insertHeap(&newHeap, newTrieNode(t.characters->character, t.nodes[(unsigned)t.characters->character]));
+//         auxList = auxList->next;
+//     }
+//     return newHeap;
+// }
 
-Heap createMinHeap(Table t){
-    Heap newHeap;
-    size_t i;
-    List *auxList = t.characters;
-    newHeap.array = malloc(t.n * sizeof(HuffmanTrie *));
-    newHeap.m = t.n;
-    newHeap.n = 0;
-    for(i = 0; i < t.n; i++){
-        insertHeap(&newHeap, newTrieNode(t.characters->character, t.nodes[t.characters->character]));
-        newHeap.n++;
-        auxList = auxList->next;
-    }
-    return newHeap;
-}
+// HuffmanTrie *mergeTries(HuffmanTrie *t1, HuffmanTrie *t2){
+//     HuffmanTrie *aux = newTrieNode(' ', t1->frequency + t2->frequency);
+//     aux->children[0] = t1;
+//     aux->children[1] = t2;
+//     return aux;    
+// }
 
-HuffmanTrie *mergeTries(HuffmanTrie *t1, HuffmanTrie *t2){
-    HuffmanTrie *aux = newTrieNode(' ', t1->frequency + t2->frequency, 0);
-    aux->children[0] = t1;
-    aux->children[1] = t2;
-    return aux;    
-}
-
-void createHuffmanTrie(Heap *freq){
-    while (freq->n > 1)
-    {
-
-    }
-    
-}
+// HuffmanTrie *createHuffmanTrie(Heap *heap){
+//     HuffmanTrie *aux1, *aux2;
+//     while (heap->n > 1)
+//     {
+//         aux1 = removeHeap(heap);
+//         aux2 = removeHeap(heap);
+//         insertHeap(heap, mergeTries(aux1, aux2));
+//     }
+//     return heap->array[0];
+// }
 
 // Operações em Arquivo
 // Abre um arquivo
@@ -213,48 +215,49 @@ int saveTextInFile(char *text, size_t size, const char *fileName)
     return 0;
 }
 
-void compactFile(char *filename){
+void compressFile(char *filename){
     size_t size;
     char *text = readTextFromFile(filename, &size);
     Table frequencias;
     if(text){
         frequencias = createFrequencyTable(text, size);
-        
+
         free(frequencias.nodes);
+        free(text);
     }
 }
 
 
-void decompactFile(char *filename){
-
+void decompressFile(char *filename){
+    filename[0] = 1;
 }
 
 
 int main(int argc, char *argv[])
 {
-    char *text;
-    int size;
-    if (argc != 3)
-    {
-        printf("Numero de argumentos invalido!\n");
-        return 0;
-    }
-    if (argv[1][0] != 'd' || argv[1][0] != 'c')
-    {
-        printf("Operacao invalida!\n");
-        return 0;
-    }
+    // if (argc != 3)
+    // {
+    //     printf("Numero de argumentos invalido!\n");
+    //     return 0;
+    // }
+    // if (argv[1][0] != 'd' || argv[1][0] != 'c')
+    // {
+    //     printf("Operacao invalida!\n");
+    //     return 0;
+    // }
 
-    if (argv[1][0] == 'c')
-    {
-        compactFile(argv[2]);
-        printf("Arquivo foi compactado!\n");
-    }
-    else
-    {
-        decompactFile(argv[2]);
-        printf("Arquivo foi descompactado!\n");
-    }
+    // if (argv[1][0] == 'c')
+    // {
+    //     compressFile(argv[2]);
+    //     printf("Arquivo foi compactado!\n");
+    // }
+    // else
+    // {
+    //     decompressFile(argv[2]);
+    //     printf("Arquivo foi descompactado!\n");
+    // }
+
+    compressFile("/home/sofia/Brushing-Bytes/J/Trabalhos/AED-II/T6/teste.txt");
 
     return 0;
 }
