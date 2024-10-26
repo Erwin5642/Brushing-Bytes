@@ -16,7 +16,6 @@ typedef struct{
 typedef struct TrieNode{
     struct TrieNode *children[2];
     unsigned frequency;
-    unsigned short isLeaf;
     char character;
 }HuffmanTrie;
 
@@ -97,15 +96,28 @@ void descendHeap(Heap h, size_t i){
     }
 }
 
-void arrangeHeap(Heap h){
-    size_t i;
-    for(i = (h.n - 1)/2; i >= 0; i--){
-        descendHeap(h, i);
+// void arrangeHeap(Heap h){
+//     size_t i;
+//     for(i = (h.n - 1)/2; i >= 0; i--){
+//         descendHeap(h, i);
+//     }
+// }
+
+void ascend(Heap heap, unsigned index){
+    unsigned j = (index - 1)/2;
+    if(j >= 0){
+        if(heap.array[j]->frequency > heap.array[index]->frequency){
+            swapNode(heap.array[j], heap.array[index])
+        }
     }
 }
 
-void insertHeap(Heap* h, HuffmanTrie *newNode){
-
+void insertHeap(Heap* heap, HuffmanTrie *newNode){
+    if(heap->n < heap->m){
+        heap->array[heap->n] = newNode;
+        ascend(*heap, heap->n);
+        heap->n++;
+    }
 }
 
 HuffmanTrie *removeHeap(Heap *h){
@@ -113,26 +125,26 @@ HuffmanTrie *removeHeap(Heap *h){
     
 }
 
+HuffmanTrie *newTrieNode(char newChar, unsigned newFreq){
+    HuffmanTrie *aux = malloc(sizeof(HuffmanTrie));
+    aux->character = newChar;
+    aux->frequency = newFreq;
+    return aux;
+}
+
 Heap createMinHeap(Table t){
     Heap newHeap;
     size_t i;
     List *auxList = t.characters;
     newHeap.array = malloc(t.n * sizeof(HuffmanTrie *));
+    newHeap.m = t.n;
+    newHeap.n = 0;
     for(i = 0; i < t.n; i++){
-        newHeap.array[i] = newTrieNode(auxList->character, t.nodes[auxList->character], 1);
+        insertHeap(&newHeap, newTrieNode(t.characters->character, t.nodes[t.characters->character]));
+        newHeap.n++;
         auxList = auxList->next;
     }
-    arrangeHeap(newHeap);
     return newHeap;
-}
-
-HuffmanTrie *newTrieNode(char newChar, unsigned newFreq, unsigned short pos){
-    HuffmanTrie *aux = malloc(sizeof(HuffmanTrie));
-    if((aux->isLeaf = pos)){
-        aux->character = newChar;
-    }
-    aux->frequency = newFreq;
-    return aux;
 }
 
 HuffmanTrie *mergeTries(HuffmanTrie *t1, HuffmanTrie *t2){
