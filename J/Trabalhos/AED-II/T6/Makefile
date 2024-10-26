@@ -1,2 +1,2 @@
 T6:
-	gcc -o -g T6_Compacta.exe T6_Compacta.c -Wall -Wextra -pedantic
+	gcc -o T6_Compacta T6_Compacta.c -g -Wall -Wextra -pedantic
