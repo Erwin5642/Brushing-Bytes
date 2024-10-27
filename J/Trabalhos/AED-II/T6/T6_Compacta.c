@@ -116,7 +116,7 @@ void descendHeap(Heap heap, int i)
                 j++;
             }
         }
-        if (heap.array[i]->frequency < heap.array[j]->frequency)
+        if (heap.array[i]->frequency > heap.array[j]->frequency)
         {
             swapNode(&heap.array[i], &heap.array[j]);
             descendHeap(heap, i);
