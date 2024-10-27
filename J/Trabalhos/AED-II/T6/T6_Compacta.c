@@ -308,24 +308,13 @@ void encodeBytes(HuffmanTrie *codesTrie, Table bytesTable, unsigned long long co
         if (codesTrie->children[0])
         {
             codesAux = codesAux << 1;
-            if (bitsUsed)
-            {
-                bitsUsed++;
-            }
+            bitsUsed++;
             encodeBytes(codesTrie->children[0], bytesTable, codesAux, bitsUsed);
-            if (bitsUsed == 1)
-            {
-                bitsUsed = 1;
-            }
             codesAux++;
             encodeBytes(codesTrie->children[1], bytesTable, codesAux, bitsUsed);
         }
         else
         {
-            if (bitsUsed == 0)
-            {
-                bitsUsed = 1;
-            }
             bytesTable.nodes[codesTrie->character].bitsActuallyUsed = bitsUsed;
             bytesTable.nodes[codesTrie->character].code = codesAux;
         }
@@ -354,85 +343,91 @@ unsigned long encodeHuffmanTrie(FILE *filePointer, HuffmanTrie *codesTrie, Byte 
             *used = 0;
         }
         (*used)++;
-        encodeHuffmanTrie(filePointer, codesTrie, aux, used);
-        encodeHuffmanTrie(filePointer, codesTrie, aux, used);
+        encodeHuffmanTrie(filePointer, codesTrie->children[0], aux, used);
+        encodeHuffmanTrie(filePointer, codesTrie->children[1], aux, used);
     }
     else
     {
-        if (*used == 8)
-        {
-            fwrite(aux, 1, 1, filePointer);
-            size = size + 8;
-            *used = 0;
-        }
         *aux = (*aux) | (1 << (7 - *used));
         (*used)++;
         if (*used == 8)
         {
+            fwrite(aux, 1, 1, filePointer);
             fwrite(&codesTrie->character, 1, 1, filePointer);
-            size = size + 8;
+            size = size + 16;
             *aux = 0;
             *used = 0;
         }
         else
         {
             temp = (codesTrie->character) << (8 - *used);
-            *aux = *aux | ((codesTrie->character) >> (8 - *used));
+            *aux = *aux | ((codesTrie->character) >> *used);
             fwrite(aux, 1, 1, filePointer);
             *aux = temp;
-            *used = 8 - *used;
             size = size + 8;
         }
     }
     return size;
 }
 
-unsigned long *encodeFile(char *fileName, HuffmanTrie *codesTrie, Table codesTable, char *text, int textSize)
+void encodeFile(char *fileName, HuffmanTrie *codesTrie, Table codesTable, Byte *text, int textSize)
 {
     FILE *file = openFile(fileName, "w");
-    Byte used = 0, aux = 0, temp;
+    Byte used = 0, aux = 0, codeShifted = 0, codeExtra = 0;
     Header h;
     TableNode auxNode;
-    int i;
+    int i, qtd;
     h.fileInit = 0;
     h.uselessBits = 0;
     if (file)
     {
-        fwrite(&h, 1, 1, file);
+        // fwrite(&h, sizeof(Header), 1, file);
         h.fileInit = encodeHuffmanTrie(file, codesTrie, &aux, &used);
-        i = 0;
         if (aux != 0)
         {
             h.fileInit += used;
-            auxNode = codesTable.nodes[text[0]];
-            temp = (auxNode.code) << (8 - (auxNode.bitsActuallyUsed + used));
-            aux = aux | temp;
-            fwrite(aux, 1, 1, file);
-            aux = temp;
-            used = 8 - used;
-            i++;
+        }
+        for (i = 0; i < textSize; i++)
+        {
+            auxNode = codesTable.nodes[text[i]];
+            if (used == 8)
+            {
+                fwrite(&aux, 1, 1, file);
+                aux = 0;
+                used = 0;
+            }
+            if (8 - (auxNode.bitsActuallyUsed + used) < 0)
+            {
+                codeShifted = auxNode.code >> ((auxNode.bitsActuallyUsed + used) - 8);
+                aux = aux | codeShifted;
+                fwrite(&aux, 1, 1, file);
+                used = (auxNode.bitsActuallyUsed + used) - 8;
+                codeExtra = auxNode.code << (8 - used);
+                aux = codeExtra;
+            }
+            else
+            {
+                codeShifted = auxNode.code << (8 - (auxNode.bitsActuallyUsed + used));
+                aux = aux | codeShifted;
+                used += auxNode.bitsActuallyUsed;
+                if (used == 8)
+                {
+                    fwrite(&aux, 1, 1, file);
+                    aux = 0;
+                    used = 0;
+                }
+            }
         }
 
-        // while(i < textSize){
-            
-        //     i++;
-        // }
-
-        // if (aux != 0)
-        // {
-        //     h.fileInit += used;
-        //     temp = text[0] << (8 - used);
-        //     aux = aux | ((text[0]) >> (8 - used));
-        //     fwrite(aux, 1, 1, file);
-        //     aux = temp;
-        //     used = 8 - used;
-        // }
-
-        fseek(file, 0, SEEK_SET);
-        fwrite(&h, 1, 1, file);
+        if (used != 0)
+        {
+            fwrite(&aux, 1, 1, file);
+        }
+        h.uselessBits = (8 - used) % 8;
+        // fseek(file, 0, SEEK_SET);
+        // fwrite(&h, sizeof(Header), 1, file);
         fclose(file);
     }
-    return 0;
 }
 
 void compressFile(char *filename)
@@ -443,16 +438,11 @@ void compressFile(char *filename)
     Heap priorityListNodes;
     HuffmanTrie *codesTrie;
     char filenameTemp[80];
-    int i = strlen(filename);
-    strcpy(filenameTemp, filename);
-    filenameTemp[i] = '.';
-    filenameTemp[i + 1] = 'c';
-    filenameTemp[i + 2] = 'm';
-    filenameTemp[i + 3] = 'p';
-    filenameTemp[i + 4] = '\0';
     if (text)
     {
-        filename = strncat(filename, filenameTemp, 4);
+        strncpy(filenameTemp, filename, strlen(filename));
+        strncat(filenameTemp, ".cmp", 5);
+
         bytesTable = createFrequencyTable(text, size);
         priorityListNodes = createMinHeap(bytesTable);
         codesTrie = createHuffmanTrie(&priorityListNodes);
