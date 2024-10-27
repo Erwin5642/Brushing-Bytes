@@ -119,7 +119,7 @@ void descendHeap(Heap heap, int i)
         if (heap.array[i]->frequency > heap.array[j]->frequency)
         {
             swapNode(&heap.array[i], &heap.array[j]);
-            descendHeap(heap, i);
+            descendHeap(heap, j);
         }
     }
 }
@@ -147,15 +147,15 @@ void insertHeap(Heap *heap, HuffmanTrie *newNode)
     }
 }
 
-HuffmanTrie *removeHeap(Heap *ptheap)
+HuffmanTrie *removeHeap(Heap *heap)
 {
     HuffmanTrie *aux;
-    if (ptheap->n)
+    if (heap->n)
     {
-        aux = ptheap->array[0];
-        ptheap->array[0] = ptheap->array[ptheap->n - 1];
-        ptheap->n--;
-        descendHeap(*ptheap, 0);
+        aux = heap->array[0];
+        heap->array[0] = heap->array[heap->n - 1];
+        heap->n--;
+        descendHeap(*heap, 0);
         return aux;
     }
     return NULL;
@@ -199,7 +199,7 @@ HuffmanTrie *createHuffmanTrie(Heap *heap)
     {
         aux1 = removeHeap(heap);
         aux2 = removeHeap(heap);
-        insertHeap(heap, mergeTries(aux1, aux2));
+        insertHeap(heap, mergeTries(aux2, aux1));
     }
     return heap->array[0];
 }
