@@ -1,24 +1,33 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
+// Trabalho T6: Compactação e Decompactação de Arquivos
+// Nome: João Vitor Antunes da Silva 
+// RGM: 48935
 
+// OBS: A implementação da descompactação ficou incompleta. A árvore de Huffman equivalente ao arquivo compactado
+// é decodificada, entretanto o algoritmo para por aí.
+
+#include <stdio.h> // printf, fread e fwrite
+#include <stdlib.h> // malloc e free
+#include <stdint.h> // uint_8
+#include <string.h> // strncat e strncpy
+
+// Tipo que define 1 byte
 typedef uint8_t Byte;
 
+// Cabeçalho do arquivo codificado
 typedef struct
 {
     unsigned long fileInit;
     unsigned uselessBits : 3;
 } Header;
 
-int i = sizeof(Header);
-
+// Lista encadeada de bytes
 typedef struct ListNode
 {
     struct ListNode *next;
     Byte character;
 } List;
 
+// Árovre de Huffman
 typedef struct HuffmanNode
 {
     struct HuffmanNode *children[2];
@@ -26,6 +35,7 @@ typedef struct HuffmanNode
     Byte character;
 } HuffmanTrie;
 
+// Nó de uma tabela de dispersão com frequências e código equivalente ao byte
 typedef struct
 {
     unsigned frequency;
@@ -33,6 +43,7 @@ typedef struct
     short unsigned bitsActuallyUsed;
 } TableNode;
 
+// Tabela de dispersão que mapeia um byte ao seu código e frequênca no arquivo
 typedef struct
 {
     TableNode *nodes;
@@ -40,12 +51,14 @@ typedef struct
     int n, m;
 } Table;
 
+// Lista de prioridade com nós de uma árvore de Huffman
 typedef struct
 {
     HuffmanTrie **array;
     int n, m;
 } Heap;
 
+//Cria um nó com um novo byte para uma lista encadeada
 List *newListNode(Byte character)
 {
     List *aux = malloc(sizeof(List));
@@ -54,6 +67,7 @@ List *newListNode(Byte character)
     return aux;
 }
 
+// Insere um nó nma lista encadeada
 void insertList(List **L, Byte newChar)
 {
     List *aux;
@@ -77,6 +91,7 @@ List *deleteList(List *L)
     return NULL;
 }
 
+// Cria uma tabela de dispersão com as frequências de todos os bytes de um dado texto
 Table createFrequencyTable(Byte *text, int size)
 {
     Table newTable;
@@ -97,6 +112,7 @@ Table createFrequencyTable(Byte *text, int size)
     return newTable;
 }
 
+// Deleta uma tabela de dispersão
 void deleteTable(Table *table)
 {
     free(table->nodes);
@@ -106,6 +122,7 @@ void deleteTable(Table *table)
     table->n = 0;
 }
 
+//Troca o endereço de dois nós de uma árvore de Huffman
 void swapNode(HuffmanTrie **a, HuffmanTrie **b)
 {
     HuffmanTrie *aux;
@@ -114,6 +131,7 @@ void swapNode(HuffmanTrie **a, HuffmanTrie **b)
     *a = aux;
 }
 
+// Aloca um novo nó para uma árvore de Huffman
 HuffmanTrie *newTrieNode(Byte newChar, unsigned newFreq)
 {
     HuffmanTrie *aux = malloc(sizeof(HuffmanTrie));
@@ -123,6 +141,7 @@ HuffmanTrie *newTrieNode(Byte newChar, unsigned newFreq)
     return aux;
 }
 
+//Realiza uma descida do elemento de índice i num heap minimo
 void descendHeap(Heap heap, int i)
 {
     int j = 2 * i + 1, n = heap.n;
@@ -143,6 +162,7 @@ void descendHeap(Heap heap, int i)
     }
 }
 
+// Realiza uma subida do elemento no índice i de um heap minimo
 void ascendHeap(Heap heap, int index)
 {
     int j = (index - 1) / 2;
@@ -156,6 +176,7 @@ void ascendHeap(Heap heap, int index)
     }
 }
 
+// Insere um novo nó de árvore de Huffman em um heap minimo
 void insertHeap(Heap *heap, HuffmanTrie *newNode)
 {
     if (heap->n < heap->m)
@@ -166,6 +187,7 @@ void insertHeap(Heap *heap, HuffmanTrie *newNode)
     }
 }
 
+// Remove um nó da Árvore de Huffman de um heap mínimo, mas sem desalocar ele da memória
 HuffmanTrie *removeHeap(Heap *heap)
 {
     HuffmanTrie *aux;
@@ -180,6 +202,7 @@ HuffmanTrie *removeHeap(Heap *heap)
     return NULL;
 }
 
+// Cria um heap mínimo a partir de uma tabela de dispersão com as frequências de cada byte
 Heap createMinHeap(Table table)
 {
     Heap newHeap;
@@ -195,6 +218,7 @@ Heap createMinHeap(Table table)
     return newHeap;
 }
 
+// Deleta um heap minimo
 void deleteHeap(Heap *ptheap)
 {
     free(ptheap->array);
@@ -203,6 +227,7 @@ void deleteHeap(Heap *ptheap)
     ptheap->m = 0;
 }
 
+// Funde dois nós de uma árvore de Huffman
 HuffmanTrie *mergeTries(HuffmanTrie *t1, HuffmanTrie *t2)
 {
     HuffmanTrie *aux = newTrieNode('\0', t1->frequency + t2->frequency);
@@ -211,6 +236,7 @@ HuffmanTrie *mergeTries(HuffmanTrie *t1, HuffmanTrie *t2)
     return aux;
 }
 
+// Cria uma árvore de Huffman a partir dos nós armazenados em um heap minimo
 HuffmanTrie *createHuffmanTrie(Heap *heap)
 {
     HuffmanTrie *aux1, *aux2;
@@ -223,20 +249,7 @@ HuffmanTrie *createHuffmanTrie(Heap *heap)
     return heap->array[0];
 }
 
-// void showHuffmanTrie(HuffmanTrie *trie)
-// {
-//     if (trie->children[0])
-//     {
-//         printf("Freq: %d\n", trie->frequency);
-//         showHuffmanTrie(trie->children[0]);
-//         showHuffmanTrie(trie->children[1]);
-//     }
-//     else
-//     {
-//         printf("Freq: %d Char: %c\n", trie->frequency, trie->character);
-//     }
-// }
-
+// Desaloca uma árvore de Huffman
 HuffmanTrie *deleteHuffmanTrie(HuffmanTrie *trie)
 {
     if (trie)
@@ -288,19 +301,7 @@ Byte *readTextFromFile(const char *fileName, int *size)
     return NULL;
 }
 
-// Salva o conteúdo de um vetor em um arquivo binário
-int saveTextInFile(Byte *text, int size, const char *fileName)
-{
-    FILE *file = openFile(fileName, "wb");
-    if (file)
-    {
-        fwrite(text, sizeof(Byte), size, file);
-        fclose(file);
-        return 1;
-    }
-    return 0;
-}
-
+// Atribui os respectivos códigos a cada um dos bytes registrados na tabela de dispersão
 void encodeBytes(HuffmanTrie *codesTrie, Table bytesTable, unsigned long long codesAux, unsigned bitsUsed)
 {
     if (codesTrie)
@@ -321,14 +322,10 @@ void encodeBytes(HuffmanTrie *codesTrie, Table bytesTable, unsigned long long co
     }
 }
 
-// void showCodes(Table bytesTable){
-//     List *aux = bytesTable.characters;
-//     while(aux){
-//         printf("Char: %c Code: %llu\n", aux->character, bytesTable.nodes[aux->character].code);
-//         aux = aux->next;
-//     }
-// }
-
+// Codifica em pré ordem em um arquivo uma dada árvore de Huffman
+// Onde:
+// 0 significa que o nó é interno
+// 1 significa que o nó é uma folha e é seguido de um byte que representa o caracter na folha
 unsigned long encodeHuffmanTrie(FILE *filePointer, HuffmanTrie *codesTrie, Byte *aux, Byte *used)
 {
     Byte temp;
@@ -370,18 +367,19 @@ unsigned long encodeHuffmanTrie(FILE *filePointer, HuffmanTrie *codesTrie, Byte 
     return size;
 }
 
+// Codifica um texto usando uma árvore de Huffman e escreve a compactação em um arquivo 
 void encodeFile(char *fileName, HuffmanTrie *codesTrie, Table codesTable, Byte *text, int textSize)
 {
     FILE *file = openFile(fileName, "w");
     Byte used = 0, aux = 0, codeShifted = 0, codeExtra = 0;
     Header h;
     TableNode auxNode;
-    int i, qtd;
+    int i;
     h.fileInit = 0;
     h.uselessBits = 0;
     if (file)
     {
-        // fwrite(&h, sizeof(Header), 1, file);
+        fwrite(&h, sizeof(Header), 1, file);
         h.fileInit = encodeHuffmanTrie(file, codesTrie, &aux, &used);
         if (aux != 0)
         {
@@ -424,12 +422,13 @@ void encodeFile(char *fileName, HuffmanTrie *codesTrie, Table codesTable, Byte *
             fwrite(&aux, 1, 1, file);
         }
         h.uselessBits = (8 - used) % 8;
-        // fseek(file, 0, SEEK_SET);
-        // fwrite(&h, sizeof(Header), 1, file);
+        fseek(file, 0, SEEK_SET);
+        fwrite(&h, sizeof(Header), 1, file);
         fclose(file);
     }
 }
 
+// Compacta os dados de um arquivo
 void compressFile(char *filename)
 {
     int size;
@@ -446,10 +445,8 @@ void compressFile(char *filename)
         bytesTable = createFrequencyTable(text, size);
         priorityListNodes = createMinHeap(bytesTable);
         codesTrie = createHuffmanTrie(&priorityListNodes);
-        // showHuffmanTrie(codesTrie);
         encodeBytes(codesTrie, bytesTable, 0, 0);
         encodeFile(filenameTemp, codesTrie, bytesTable, text, size);
-        // showCodes(bytesTable);
         deleteTable(&bytesTable);
         deleteHeap(&priorityListNodes);
         codesTrie = deleteHuffmanTrie(codesTrie);
@@ -457,41 +454,120 @@ void compressFile(char *filename)
     }
 }
 
-// int decodeByte(HuffmanTrie codesTrie, Byte *byte)
-// {
-//     return 0;
-// }
+// Retira bit a bit os dados de um byte que é dado em uma stream 
+// fazendo alterações necessárias nas informações sobre esse byte e essa stream
+int processCode(Byte *code, unsigned *used, int *index, unsigned long *total)
+{
+    int r = *code >> 7;
+    *code = *code << 1;
+    (*used)--;
+    (*total)++;
+    if (!(*used))
+    {
+        *used = 8;
+        (*index)++;
+    }
+    return r;
+}
 
-// void decompressFile(char *filename)
-// {
-//     filename[0] = 0;
-// }
+// Decodifica uma árovre de Huffman a partir de uma stream de byts em pré ordem 
+HuffmanTrie *byteToHuffmanTrie(Byte *codeStream, unsigned *used, int *index, unsigned long *total, unsigned long max)
+{
+    int op;
+    HuffmanTrie *aux = NULL;
+    Byte newChar, newCharAux;
+    if (codeStream)
+    {
+        if (used)
+        {
+            if (*total < max)
+            {
+                op = processCode(&codeStream[*index], used, index, total);
+                if (!op)
+                {
+                    aux = newTrieNode('\0', 0);
+                    aux->children[0] = byteToHuffmanTrie(codeStream, used, index, total, max);
+                    aux->children[1] = byteToHuffmanTrie(codeStream, used, index, total, max);
+                    return aux;
+                }
+                else
+                {
+                    if (*used == 8)
+                    {
+                        *total = *total + 8;
+                        *used = 8;
+                        newChar = codeStream[*index];
+                        (*index)++;
+                    }
+                    else
+                    {
+                        newCharAux = codeStream[*index + 1] >> (*used);
+                        newChar = codeStream[*index] | newCharAux;
+                        (*index)++;
+                        codeStream[*index] = codeStream[*index] << (8 - *used);
+                        *total = *total + 8;
+                    }
+                    return newTrieNode(newChar, 0);
+                }
+            }
+        }
+    }
+    return aux;
+}
 
+//Decodifica a árvore de Huffman escrita em um arquivo
+void decompressFile(char *filename)
+{
+    FILE *file = openFile(filename, "r");
+    HuffmanTrie *codesTrie;
+    Header size;
+    int indexAux = 0;
+    unsigned long totalAux = 0, i;
+    unsigned usedAux = 8;
+    Byte *streamTemp;
+    char filenameTemp[80];
+    if (file)
+    {
+        strncpy(filenameTemp, filename, strlen(filename));
+        strncat(filenameTemp, ".dcmp", 6);
+
+        fread(&size, sizeof(Header), 1, file);
+        streamTemp = malloc((size.fileInit / 8) + 1);
+        for (i = 0; i <= size.fileInit / 8; i++)
+        {
+            fread(&(streamTemp[i]), 1, 1, file);
+        }
+
+        codesTrie = byteToHuffmanTrie(streamTemp, &usedAux, &indexAux, &totalAux, size.fileInit);
+        codesTrie = deleteHuffmanTrie(codesTrie);
+        free(streamTemp);
+    }
+}
+
+// Programa principal
 int main(int argc, char *argv[])
 {
-    // if (argc != 3)
-    // {
-    //     printf("Numero de argumentos invalido!\n");
-    //     return 0;
-    // }
-    // if (argv[1][0] != 'd' || argv[1][0] != 'c')
-    // {
-    //     printf("Operacao invalida!\n");
-    //     return 0;
-    // }
+    if (argc != 3)
+    {
+        printf("Numero de argumentos invalido!\n");
+        return 0;
+    }
+    if ((argv[1][0] != 'd') && (argv[1][0] != 'c'))
+    {
+        printf("Operacao invalida!\n");
+        return 0;
+    }
 
-    // if (argv[1][0] == 'c')
-    // {
-    //     compressFile(argv[2]);
-    //     printf("Arquivo foi compactado!\n");
-    // }
-    // else
-    // {
-    //     decompressFile(argv[2]);
-    //     printf("Arquivo foi descompactado!\n");
-    // }
-
-    compressFile("/home/sofia/Brushing-Bytes/J/Trabalhos/AED-II/T6/teste.txt");
+    if (argv[1][0] == 'c')
+    {
+        compressFile(argv[2]);
+        printf("Arquivo foi compactado!\n");
+    }
+    else
+    {
+        decompressFile(argv[2]);
+        printf("Descompactação incompleta...\n");
+    }
 
     return 0;
 }
