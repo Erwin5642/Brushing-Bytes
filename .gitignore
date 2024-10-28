@@ -44,6 +44,5 @@ tempos
 *.out
 *.app
 
-
 #VS code config
 .vscode/
